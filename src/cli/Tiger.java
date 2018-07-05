@@ -10,7 +10,10 @@ import domain.Menu;
 import domain.Order;
 import domain.Store;
 import domain.User;
+import domain.Card;
+
 import java.sql.SQLException;
+import services.CardService;
 import services.MenuServices;
 import services.OrderService;
 import services.StoreService;
@@ -55,15 +58,17 @@ public class Tiger{
 	    int input = sc.nextInt();
 	    switch(input){
     		case 1:
-    			loginScreen();
+    			loginScreen();break;
     		case 2:
-    			registerScreen();    	
+    			registerScreen();break; 	
     		case 3:
     			System.out.println("Goodbye");
     			System.exit(0);
+                        break;
     		case 4:
     			AdminAndManager aam = new AdminAndManager(con);
     			aam.adminScreen();
+                        break;
 	    }
 
 	}
@@ -360,7 +365,6 @@ public class Tiger{
     			System.out.println("Password Changed to: " + newPassword);
     		}
     		if(input==5){
-
     			String newPhoneNumber = editString();
     			currentUser.setPhone(newPhoneNumber);
     			System.out.println("Phone Number Changed to: " + newPhoneNumber);
@@ -380,7 +384,28 @@ public class Tiger{
 	}
 
 	private static void editCards() {
-		// TODO Auto-generated method stub
+            System.out.println("\n *** Cards ***\n");
+            
+            ArrayList<String> options = new ArrayList<String>();
+            options.add("Add a Card");
+            
+            CardService cardServe = new CardService(con);
+            ArrayList<Card> userCards= cardServe.getUserCards(currentUser.getUserId());
+            if(userCards == null || userCards.size()==0){
+                System.out.println("You have no cards on file.");
+            }
+            
+            for(int i=0; i<userCards.size(); i++){
+                options.add(userCards.get(i).getCardNumber());
+            }
+            
+            int count = 0;
+            for(String x : options){
+                count++;
+                System.out.println(count+". "+x);
+            }
+            
+            int cardChoice = sc.nextInt();
 		
 	}
 

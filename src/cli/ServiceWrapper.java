@@ -18,9 +18,7 @@ import services.UserService;
 public class ServiceWrapper {
 	
 	Connection con;
-	
-	
-	
+		
 	public ServiceWrapper(Connection con) {
 		super();
 		this.con = con;
