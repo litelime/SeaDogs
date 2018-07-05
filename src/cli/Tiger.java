@@ -29,9 +29,9 @@ public class Tiger{
 	public static void main(String[] args) {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-	        con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "db_uSpring", "pass");
+        	        con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "db_uSpring", "pass");
 		} catch (ClassNotFoundException | SQLException e) {
-                        System.out.println("Failed to connect");
+
 			e.printStackTrace();
 		}
 		sw  = new ServiceWrapper(con);
@@ -82,7 +82,8 @@ public class Tiger{
 			firstScreen();
 		}
 		if(password.equals(candidate.getPassword())){
-                        currentUser = candidate;
+
+			currentUser = candidate;
 			currentOrder = new Order();
 			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
 			currentOrder.setUser_id(currentUser.getUserId());
@@ -90,7 +91,7 @@ public class Tiger{
 			//currentOrder.setCard_id();
 			StoreService ss = new StoreService(con);
 			currentStore = ss.getById("0");
-                        homeScreen();
+                	homeScreen();
 	    }
 	    else{
 	    	System.out.println("Wrong email or password");
@@ -118,7 +119,7 @@ public class Tiger{
 	    String last = sc.next();
 		System.out.println("Enter phone:");
 	    String phone = sc.next();
-            /*System.out.println("Enter street:");
+/*
 	    String street = sc.next();
 		System.out.println("Enter city:");
 	    String city = sc.next();
@@ -157,6 +158,11 @@ public class Tiger{
 		options.add("Store Details");
 		options.add("Logout");
 		options.add("Quit");
+
+                // Offer admin and manager menus
+               // if(currentUser.)
+                
+                
 		int count = 0;
 		for(String option : options) {
 			count++;
@@ -173,7 +179,7 @@ public class Tiger{
     		System.exit(0);
 	    }
 	}
-	
+
 	public static void menuScreen(){
 		System.out.println("\n*Menu*");
 		MenuServices ms = new MenuServices(con);
