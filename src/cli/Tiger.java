@@ -56,14 +56,17 @@ public class Tiger{
 	    switch(input){
     		case 1:
     			loginScreen();
+                        break;
     		case 2:
-    			registerScreen();    	
+    			registerScreen();
+                        break;
     		case 3:
     			System.out.println("Goodbye");
     			System.exit(0);
     		case 4:
     			AdminAndManager aam = new AdminAndManager(con);
     			aam.adminScreen();
+                        break;
 	    }
 
 	}
