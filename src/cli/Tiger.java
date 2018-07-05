@@ -11,8 +11,10 @@ import domain.Order;
 import domain.Store;
 import domain.User;
 import domain.Card;
+import java.sql.Date;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
 import services.CardService;
 import services.MenuServices;
 import services.OrderService;
@@ -382,7 +384,31 @@ public class Tiger{
 		// TODO Auto-generated method stub
 		
 	}
-
+        
+        private static void addACard(){
+            CardService cardService = new CardService(con);
+            
+            System.out.println("Enter card number");
+            String cardNum = sc.next();
+            
+            System.out.println("Enter expire date as DD-MM-YY");
+            String dateStr = sc.next();
+            String[] date = dateStr.split("-");
+            int day = Integer.parseInt(date[0]);
+            int month = Integer.parseInt(date[1]);
+            int year = Integer.parseInt(date[2]);
+            Date cardDate = new Date(year,month,day);
+            
+            System.out.println("Enter security code");
+            String securityCode = sc.next();
+            
+            String userId = currentUser.getUserId();
+            String cardId = cardService.getNextCardId();
+            
+            Card newCard = new Card(cardId, userId, cardNum, cardDate, securityCode);
+            cardService.add(newCard);
+        }
+             
 	private static void editCards() {
             System.out.println("\n *** Cards ***\n");
             
@@ -391,14 +417,19 @@ public class Tiger{
             
             CardService cardServe = new CardService(con);
             ArrayList<Card> userCards= cardServe.getUserCards(currentUser.getUserId());
+           
+            //check if user has any cards on file. 
             if(userCards == null || userCards.size()==0){
                 System.out.println("You have no cards on file.");
+            }else{
+            
+                for(int i=0; i<userCards.size(); i++){
+                    options.add(userCards.get(i).getCardNumber());
+                }
+                
             }
             
-            for(int i=0; i<userCards.size(); i++){
-                options.add(userCards.get(i).getCardNumber());
-            }
-            
+            //print all optiins. first option is to add a card. 
             int count = 0;
             for(String x : options){
                 count++;
@@ -407,6 +438,29 @@ public class Tiger{
             
             int cardChoice = sc.nextInt();
 		
+            if(cardChoice == 1){
+                addACard();
+                System.out.println("Card Added..");
+            }else{
+                //decrement bc array starts at 0. 
+                cardChoice--;
+                System.out.println("Viewing Card: "+options.get(cardChoice));
+                System.out.println("1. Delete Card");
+                System.out.println("2. Edit Card");
+                System.out.println("3. Go Back");
+                
+                int viewChoice = sc.nextInt();
+                
+                cardChoice--;//decrement again to pull from userCards array
+                switch(viewChoice){
+                    case 1: cardServe.deleteById(userCards.get(cardChoice).getCardId());
+                            System.out.println("Card Deleted");
+                            break;
+                    case 2: editACard();   break;
+                    case 3: editCards(); break;
+                    default:break;
+                }
+            }            
 	}
 
 	private static String editString() {
@@ -458,4 +512,8 @@ public class Tiger{
 	    if(input==1) return true;
 	    return false;
 	}
+
+    private static void editACard() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

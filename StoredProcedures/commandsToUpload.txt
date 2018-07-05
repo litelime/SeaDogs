@@ -1,0 +1,15 @@
+--INSTRUCTIONS FOR CREATING A PROCEDURE:
+--MAKE SURE UR SHEET IS IN THE FILE PATH BELOW
+--MAKE SURE U HAVE A '/'(BACK SLASH) BETWEEN EVERY TWO PROCEDURE
+
+--DO THIS AFTER EACH GIT PULL
+--MAKE SURE FOLDER NAME CHANGED FROM 'Stored Procedure' to 'StoredProcedure'
+--COPY THE FOLLOWING STUFF TO UR SQL COMMAND LINE--
+
+start C:\SeaDogs\SQL\StoredProcedures\delivery_methods_sp.sql
+start C:\SeaDogs\SQL\StoredProcedures\delivery_statuses_sp.sql
+start C:\SeaDogs\SQL\StoredProcedures\items.sql
+start C:\SeaDogs\SQL\StoredProcedures\location_sp.sql
+start C:\SeaDogs\SQL\StoredProcedures\orders_sp.sql
+start C:\SeaDogs\SQL\StoredProcedures\user_sp.sql
+start C:\SeaDogs\SQL\StoredProcedures\user_status_sp.sql

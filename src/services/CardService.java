@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import domain.Card;
+import java.sql.ResultSetMetaData;
 
 public class CardService implements Service<Card>{
 	
@@ -29,13 +30,13 @@ public class CardService implements Service<Card>{
 			String cardNumber = card.getCardNumber();
 			Date expiryDate = card.getExpiryDate();
 			String securityCode = card.getSecurityCode();
-			
-			CallableStatement oCSF = connection.prepareCall("{?=call sp_insert_card(?,?,?,?,?)}");
-			oCSF.setString(2, cardId);
-			oCSF.setString(3, userId);
-			oCSF.setString(4, cardNumber);
-			oCSF.setDate(5, expiryDate);
-			oCSF.setString(6, securityCode);
+                        			
+                        CallableStatement oCSF = connection.prepareCall("{call sp_insert_card(?,?,?,?,?)}");
+			oCSF.setString(1, cardId);
+			oCSF.setString(2, userId);
+			oCSF.setString(3, cardNumber);
+			oCSF.setDate(4, expiryDate);
+			oCSF.setString(5, securityCode);
 			oCSF.execute();
 			oCSF.close();
 			return true;
@@ -141,6 +142,26 @@ public class CardService implements Service<Card>{
 		}
 		return cards;
 	}
+        
+        public String getNextCardId(){
+            
+            int cardId = 0;
+            int count = 0;
+            try{
+		Statement cardsSt = connection.createStatement();
+
+		ResultSet cardsRs = cardsSt.executeQuery("Select card_id from Cards");
+                
+                while(cardsRs.next()){
+                    count++;
+                }
+            }catch(SQLException e){
+			System.out.println(e.getMessage());
+		}
+            
+            cardId = count++;
+            return Integer.toString(cardId);
+        }
 
 
 }
