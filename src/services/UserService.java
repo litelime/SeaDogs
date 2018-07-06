@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import domain.User;
+import java.util.Collection;
+import java.util.Collections;
 
 public class UserService implements Service<User>{
 	
@@ -164,19 +166,43 @@ public class UserService implements Service<User>{
                 Statement stmnt = connection.createStatement();
                 stmnt.execute(query);
                 
-                // Get the user IDs
+                // Get the emails
                 ArrayList<String> emails = new ArrayList<>();
                 ResultSet results = stmnt.getResultSet();
                 while(results.next()){
                     emails.add(results.getString(1));
                 }
                 
-                // See if the user id exists
+                // See if the email exists
                 return emails.contains(email);
             } catch (SQLException e) {
                 e.printStackTrace();
                 System.exit(1);
                 return false;
+            }
+        }
+        
+        // Generate a new user id
+        public int newUserId(){
+            try {
+                // Ask for all the ids
+                String query = "select user_id from users";
+                Statement stmnt = connection.createStatement();
+                stmnt.execute(query);
+                
+                // Collect the ids
+                ArrayList<Integer> ids = new ArrayList<Integer>();
+                ResultSet results = stmnt.getResultSet();
+                while(results.next()){
+                    ids.add(Integer.parseInt(results.getString(1)));
+                }
+                
+                // Generate a new id
+                return Collections.max(ids) + 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+                return -1;
             }
         }
 }

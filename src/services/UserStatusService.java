@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import domain.UserStatus;
+import java.util.Collection;
+import java.util.Collections;
 
 public class UserStatusService implements Service<UserStatus>{
 
@@ -97,5 +99,28 @@ public class UserStatusService implements Service<UserStatus>{
 			System.out.println(e.getMessage());
 		}	
 	}
-
+        
+        public int newStatusID(){
+            try {
+                // Ask for the user_status_ids
+                String query = "select user_status_id from user_statuses";
+                Statement stmnt = connection.createStatement();
+                stmnt.execute(query);
+                
+                // Collect the user_status_id
+                ArrayList<Integer> userStatusIDs = new ArrayList<>();
+                ResultSet results = stmnt.getResultSet();
+                while(results.next()){
+                    userStatusIDs.add(Integer.parseInt(results.getString(1)));
+                }
+                
+                // Make the next newStatusID
+                return Collections.max(userStatusIDs) + 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+                return -1;
+            }
+        }        
+        
 }

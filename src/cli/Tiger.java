@@ -82,9 +82,9 @@ public class Tiger{
 	public static void loginScreen(){
 		System.out.println("\n*Login*");
 		System.out.println("Enter email:");
-	    String email = sc.next();
+                String email = sc.next();
 		System.out.println("Enter password:");
-	    String password = sc.next();
+                String password = sc.next();
 	    
 		UserService us = new UserService(con);
 		User candidate = us.getByEmail(email);
