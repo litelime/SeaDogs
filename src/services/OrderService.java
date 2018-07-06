@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import domain.Order;
+import java.sql.DriverManager;
 
 public class OrderService implements Service<Order>{
 	/*
@@ -33,17 +34,17 @@ public class OrderService implements Service<Order>{
 			CallableStatement statement = connection.prepareCall(
 					"{call AddOrder(?,?,?,?,?,?,?,?,?,?,?)}");
 			
-			statement.setString("ORDER_ID",order.getOrder_id());
-			statement.setString("USER_ID",order.getUser_id());
-			statement.setFloat("TIP",order.getTip());
-			statement.setFloat("TOTAL_PRICE",order.getTotal_price());
-			statement.setInt("PLACED_TIMESTAMP",order.getPlaced_timestamp());
-			statement.setInt("DELIVERY_TIMESTAMP",order.getDelivery_timestamp());
-			statement.setString("CARD_ID",order.getCard_id());
-			statement.setString("INSTRUCTIONS",order.getInstuctions());
-			statement.setString("DELIVERY_METHOD_ID",order.getDelivery_method_id());
-			statement.setString("STORE_ID",order.getStore_id());
-			statement.setString("DELIVERY_STATUS_ID",order.getDelivery_status_id());
+			statement.setString(1,order.getOrder_id());
+			statement.setString(2,order.getUser_id());
+			statement.setFloat(3,order.getTip());
+			statement.setFloat(4,order.getTotal_price());
+			statement.setInt(5,order.getPlaced_timestamp());
+			statement.setInt(6,order.getDelivery_timestamp());
+			statement.setString(7,order.getCard_id());
+			statement.setString(8,order.getInstuctions());
+			statement.setString(9,order.getDelivery_method_id());
+			statement.setString(10,order.getStore_id());
+			statement.setString(11,order.getDelivery_status_id());
 			statement.execute();
 			statement.close();
 			
@@ -266,6 +267,41 @@ public class OrderService implements Service<Order>{
 		}
 		
 	}
+        
+        public void generateInvoice(String Order_ID){
+            Connection conn;
+            PreparedStatement pStmt;
+            ResultSet RS;
+            try{
+                //Step 1: get the driver
+                Class.forName("oracle.jdbc.OracleDriver");
+                //Step 2:Get connected
+                conn=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "db_uSpring", "pass");
+                System.out.println("Connection successful");
+                //Step3: Create the statement
+                pStmt=conn.prepareStatement("SELECT S.store, S.PHONE_NUMBER, O.order_id, U.first, U.last, U.phone, U.email, I.name, I.description, I.price,C.CARD_NUMBER "
+                                           +"FROM orders O, USERS U, Order_items OI, stores S, cards C, items I WHERE "
+                                           + "O.order_id=OI.ORDER_ID AND OI.ITEM_ID=I.ITEM_ID AND U.user_id=O.user_id AND O.Store_id=S.STORE_ID AND O.card_id=C.CARD_ID AND O.order_id=?");
+                pStmt.setString(1, Order_ID);
+                pStmt.execute();
+                //Step4: get the output ResultSet
+                RS=pStmt.getResultSet();
+
+                System.out.println("Connection successful12");
+                while(RS.next()){
+                    System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
+                            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
+                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Paymeny Card Number: "+RS.getString(11));
+                }
+                System.out.println("Connection successful123");
+                //Step5: close statement and connections
+                pStmt.close();
+                conn.close();
+
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+        }
 
 	
 }

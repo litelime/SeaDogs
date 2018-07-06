@@ -103,15 +103,28 @@ public class AdminAndManager {
                                         break;
 	    			case 2:
 	    				addUserScreen();
+                                        break;
 	    			case 3:
 	    				deleteUserScreen();
+                                        break;
 	    		}
 	    			
 	    	}
 	    	case 11:
-	    		optionsScreen("User Statuse");
-	    	case 12:
-	    		firstScreen();
+	    		option = optionsScreen("User Statuses");
+                        switch(option){
+                            case 1:
+                                System.out.println("Altering not supported");
+                                break;
+                            case 2:
+                                System.out.println("Adding not supported");
+                                break;
+                            case 3:
+                                System.out.println("Deleting not supported");
+                                break;
+                        }
+                case 12:
+	    		adminScreen();
 	    	case 13:
 	    		System.exit(0);
 	    }
@@ -120,19 +133,53 @@ public class AdminAndManager {
 	    
 	}
 	
+        public static int optionsScreen(String thing){
+		System.out.println("How would you like to alter " + thing);
+		ArrayList<String> options = new ArrayList<String>();
+		options.add("Alter");
+		options.add("Add");
+		options.add("Delete");
+		ServiceWrapper.printOptions(options);
+		Scanner sc = new Scanner(System.in);
+	    int input = sc.nextInt();
+		return input;
+	}
+        
+        void alterStatuses(){
+            
+        }
+        void addStatuses(){}
+        
+        void deleteStatuses(){
+            // Get the user_status
+            Scanner kb = new Scanner(System.in);
+            String newStatus = kb.nextLine();
+            
+            // Generate a user_id for the status
+            
+            
+            // Find users who will lose their status
+            
+        }
+        
         /*
             This will protect against updating to nulls but not updating
             to values that are not valid. I.e. someone can change a user
             status to 999999 which is not a status
         */
 	public void alterUserScreen(){
+            // Display the users
+            UserService userHelper = new UserService(con);
+//            for(User user: userHelper.getAll()){
+//                System.out.println(user.getEmail);
+//            }
+
             // Ask for the user to modify
             Scanner kb = new Scanner(System.in);
             System.out.println("Enter the email of the user you wish to alter:");
             String alterEmail = kb.nextLine();
             
             // Check to see the user exists
-            UserService userHelper = new UserService(con);
             User toAlter = null;
             boolean exists = userHelper.emailExists(alterEmail);
             if(!exists){
@@ -214,19 +261,6 @@ public class AdminAndManager {
             adminScreen();
             return;
         }   
-        
-        
-	public static int optionsScreen(String thing){
-		System.out.println("How would you like to alter " + thing);
-		ArrayList<String> options = new ArrayList<String>();
-		options.add("Alter");
-		options.add("Add");
-		options.add("Delete");
-		ServiceWrapper.printOptions(options);
-		Scanner sc = new Scanner(System.in);
-	    int input = sc.nextInt();
-		return input;
-	}
 
 	//Doesn't work
 	public static void addCardScreen(){
@@ -392,8 +426,8 @@ public class AdminAndManager {
 		System.out.println("Add a User");
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter user id: ");
-	    String userId = sc.next();
-	    System.out.println("Enter first name: ");
+                String userId = sc.next();
+                System.out.println("Enter first name: ");
 		String firstName = sc.next();
 		System.out.println("Enter last name: ");
 		String lastName = sc.next();

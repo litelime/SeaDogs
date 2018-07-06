@@ -1,2 +1,4 @@
  build/classes/*
  nbproject/*
+/build/
+*.class
