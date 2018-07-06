@@ -1,5 +1,6 @@
 package cli;
 
+import static cli.Tiger.firstScreen;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -110,7 +111,7 @@ public class AdminAndManager {
 	    	case 11:
 	    		optionsScreen("User Statuse");
 	    	case 12:
-	    		adminScreen();
+	    		firstScreen();
 	    	case 13:
 	    		System.exit(0);
 	    }
