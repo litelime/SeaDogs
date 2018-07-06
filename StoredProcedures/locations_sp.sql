@@ -21,4 +21,11 @@ begin
   where location_id=location_id_in;
 end sp_update_location;
 /
+create or replace procedure sp_delete_location(location_id_in varchar)
+as
+begin
+  delete from locations
+  where location_id = location_id_in;
+end sp_delete_location;
+/
 --execute SP_INSERT_LOCATION('4', '4', 20.0, 'QWE', 'QWE', 'MN', 'QWE', '01440');
