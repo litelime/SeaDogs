@@ -9,7 +9,7 @@
 start C:\SeaDogs\SQL\StoredProcedures\delivery_methods_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\delivery_statuses_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\items.sql
-start C:\SeaDogs\SQL\StoredProcedures\location_sp.sql
+start C:\SeaDogs\SQL\StoredProcedures\locations_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\orders_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\user_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\user_status_sp.sql
