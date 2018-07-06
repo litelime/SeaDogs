@@ -97,6 +97,7 @@ public class UserService implements Service<User>{
 					usersRs.getString(7)
 					); 
 		}catch(Exception e){
+                        System.out.println("HERE");
 			System.out.println(e.getMessage());
 		}	
 		
@@ -154,6 +155,28 @@ public class UserService implements Service<User>{
 			System.out.println(e.getMessage());
 		}	
 	}
-	
-	
+        
+        // Check to see if a userID exists
+	public boolean emailExists(String email){
+            try {
+                // Ask for all the user IDs
+                String query = "select email from users";
+                Statement stmnt = connection.createStatement();
+                stmnt.execute(query);
+                
+                // Get the user IDs
+                ArrayList<String> emails = new ArrayList<>();
+                ResultSet results = stmnt.getResultSet();
+                while(results.next()){
+                    emails.add(results.getString(1));
+                }
+                
+                // See if the user id exists
+                return emails.contains(email);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.exit(1);
+                return false;
+            }
+        }
 }

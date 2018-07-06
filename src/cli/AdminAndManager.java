@@ -98,7 +98,6 @@ public class AdminAndManager {
 	    		option = optionsScreen("User");
 	    		switch(option){
 	    			case 1:
-	    				System.out.println("not yet supported");
                                         alterUserScreen();
                                         break;
 	    			case 2:
@@ -128,8 +127,20 @@ public class AdminAndManager {
 	public void alterUserScreen(){
             // Ask for the user to modify
             Scanner kb = new Scanner(System.in);
-            System.out.println("Enter the ID of the user you wish to alter:");
-            String alterID = kb.nextLine();
+            System.out.println("Enter the email of the user you wish to alter:");
+            String alterEmail = kb.nextLine();
+            
+            // Check to see the user exists
+            UserService userHelper = new UserService(con);
+            User toAlter = null;
+            boolean exists = userHelper.emailExists(alterEmail);
+            if(!exists){
+                System.out.println(alterEmail + " not associated with an account.");
+                adminScreen();
+                return;
+            } else {
+                toAlter = userHelper.getByEmail(alterEmail);
+            }
             
             // Fields that can't be null
             ArrayList<String> cantBeNull = new ArrayList<String>();
@@ -145,45 +156,40 @@ public class AdminAndManager {
             options.add("Email");
             options.add("Password");
             options.add("User ID Status");
-            options.add("Exit");
+            options.add("Go back");
+            System.out.println("What field would you like to change?");
             for (int i = 0; i < options.size(); i++) {
                 System.out.println(i + ". " + options.get(i));
             }
             changeField = options.get(Integer.parseInt(kb.nextLine()));
             
-            // Exit 
-            if(changeField.equals("Exit")){
+            // Go back 
+            if(changeField.equals("Go back")){
                 adminScreen();
                 return;
             }
             
             // Ask for the value to change it to
-            System.out.println("What would you like to change " + changeField + "to?");
+            System.out.println("What would you like to change " + changeField + " to?");
             String changeValue = kb.nextLine();
             
-            // Check the user input
-            if(changeValue.isEmpty()){ // no value given
-                if(cantBeNull.contains(changeValue)){ // empty and shouldnt be
+            
+            // Check the user input 
+            // No value given
+            if(changeValue.isEmpty()){
+                if(cantBeNull.contains(changeField)){ // empty and shouldnt be
                     System.out.println(changeField + " cannot be empty");
                     alterUserScreen();
                     return;
                 } else { // empty and needs to be changed to null
                     changeValue = "NULL";
                 }
-            } else {
-                changeValue = "'" + changeValue + "'";
+            // Email alread in use
+            } else if(changeField.equals("Email") && userHelper.emailExists(changeValue)){
+                System.out.println("Email already in use");
+                adminScreen();
             }
-            
-            // Find the user to update
-            System.out.println("Changing " + changeField + " to " + changeValue);
-            UserService userHelper = new UserService(con);
-            User toAlter = userHelper.getById(alterID);
-            if(toAlter == null){
-                System.out.println("Invalid User ID");
-                alterUserScreen();
-                return;
-            }
-            
+           
             // Update the user
             if(changeField.equals("First Name")){
                 toAlter.setFirstName(changeValue);
@@ -204,9 +210,9 @@ public class AdminAndManager {
             // Update the employee and return to alter screen
             userHelper.update(toAlter);
             System.out.println("Alteration successful");
-            alterUserScreen();
+            adminScreen();
             return;
-        }
+        }   
         
         
 	public static int optionsScreen(String thing){
