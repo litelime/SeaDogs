@@ -15,6 +15,10 @@ import java.sql.Date;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import services.CardService;
 import services.MenuServices;
 import services.OrderService;
@@ -182,7 +186,7 @@ public class Tiger{
 		if(input==4) storeDetailsScreen();   	
 		if(input==5) firstScreen();
 		if(input==6) {
-			System.out.println("Goodbye");
+		System.out.println("Goodbye");
     		System.exit(0);
 	    }
 	}
@@ -391,13 +395,10 @@ public class Tiger{
             System.out.println("Enter card number");
             String cardNum = sc.next();
             
-            System.out.println("Enter expire date as DD-MM-YY");
-            String dateStr = sc.next();
-            String[] date = dateStr.split("-");
-            int day = Integer.parseInt(date[0]);
-            int month = Integer.parseInt(date[1]);
-            int year = Integer.parseInt(date[2]);
-            Date cardDate = new Date(year,month,day);
+            Date cardDate = editDate();
+            if(cardDate.getYear()==1111){
+                return;
+            }
             
             System.out.println("Enter security code");
             String securityCode = sc.next();
@@ -407,6 +408,7 @@ public class Tiger{
             
             Card newCard = new Card(cardId, userId, cardNum, cardDate, securityCode);
             cardService.add(newCard);
+            System.out.println("Card Added..");
         }
              
 	private static void editCards() {
@@ -429,6 +431,8 @@ public class Tiger{
                 
             }
             
+            options.add("Go Back");
+            
             //print all optiins. first option is to add a card. 
             int count = 0;
             for(String x : options){
@@ -440,27 +444,31 @@ public class Tiger{
 		
             if(cardChoice == 1){
                 addACard();
-                System.out.println("Card Added..");
+            }else if(cardChoice == options.size()){
+                accountScreen();
             }else{
                 //decrement bc array starts at 0. 
-                cardChoice--;
-                System.out.println("Viewing Card: "+options.get(cardChoice));
+                cardChoice = cardChoice -2;
+                System.out.println("*** Viewing Card ***");
+                System.out.println("Card Number: "+userCards.get(cardChoice).getCardNumber());
+                System.out.println("Security Code: "+userCards.get(cardChoice).getSecurityCode());
+                System.out.println("Expiry Date: "+userCards.get(cardChoice).getExpiryDate());
                 System.out.println("1. Delete Card");
                 System.out.println("2. Edit Card");
                 System.out.println("3. Go Back");
                 
                 int viewChoice = sc.nextInt();
                 
-                cardChoice--;//decrement again to pull from userCards array
                 switch(viewChoice){
                     case 1: cardServe.deleteById(userCards.get(cardChoice).getCardId());
                             System.out.println("Card Deleted");
                             break;
-                    case 2: editACard();   break;
+                    case 2: editACard(userCards.get(cardChoice));   break;
                     case 3: editCards(); break;
                     default:break;
                 }
-            }            
+            }
+            editCards();            
 	}
 
 	private static String editString() {
@@ -468,7 +476,26 @@ public class Tiger{
 	    String inp = sc.next();
 		return inp;
 	}
-
+        
+	private static Date editDate() {
+            System.out.println("Enter date in the format DD-MM-YYYY");
+            String dateStr = sc.next();
+            String[] dateArr = dateStr.split("-");
+            
+            while(dateArr.length!=3){
+                System.out.println("Enter date in the format DD-MM-YYYY");
+                dateStr = sc.next();
+                dateArr = dateStr.split("-");
+            }
+            int day = Integer.parseInt(dateArr[0]);
+            int month = Integer.parseInt(dateArr[1]);
+            int year = Integer.parseInt(dateArr[2]) - 1901;
+                    
+            Date cardDate = new Date(year,month,day);
+            return cardDate;
+        }
+        
+        
 	public static void allOrdersScreen(){
 		System.out.println("\n*All orders*");
 		OrderService os = new OrderService(con);
@@ -509,11 +536,41 @@ public class Tiger{
 		System.out.println("1. Yes");
 		System.out.println("2. No");
 	    int input = sc.nextInt();
-	    if(input==1) return true;
-	    return false;
+	    return input==1;
 	}
 
-    private static void editACard() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static void editACard(Card editCard) {
+        
+        System.out.printf("\n*** Editing Card ***\n");
+        System.out.println("1. Edit Card Number: " +editCard.getCardNumber());
+        System.out.println("2. Edit Security Code: "+editCard.getSecurityCode());
+        System.out.println("3. Edit Expiration Date: "+editCard.getExpiryDate());
+        System.out.println("4. Back");
+        
+        int editChoice = sc.nextInt();
+
+        switch(editChoice){
+            case 1: 
+                String cardNum = editString(); 
+                editCard.setCardNumber(cardNum);
+                System.out.println("Card Number changed to "+cardNum);
+                break;
+            case 2: 
+                String securityCode = editString();
+                editCard.setSecurityCode(securityCode);
+                System.out.println("Security code changed to "+securityCode);
+                break;
+            case 3: 
+                Date cardDate = editDate(); 
+                editCard.setExpiryDate(cardDate);
+                System.out.println("Expiry Date changed to " + cardDate);
+                break;
+            case 4: break;
+            default: break;
+        }
+        
+        CardService cardServe = new CardService(con);
+        cardServe.update(editCard);
+        editCards();        
     }
 }
