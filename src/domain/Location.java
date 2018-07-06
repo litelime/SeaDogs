@@ -8,12 +8,13 @@ public class Location {
 	String country;
 	String state;
 	String zip;
+        String userId;
 	
 	public Location() {
 		super();
 	}
 	
-	public Location(String locationId, String street, String city, String country, String state, String zip) {
+	public Location(String locationId, String userID, String street, String city, String state, String country, String zip) {
 		super();
 		this.locationId = locationId;
 		this.street = street;
@@ -21,7 +22,16 @@ public class Location {
 		this.country = country;
 		this.state = state;
 		this.zip = zip;
+                this.userId = userID;
 	}
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
 	public String getLocationId() {
 		return locationId;
