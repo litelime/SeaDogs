@@ -1,5 +1,6 @@
 package cli;
 
+import static cli.Tiger.firstScreen;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;

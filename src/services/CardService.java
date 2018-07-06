@@ -145,21 +145,26 @@ public class CardService implements Service<Card>{
         
         public String getNextCardId(){
             
-            int cardId = 0;
-            int count = 0;
+            int cardId=0;
+            
             try{
 		Statement cardsSt = connection.createStatement();
 
 		ResultSet cardsRs = cardsSt.executeQuery("Select card_id from Cards");
                 
+                ArrayList<Integer> ints = new ArrayList();
                 while(cardsRs.next()){
-                    count++;
+                    ints.add(cardsRs.getInt("card_id"));
+                }
+                //cardId = greatest value. 
+                for(int x: ints){
+                    if(x>cardId)
+                        cardId = x;
                 }
             }catch(SQLException e){
-			System.out.println(e.getMessage());
-		}
-            
-            cardId = count++;
+		System.out.println(e.getMessage());
+            }
+            cardId++;
             return Integer.toString(cardId);
         }
 
