@@ -13,3 +13,6 @@ start C:\SeaDogs\SQL\StoredProcedures\location_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\orders_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\user_sp.sql
 start C:\SeaDogs\SQL\StoredProcedures\user_status_sp.sql
+start C:\SeaDogs\SQL\StoredProcedures\SP_UPDATE_CARD.sql
+start C:\SeaDogs\SQL\StoredProcedures\SP_INSERT_CARD.sql
+start C:\SeaDogs\SQL\StoredProcedures\sp_delete_card.sql
