@@ -11,6 +11,7 @@ import domain.Order;
 import domain.Store;
 import domain.User;
 import domain.Card;
+import domain.Location;
 import java.sql.Date;
 
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import services.CardService;
+import services.LocationService;
 import services.MenuServices;
 import services.OrderService;
 import services.StoreService;
@@ -241,10 +243,21 @@ public class Tiger{
 	    }
 	    if(input==2) viewEditOrderItems(currentOrder);
 	    if(input==3) editOrder(currentOrder);
-	    if(input==4 && confirm()) sw.submitOrder(currentOrder);
-	    else if(input==5) homeScreen();
+	    if(input==4 && hasItems()){ 
+                sw.submitOrder(currentOrder);
+                homeScreen();
+            }else{
+                System.out.println("No Orders in Cart. Redirecting to previous screen");
+                homeScreen();
+            }
+	    if(input==5) homeScreen();
 	}
-	
+	public static boolean hasItems(){
+            if(currentOrder.getItem_ids().isEmpty()){
+                return false;
+            }
+            return confirm();
+        }
 	private static void editOrder(Order currentOrder2) {
 		System.out.println("\n*Edit Order*");
 		ArrayList<String> options = new ArrayList<String>();
@@ -385,9 +398,83 @@ public class Tiger{
 	    accountScreen();
 	}
 	private static void editLocations() {
-		// TODO Auto-generated method stub
-		
+            System.out.println("\n *** Locations ***\n");
+            
+            ArrayList<String> options = new ArrayList<String>();
+            options.add("Add Location");
+            
+            LocationService ls = new LocationService(con);
+            ArrayList<Location> userLoc = ls.getUserLocations(currentUser.getUserId());
+           
+            //check if user has any locations on file. 
+            if(userLoc == null || userLoc.isEmpty()){
+                System.out.println("You have no locations on file.");
+            }else{
+                for(Location l: userLoc){
+                    options.add(l.getStreet());
+                }       
+            }
+            options.add("Go Back");
+            
+            //print options
+            int count = 0;
+            for(String x : options){
+                count++;
+                System.out.println(count+". "+x);
+            }
+            
+            int input = sc.nextInt();
+            if(input == 1){
+                sc.nextLine();
+                addLocation(ls);
+                System.out.println("Location Added..");
+            }else if(input ==(2+userLoc.size())){
+                //Go back
+                accountScreen();
+            }else{
+                //decrement bc array starts at 0. 
+                input--;
+                System.out.println("\nViewing Location: "+options.get(input));
+                System.out.println("1. Delete Location");
+                System.out.println("2. Edit Location");
+                System.out.println("3. Go Back");
+                
+                int uChoice = sc.nextInt();
+                
+                input--;//decrement again to pull from userCards array
+                switch(uChoice){
+                    case 1: ls.deleteById(userLoc.get(input).getLocationId());
+                            System.out.println("Location Deleted");
+                            break;
+                    case 2: editLoc();   break;
+                    case 3: editLocations(); break;
+                    default:break;
+                }
+            }        	
 	}
+        private static void editLoc(){
+            
+        }
+        private static void addLocation(LocationService ls){
+            System.out.println("Enter Street");
+            String street = sc.nextLine();
+            
+            System.out.println("Enter city");
+            String city = sc.nextLine();
+            
+            System.out.println("Enter Country");
+            String country = sc.nextLine();
+            
+            System.out.println("Enter state");
+            String state = sc.nextLine();
+            
+            System.out.println("Enter zip");
+            String zip = sc.nextLine();
+            String userId = currentUser.getUserId();
+            String locId = ls.getNextLocId();
+            Location loc = new Location(locId, userId, street, city, state, country, zip);
+            ls.add(loc);
+        }
         
         private static void addACard(){
             CardService cardService = new CardService(con);

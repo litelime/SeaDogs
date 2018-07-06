@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import domain.Location;
+import java.util.Random;
 
 public class LocationService implements Service<Location>{
 	
@@ -23,14 +24,16 @@ public class LocationService implements Service<Location>{
 	public boolean add(Location location){
 		try{
 			String locationId = location.getLocationId();
+                        String userId = location.getUserId();
 			String street = location.getStreet();
 			String city = location.getCity();
 			String state = location.getState();
 			String country = location.getCountry();
 			String zip = location.getZip();
 			
-			CallableStatement oCSF = connection.prepareCall("{?=call sp_insert_location(?,?,?,?,?)}");
-			oCSF.setString(2, locationId);
+			CallableStatement oCSF = connection.prepareCall("{call sp_insert_location(?,?,?,?,?,?,?)}");
+			oCSF.setString(1, locationId);
+                        oCSF.setString(2, userId);
 			oCSF.setString(3, street);
 			oCSF.setString(4, city);
 			oCSF.setString(5, state);
@@ -46,8 +49,9 @@ public class LocationService implements Service<Location>{
 	}
 	public void deleteById(String id){
 		try{
-			Statement locationsSt = connection.createStatement();
-			locationsSt.executeQuery("Delete from locations where location_id = "+id);
+			CallableStatement locationsSt = connection.prepareCall("{call SP_DELETE_LOCATION_BY_ID(?) }");
+                        locationsSt.setString(1, id);
+                        locationsSt.execute();
 		}catch(SQLException e){
 			System.out.println(e.getMessage());
 		}
@@ -61,13 +65,15 @@ public class LocationService implements Service<Location>{
 			ResultSet locationsRs = locationsSt.executeQuery("Select * from Locations");
 			
 			while(locationsRs.next()){
+                                //loc, st, ci, co, st, zip, uid
 				Location location = new Location(
 						locationsRs.getString(1),
 						locationsRs.getString(2),
-						locationsRs.getString(3),
 						locationsRs.getString(4),
 						locationsRs.getString(5),
-						locationsRs.getString(6)
+						locationsRs.getString(6),
+                                                locationsRs.getString(7),
+                                                locationsRs.getString(8)
 						); 
 				locations.add(location);
 			}
@@ -87,10 +93,11 @@ public class LocationService implements Service<Location>{
 			location = new Location(
 					locationsRs.getString(1),
 					locationsRs.getString(2),
-					locationsRs.getString(3),
 					locationsRs.getString(4),
 					locationsRs.getString(5),
-					locationsRs.getString(6)
+					locationsRs.getString(6),
+					locationsRs.getString(7),
+                                        locationsRs.getString(8)
 					); 
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -131,10 +138,11 @@ public class LocationService implements Service<Location>{
 				Location location = new Location(
 						locationsRs.getString(1),
 						locationsRs.getString(2),
-						locationsRs.getString(3),
 						locationsRs.getString(4),
 						locationsRs.getString(5),
-						locationsRs.getString(6)
+						locationsRs.getString(6),
+						locationsRs.getString(7),
+                                                locationsRs.getString(8)
 						); 
 				locations.add(location);
 			}
@@ -143,5 +151,22 @@ public class LocationService implements Service<Location>{
 		}
 		return locations;
 	}
+        public String getNextLocId(){
+            String id = "";
+            try{
+		Statement locSt = connection.createStatement();
+                boolean idNotFound = true;
+                Random val = new Random();
+                while(idNotFound){
+                    //To try and ensure uniqueness...
+                    id = Integer.toString(val.nextInt(999999));
+                    ResultSet locRs = locSt.executeQuery("Select location_id from Locations WHERE location_id =" + id);
+                    if(!locRs.next()) idNotFound = false;
+                }
+            }catch(SQLException e){
+			System.out.println(e.getMessage());
+		}
+            return id;
+        }
 	
 }
