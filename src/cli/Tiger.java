@@ -207,7 +207,7 @@ public class Tiger{
 	    int input = sc.nextInt();
 		if(input==1) itemScreen();
 		if(input==2) specialScreen();    	
-		if(input==3) menuScreen();
+		if(input==3) homeScreen();
 	}
         public static void itemScreen() {
             System.out.println("\n*Items*");
