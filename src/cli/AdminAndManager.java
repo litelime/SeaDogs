@@ -8,15 +8,19 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import domain.Card;
+import domain.Location;
 import domain.Menu;
 import domain.Order;
 import domain.Store;
 import domain.User;
+import domain.UserStatus;
 import services.CardService;
+import services.LocationService;
 import services.MenuServices;
 import services.OrderService;
 import services.StoreService;
 import services.UserService;
+import services.UserStatusService;
 
 public class AdminAndManager {
 	
@@ -422,28 +426,58 @@ public class AdminAndManager {
 	}
 
 	public static void addUserScreen(){
+                // Get info for new user
+                UserService helper = new UserService(con);
 		System.out.println("Add a User");
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Enter user id: ");
-                String userId = sc.next();
+                String userId = helper.newUserId() + "";
                 System.out.println("Enter first name: ");
-		String firstName = sc.next();
+		String firstName = emptyToNull(sc.nextLine());
 		System.out.println("Enter last name: ");
-		String lastName = sc.next();
+		String lastName = emptyToNull(sc.nextLine());
 		System.out.println("Enter email: ");
-		String email = sc.next();
+		String email = emptyToNull(sc.nextLine());
 		System.out.println("Enter password: ");
-		String password = sc.next();
-		System.out.println("Enter status id: ");
-		String userStatusId = sc.next();
+		String password = emptyToNull(sc.nextLine());
+                
+                // Let the user select from a list of status ids
+		System.out.println("Select a user status: ");
+		UserStatusService statusHelper = new UserStatusService(con);
+                ArrayList<UserStatus> statuses = statusHelper.getAll();
+                for(int i = 0; i < statuses.size(); i++){
+                    System.out.println((i + 1) + ". " + statuses.get(i).getUserStatus());
+                }
+                String userStatusId = statuses.get(Integer.parseInt(sc.nextLine())).getUserStatusId();
+
+               
+                // Let let the user select from a list of locations
 		System.out.println("Enter location id: ");
-		String locationId = sc.next();
-		User u = new User(userId, firstName, lastName, email, password, userStatusId, locationId);
-		UserService us = new UserService(con);
-		us.add(u);
+                LocationService locationHelper = new LocationService(con);
+                ArrayList<Location> locations = locationHelper.getAll();
+                for(int i = 0;  i < locations.size(); i++){
+                    System.out.println((i + 1) + ". " + locations.get(i));
+                }
+		String locationId = emptyToNull(sc.nextLine());
 		
+                /*
+                // Make sure email and password aren't null
+                if(email.equals("null")){
+                    System.out.println("Please enter an email address");
+                    addUserScreen();
+                } else if(password.equals("null")){
+                    System.out.println("Please enter a password");
+                    addUserScreen();
+                }
+                
+                // Create and add the user
+                User u = new User(userId, firstName, lastName, email, password, userStatusId, locationId);
+                System.out.println(u);
+                helper.add(u);
+		
+                // Not sure why this is here
 		AdminAndManager aam = new AdminAndManager(con);
 		aam.adminScreen();
+                */
 	}
 	
 	public static void deleteUserScreen() {
@@ -463,4 +497,12 @@ public class AdminAndManager {
 	    System.out.println(uArr.get(input-1).getFirstName() + "has been deleted");
 		
 	}
+        
+        private static String emptyToNull(String field){
+            if(field.length() == 0){
+                return "null";
+            } else {
+                return field;
+            }
+        }
 }

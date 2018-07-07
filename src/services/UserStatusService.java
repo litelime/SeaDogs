@@ -71,7 +71,8 @@ public class UserStatusService implements Service<UserStatus>{
 		
 		try{
 			Statement userStatusesSt = connection.createStatement();
-			ResultSet userStatusesRs = userStatusesSt.executeQuery("Select * from Users");
+                        userStatusesSt.execute("select * from user_statuses");
+			ResultSet userStatusesRs = userStatusesSt.getResultSet();
 			
 			while(userStatusesRs.next()){
 				UserStatus userStatus = new UserStatus(
@@ -81,7 +82,7 @@ public class UserStatusService implements Service<UserStatus>{
 				userStatuses.add(userStatus);
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			System.out.println("UserStatusService Error: " + e.getMessage());
 		}
 		return userStatuses;
 	}

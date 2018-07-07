@@ -10,9 +10,11 @@ public class UserStatus {
 	
 	public UserStatus(String userStatusId, String userStatus) throws IdException {
 		super();
-		
+	
+        /* Don't see the point of this and it breaks get all for the service
         if(userStatusId.length() < 7)
 	           throw new IdException("Id can't be less than 7 characters");
+        */
         
 		this.userStatusId = userStatusId;
 		this.userStatus = userStatus;
