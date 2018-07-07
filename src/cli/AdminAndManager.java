@@ -431,11 +431,13 @@ public class AdminAndManager {
                 UserService helper = new UserService(con);
 		System.out.println("Add a User");
 		Scanner sc = new Scanner(System.in);
-                String userId = helper.newUserId() + "";
+                String userID = helper.newUserId() + "";
                 System.out.println("Enter first name: ");
 		String firstName = emptyToNull(sc.nextLine());
 		System.out.println("Enter last name: ");
 		String lastName = emptyToNull(sc.nextLine());
+                System.out.println("Enter phone number:");
+                String phone = emptyToNull(sc.nextLine());
 		System.out.println("Enter email: ");
 		String email = emptyToNull(sc.nextLine());
 		System.out.println("Enter password: ");
@@ -449,36 +451,25 @@ public class AdminAndManager {
                     System.out.println((i + 1) + ". " + statuses.get(i).getUserStatus());
                 }
                 String userStatusId = statuses.get(Integer.parseInt(sc.nextLine())).getUserStatusId();
-
-               
-                // Let let the user select from a list of locations
-		System.out.println("Enter location id: ");
-                LocationService locationHelper = new LocationService(con);
-                ArrayList<Location> locations = locationHelper.getAll();
-                for(int i = 0;  i < locations.size(); i++){
-                    System.out.println((i + 1) + ". " + locations.get(i));
-                }
-		String locationId = emptyToNull(sc.nextLine());
-		
-                /*
+                
+                
                 // Make sure email and password aren't null
                 if(email.equals("null")){
-                    System.out.println("Please enter an email address");
+                    System.out.println("Please try again and enter an email address");
                     addUserScreen();
                 } else if(password.equals("null")){
-                    System.out.println("Please enter a password");
+                    System.out.println("Please try again and enter a password");
                     addUserScreen();
                 }
                 
                 // Create and add the user
-                User u = new User(userId, firstName, lastName, email, password, userStatusId, locationId);
+                User u = new User(userID, firstName, lastName, phone, email, password, userStatusId);
                 System.out.println(u);
                 helper.add(u);
 		
                 // Not sure why this is here
 		AdminAndManager aam = new AdminAndManager(con);
 		aam.adminScreen();
-                */
 	}
 	
 	public static void deleteUserScreen() {

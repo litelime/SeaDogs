@@ -83,8 +83,8 @@ public class Location {
 
 	@Override
 	public String toString() {
-		return "Locations [locationId=" + locationId + ", street=" + street + ", city=" + city + ", country="
-				+ country + ", state=" + state + ", zip=" + zip + "]";
+                return street + " St " + city + ", "
+				+ state + " " + country + " " + zip;
 	}
 	
 	
