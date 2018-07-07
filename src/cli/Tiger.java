@@ -195,13 +195,38 @@ public class Tiger{
 
 	public static void menuScreen(){
 		System.out.println("\n*Menu*");
+                ArrayList<String> options = new ArrayList<String>();
+		options.add("Items");
+		options.add("Specials");
+                options.add("Go back");
+                int count = 0;
+		for(String option : options) {
+			count++;
+			System.out.println(count + ". " + option);
+		}
+	    int input = sc.nextInt();
+		if(input==1) itemScreen();
+		if(input==2) specialScreen();    	
+		if(input==3) menuScreen();
+	}
+        public static void itemScreen() {
+            System.out.println("\n*Items*");
 		MenuServices ms = new MenuServices(con);
 		ArrayList<Menu> menus = ms.getAll();
 		ServiceWrapper.printMenuItems(menus);
 	    int input = sc.nextInt();
-	    if(input==menus.size()+1) homeScreen();
+	    if(input==menus.size()+1) menuScreen();
 	    else menuItemScreen(menus.get(input-1));
-	}
+        }
+        public static void specialScreen() {
+            System.out.println("\n*Specials*");
+		MenuServices ms = new MenuServices(con);
+		ArrayList<Menu> menus = ms.getAll();
+		ServiceWrapper.printMenuItems(menus);
+	    int input = sc.nextInt();
+	    if(input==menus.size()+1) menuScreen();
+	    else menuItemScreen(menus.get(input-1));
+        }
 	public static void menuItemScreen(Menu menu){
 		System.out.println("\n*" + menu.getName() + "*");
 		System.out.println(menu.getDescription());
