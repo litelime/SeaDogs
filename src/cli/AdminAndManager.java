@@ -464,7 +464,6 @@ public class AdminAndManager {
                 
                 // Create and add the user
                 User u = new User(userID, firstName, lastName, phone, email, password, userStatusId);
-                System.out.println(u);
                 helper.add(u);
 		
                 // Not sure why this is here
@@ -473,21 +472,24 @@ public class AdminAndManager {
 	}
 	
 	public static void deleteUserScreen() {
-		System.out.println("List of users");
-		UserService us = new UserService(con);
-		ArrayList<User> uArr = us.getAll();
-		int count=1;
-		for(User u:uArr){
-			System.out.println(count + " " + u.getFirstName() + " " + u.getLastName());
-			count++;
-		}
-		
-		System.out.println("Select user you'd like to delete");
-		Scanner sc = new Scanner(System.in);
+            // List existing users
+            System.out.println("List of users");
+            UserService us = new UserService(con);
+            ArrayList<User> uArr = us.getAll();
+            int count=1;
+            for(User u:uArr){
+		System.out.println(count + " " + u.getFirstName() + " " + u.getLastName());
+		count++;
+            }
+	
+            // Ask for the user to delete
+            System.out.println("Select user you'd like to delete");
+            Scanner sc = new Scanner(System.in);
 	    int input = sc.nextInt();
+            
+            // Delete the user
 	    us.deleteById(uArr.get(input-1).getUserId());
-	    System.out.println(uArr.get(input-1).getFirstName() + "has been deleted");
-		
+	    System.out.println(uArr.get(input-1).getFirstName() + " has been deleted");	
 	}
         
         private static String emptyToNull(String field){
