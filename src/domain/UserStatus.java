@@ -38,6 +38,6 @@ public class UserStatus {
 	}
 	@Override
 	public String toString() {
-		return "UserStatus [userStatusId=" + userStatusId + ", userStatus=" + userStatus + "]";
+		return userStatus;
 	}
 }

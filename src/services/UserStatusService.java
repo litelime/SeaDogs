@@ -91,9 +91,9 @@ public class UserStatusService implements Service<UserStatus>{
 			String userStatusId = userStatus.getUserStatusId();
 			String userStatusName = userStatus.getUserStatus();
 			
-			CallableStatement oCSF = connection.prepareCall("{?=call sp_update_user_status(?,?)}");
-			oCSF.setString(2,userStatusId);
-			oCSF.setString(3, userStatusName);
+			CallableStatement oCSF = connection.prepareCall("{call sp_update_user_status(?,?)}");
+			oCSF.setString(1,userStatusId);
+			oCSF.setString(2, userStatusName);
 			oCSF.execute();
 			oCSF.close();
 		}catch(SQLException e){

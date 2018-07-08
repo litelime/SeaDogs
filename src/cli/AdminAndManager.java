@@ -118,7 +118,7 @@ public class AdminAndManager {
 	    		option = optionsScreen("User Statuses");
                         switch(option){
                             case 1:
-                                System.out.println("Altering not supported");
+                                alterStatus();
                                 break;
                             case 2:
                                 System.out.println("Adding not supported");
@@ -149,12 +149,31 @@ public class AdminAndManager {
 		return input;
 	}
         
-        void alterStatuses(){
+        void alterStatus(){
+            // Ask for which status to alter
+            UserStatusService statusHelper = new UserStatusService(con);
+            ArrayList<UserStatus> statuses = statusHelper.getAll();
+            System.out.println("Select a user status to alter:" + statuses.size());
+            for(int i = 0; i < statuses.size(); i++){
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            Scanner kb = new Scanner(System.in);
+            UserStatus toAlter = statuses.get(Integer.parseInt(kb.nextLine()));
             
+            // Alter it
+            System.out.println("What would you like to change the status to?");
+            String newStatus = kb.nextLine();
+            toAlter.setUserStatus(newStatus);
+            statusHelper.update(toAlter);
+            System.out.println("Status altered");
         }
-        void addStatuses(){}
+        void addStatus(){
+            // Ask for a new status
+            
+            // Make the status
+        }
         
-        void deleteStatuses(){
+        void deleteStatus(){
             // Get the user_status
             Scanner kb = new Scanner(System.in);
             String newStatus = kb.nextLine();
