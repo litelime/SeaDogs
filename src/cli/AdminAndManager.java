@@ -121,7 +121,7 @@ public class AdminAndManager {
                                 alterStatus();
                                 break;
                             case 2:
-                                System.out.println("Adding not supported");
+                                addStatus();
                                 break;
                             case 3:
                                 System.out.println("Deleting not supported");
@@ -169,8 +169,16 @@ public class AdminAndManager {
         }
         void addStatus(){
             // Ask for a new status
+            UserStatusService statusHelper = new UserStatusService(con);
+            Scanner kb = new Scanner(System.in);
+            System.out.println("What status would you like to add?");
+            String newID = statusHelper.newStatusID() + "";
+            String newStatus = kb.nextLine();
             
             // Make the status
+            UserStatus toInsert = new UserStatus(newID, newStatus);
+            statusHelper.add(toInsert);
+            System.out.println(newStatus + " added");
         }
         
         void deleteStatus(){
