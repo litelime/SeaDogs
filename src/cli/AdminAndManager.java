@@ -111,6 +111,9 @@ public class AdminAndManager {
 	    			case 3:
 	    				deleteUserScreen();
                                         break;
+                                case 4:
+                                    adminScreen();
+                                    break;
 	    		}
 	    			
 	    	}
@@ -125,6 +128,7 @@ public class AdminAndManager {
                                 break;
                             case 3:
                                 System.out.println("Deleting not supported");
+                                deleteStatus();
                                 break;
                         }
                 case 12:
@@ -182,15 +186,30 @@ public class AdminAndManager {
         }
         
         void deleteStatus(){
-            // Get the user_status
+            // Ask for the user status to delete
+            UserStatusService statusHelper = new UserStatusService(con);
             Scanner kb = new Scanner(System.in);
-            String newStatus = kb.nextLine();
+            ArrayList<UserStatus> statuses = statusHelper.getAll();
+            System.out.println("Select a user status to delete");
+            for (int i = 0; i < statuses.size(); i++) {
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            int choiceIndex = Integer.parseInt(kb.nextLine()) - 1;
+            UserStatus toDelete = statuses.get(choiceIndex);
             
-            // Generate a user_id for the status
+            // Ask for the replacement status
+            System.out.println("Users with status " + toDelete.toString() + " should take on which status?");
+            statuses.remove(choiceIndex);
+            for (int i = 0; i < statuses.size(); i++) {
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            UserStatus replacement = statuses.get(Integer.parseInt(kb.nextLine()) - 1);
             
+            // Update the users statuses
+            statusHelper.replace(toDelete.getUserStatusId(), replacement.getUserStatusId());
             
-            // Find users who will lose their status
-            
+            // Delete the user status from the table
+            statusHelper.deleteById(toDelete.getUserStatusId());
         }
         
         /*

@@ -123,5 +123,16 @@ public class UserStatusService implements Service<UserStatus>{
                 return -1;
             }
         }        
-        
+ 
+        public void replace(String oldOne, String newOne){
+            try {
+                CallableStatement stmnt = connection.prepareCall("{call sp_swap_status(?,?)}");
+                stmnt.setString(1, oldOne);
+                stmnt.setString(2, newOne);
+                stmnt.execute();
+                stmnt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 }
