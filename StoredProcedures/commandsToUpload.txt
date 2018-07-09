@@ -6,13 +6,17 @@
 --MAKE SURE FOLDER NAME CHANGED FROM 'Stored Procedure' to 'StoredProcedure'
 --COPY THE FOLLOWING STUFF TO UR SQL COMMAND LINE--
 
-start C:\SeaDogs\SQL\StoredProcedures\delivery_methods_sp.sql
-start C:\SeaDogs\SQL\StoredProcedures\delivery_statuses_sp.sql
-start C:\SeaDogs\SQL\StoredProcedures\items.sql
-start C:\SeaDogs\SQL\StoredProcedures\locations_sp.sql
-start C:\SeaDogs\SQL\StoredProcedures\orders_sp.sql
-start C:\SeaDogs\SQL\StoredProcedures\user_sp.sql
-start C:\SeaDogs\SQL\StoredProcedures\user_status_sp.sql
-start C:\SeaDogs\SQL\StoredProcedures\SP_UPDATE_CARD.sql
-start C:\SeaDogs\SQL\StoredProcedures\SP_INSERT_CARD.sql
-start C:\SeaDogs\SQL\StoredProcedures\sp_delete_card.sql
+start C:\SeaDogs\StoredProcedures\delivery_methods_sp.sql
+start C:\SeaDogs\StoredProcedures\delivery_statuses_sp.sql
+start C:\SeaDogs\StoredProcedures\items.sql
+start C:\SeaDogs\StoredProcedures\specials.sql
+start C:\SeaDogs\StoredProcedures\locations_sp.sql
+start C:\SeaDogs\StoredProcedures\orders_sp.sql
+start C:\SeaDogs\StoredProcedures\user_sp.sql
+start C:\SeaDogs\StoredProcedures\user_status_sp.sql
+start C:\SeaDogs\StoredProcedures\SP_UPDATE_CARD.sql
+start C:\SeaDogs\StoredProcedures\SP_INSERT_CARD.sql
+start C:\SeaDogs\StoredProcedures\sp_delete_card.sql
+
+--CALL IT ONLY ONE TIME, U WILL GET AN ERROR IF CALLED TWICE, BUT DONT WORRY
+start C:\SeaDogs\StoredProcedures\temp.sql
