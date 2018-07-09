@@ -58,8 +58,20 @@ public class Tiger{
 		sc.close();
 	}
 	
+        
+        public static void printArt(){
+                   
+            System.out.println(" _______  _______  _______  _____    _______  _______  _______ ");
+            System.out.println("|       ||       ||       ||     |  |       ||       ||       |");
+            System.out.println("|  _____||    ___||   _   ||  _   | |   _   ||    ___||  _____|");
+            System.out.println("| |_____ |   |___ |  |_|  || | |   ||  | |  ||   | __ | |_____ ");
+            System.out.println("|_____  ||    ___||       || |_|   ||  |_|  ||   ||  ||_____  |");
+            System.out.println(" _____| ||   |___ |   _   ||      | |       ||   |_| | _____| |");
+            System.out.println("|_______||_______||__| |__||_____|  |_______||_______||_______|");
+        }
+        
 	public static void firstScreen(){
-		System.out.println(" __  __ _                     _ _        _____       __     \n|  \\/  (_)                   (_| )      / ____|     / _|    \n| \\  / |_ _ __ ___  _ __ ___  _|/ ___  | |     __ _| |_ ___ \n| |\\/| | | '_ ` _ \\| '_ ` _ \\| | / __| | |    / _` |  _/ _ \\\n| |  | | | | | | | | | | | | | | \\__ \\ | |___| (_| | ||  __/\n|_|  |_|_|_| |_| |_|_| |_| |_|_| |___/  \\_____\\__,_|_| \\___|");
+                printArt();
 		ArrayList<String> options = new ArrayList<String>();
 		options.add("Login");
 		options.add("Register");
@@ -103,9 +115,9 @@ public class Tiger{
 		}
 		if(password.equals(candidate.getPassword())){
 
+                        OrderService os = new OrderService(con);
 			currentUser = candidate;
-			currentOrder = new Order();
-			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
+			currentOrder = new Order(os.getNextOrderId());
 			currentOrder.setUser_id(currentUser.getUserId());
 			currentOrder.setDelivery_status_id("0");
 			//currentOrder.setCard_id();
@@ -155,7 +167,8 @@ public class Tiger{
 	    if(password.equals(passwordConfirm)){
 	    	System.out.println("Registered");
 	    	currentUser = sw.register(first, last, phone, email, password);
-			currentOrder = new Order();
+                OrderService os = new OrderService(con);
+			currentOrder = new Order(os.getNextOrderId());
 			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
 			currentOrder.setUser_id(currentUser.getUserId());
 			currentOrder.setDelivery_status_id("0");
@@ -297,15 +310,25 @@ public class Tiger{
 		System.out.println("5. Go Back");
 	    int input = sc.nextInt();
 	    if(input==1 && confirm()) {
-	    	currentOrder = new Order();
-			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
+                OrderService os = new OrderService(con);
+	    	currentOrder = new Order(os.getNextOrderId());
 			currentOrder.setUser_id(currentUser.getUserId());
 			currentOrder.setDelivery_status_id("0");
 	    }
 	    if(input==2) viewEditOrderItems(currentOrder);
 	    if(input==3) editOrder(currentOrder);
 	    if(input==4 && hasItems()){ 
+                CardService cs = new CardService(con);
+                OrderService os = new OrderService(con);
+                ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
+                if(userCards.isEmpty()){
+                    System.out.println("You must add a Card to your account first.");
+                    currentOrderScreen();
+                }
+                String cardId = cs.getUserCards(currentUser.getUserId()).get(0).getCardId();
+                currentOrder.setCard_id(cardId);
                 sw.submitOrder(currentOrder);
+                os.generateInvoice(currentOrder.getOrder_id());
                 homeScreen();
             }else{
                 System.out.println("No Orders in Cart. Redirecting to previous screen");
@@ -430,7 +453,7 @@ public class Tiger{
 	    else if(input==2) System.exit(0);*/
 	}
 
-	//TODO
+	
 	public static void submitOrder(){
 		System.out.println("\n*Submit*");
 
@@ -733,7 +756,6 @@ public class Tiger{
             Date cardDate = new Date(year,month,day);
             return cardDate;
         }
-        
         
 	public static void allOrdersScreen(){
 		System.out.println("\n*All orders*");
