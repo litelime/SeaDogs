@@ -1,6 +1,7 @@
 package domain;
 
 import java.sql.Date;
+import java.time.LocalTime;
 
 public class Store {
 	String storeId;
@@ -8,15 +9,15 @@ public class Store {
 	String storeName;
 	String phoneNumber;
 	String managerId;
-	int openTime;
-	int closeTime;
+	LocalTime openTime;
+	LocalTime closeTime;
 	
 	public Store() {
 		super();
 	}
 	
-	public Store(String storeId, String locationId, String storeName, String phoneNumber, String managerId, int openTime,
-			int closeTime) {
+	public Store(String storeId, String locationId, String storeName, String phoneNumber, String managerId, LocalTime openTime,
+			LocalTime closeTime) {
 		super();
 		this.storeId = storeId;
 		this.locationId = locationId;
@@ -57,16 +58,16 @@ public class Store {
 	public void setManagerId(String managerId) {
 		this.managerId = managerId;
 	}
-	public int getOpenTime() {
+	public LocalTime getOpenTime() {
 		return openTime;
 	}
-	public void setOpenTime(int openTime) {
+	public void setOpenTime(LocalTime openTime) {
 		this.openTime = openTime;
 	}
-	public int getCloseTime() {
+	public LocalTime getCloseTime() {
 		return closeTime;
 	}
-	public void setCloseTime(int closeTime) {
+	public void setCloseTime(LocalTime closeTime) {
 		this.closeTime = closeTime;
 	}
 	@Override

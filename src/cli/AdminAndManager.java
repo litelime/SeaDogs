@@ -356,28 +356,34 @@ public class AdminAndManager {
             return;
         }   
 
-	//Doesn't work
 	public static void addCardScreen(){
+            CardService cs = new CardService(con);
+            UserService us = new UserService(con);    
+            
 		System.out.println("Add a Credit Card");
 		Scanner sc = new Scanner(System.in);
-		System.out.println("\nEnter Card id: ");
-	    String cardId= sc.next();
-	    System.out.println("\nEnter id of user this card belongs to: ");
-		String userId= sc.next();
+                            
+                System.out.println("\nWhat user does this card belong to");
+                int count = 0;
+                ArrayList<User> users = us.getAll(); 
+                for(User user : users){
+                    count++;
+                    System.out.println(count+ ". "+user.getFirstName() + " "+user.getLastName());
+                }
+		int userChoice = Tiger.getAnInt();
+                userChoice--;
+                String userId = users.get(userChoice).getUserId();
+                
 		System.out.println("\nEnter Card number: ");
 		String cardNumber= sc.next();
-		System.out.println("\nEnter expiration year: ");
-		int year = sc.nextInt();
-		System.out.println("\nEnter expiration month: ");
-		int month = sc.nextInt();
-		System.out.println("\nEnter expiration date: ");
-		int day = sc.nextInt();
-		Date expiryDate= new Date(year, month, day);
+
+		Date expiryDate= Tiger.editDate();
+                
 		System.out.println("Enter Security code: ");
 		String securityCode= sc.next();
-		Card c = new Card(cardId, userId, cardNumber, expiryDate, securityCode);
+                
+		Card c = new Card(cs.getNextCardId(), userId, cardNumber, expiryDate, securityCode);
 		
-		CardService cs = new CardService(con);
 		cs.add(c);
 		AdminAndManager aam = new AdminAndManager(con);
 		aam.adminScreen();
@@ -413,18 +419,25 @@ public class AdminAndManager {
 		Scanner sc = new Scanner(System.in);
 	    int input = sc.nextInt();
 	    
+            UserService us = new UserService(con);
 	    String cardId= cl.get(input-1).getCardId();
-	    System.out.println("Enter id of user this card belongs to: ");
-		String userId= sc.next();
+            
+               System.out.println("\nWhat user shoild this card belong to");
+                int userCount = 0;
+                ArrayList<User> users = us.getAll(); 
+                for(User user : users){
+                    userCount++;
+                    System.out.println(userCount+ ". "+user.getFirstName() + " "+user.getLastName());
+                }
+		int userChoice = Tiger.getAnInt();
+                userChoice--;
+                String userId = users.get(userChoice).getUserId();
+                
 		System.out.println("Enter Card number: ");
 		String cardNumber= sc.next();
-		System.out.println("Enter expiration year: ");
-		int year = sc.nextInt();
-		System.out.println("Enter expiration month: ");
-		int month = sc.nextInt();
-		System.out.println("Enter expiration date: ");
-		int day = sc.nextInt();
-		Date expiryDate= new Date(year, month, day);
+
+		Date expiryDate= Tiger.editDate();
+                
 		System.out.println("Enter Security code: ");
 		String securityCode= sc.next();
 	    
