@@ -31,6 +31,7 @@ public class OrderService implements Service<Order>{
 	@Override
 	public boolean add(Order order){
 		try{
+                        System.out.println(order);
 			//Add order items
 			CallableStatement statement = connection.prepareCall(
 					"{call AddOrder(?,?,?,?,?,?,?,?,?,?,?)}");
@@ -225,18 +226,23 @@ public class OrderService implements Service<Order>{
                 
                 ArrayList<Integer> ints = new ArrayList();
                 while(orderRs.next()){
+                    System.out.println("is this the eror");
                     ints.add(orderRs.getInt("order_id"));
                 }
+                System.out.println(ints.get(0));
                 //orderId = greatest value. 
                 for(int x: ints){
-                    if(x>orderId)
+                    if(x>orderId){
                         orderId = x;
+                        System.out.println("id: " + orderId);
+                    }
                 }
             }catch(SQLException e){
                 System.out.println("ERROR: getNextOrderID");
 		System.out.println(e.getMessage());
             }
             orderId++;
+            System.out.println("Ending id: " + orderId);
             return Integer.toString(orderId);
         }
         
