@@ -14,6 +14,8 @@ import domain.User;
 import domain.Card;
 import domain.Location;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 import java.time.LocalTime;
@@ -316,6 +318,7 @@ public class Tiger{
 	    if(input==2) viewEditOrderItems(currentOrder);
 	    if(input==3) editOrder(currentOrder);
 	    if(input==4 && hasItems()){ 
+                
                 CardService cs = new CardService(con);
                 OrderService os = new OrderService(con);
                 ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
@@ -471,10 +474,10 @@ public class Tiger{
 	    else if(input==2) System.exit(0);*/
 	}
 
-	
 	public static void submitOrder(){
 		System.out.println("\n*Submit*");
-
+                
+                
 	    //OrderService os = new OrderService(con);
 	    //input should be equal to number of items in order
 	    //Menu menu = null;

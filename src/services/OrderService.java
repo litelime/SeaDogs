@@ -66,7 +66,7 @@ public class OrderService implements Service<Order>{
 		}	
 	}
 	
-	@Override
+	
 	public void deleteById(String id){
 		try{
 			//Delete order_items
@@ -295,6 +295,7 @@ public class OrderService implements Service<Order>{
 		
 	}
         
+
         public void generateInvoice(String Order_ID){
             
             PreparedStatement pStmt;
@@ -307,12 +308,33 @@ public class OrderService implements Service<Order>{
                 pStmt.execute();
                 //Step4: get the output ResultSet
                 RS=pStmt.getResultSet();
-
+                RS.next();
+            
+                System.out.println("Thank You for the Order");
+                System.out.println("INVOICE");
+                System.out.println("STORE DETAILS");
+                System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2));
+                System.out.println("CUSTOMER and ORDER DETAILS");
+                System.out.println("--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
+                            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Paymeny Card Number: "+RS.getString(11));
+                System.out.println("Items Ordered under Order no. 1 ");
+                System.out.println("Item No. 1: "+RS.getString(8)+
+                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10));
+                int i=2;
                 while(RS.next()){
-                    System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
-                            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
-                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Payment Card Number: "+RS.getString(11));
-                }
+                    //   System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
+                   //         "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
+                     //       "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Paymeny Card Number: "+RS.getString(11));
+
+                    System.out.println("Item No. "+i+": "+RS.getString(8)+
+                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10));
+                    i++;
+                }    
+                    //while(RS.next()){
+                //    System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
+                //            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
+                //            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Payment Card Number: "+RS.getString(11));
+                //}
                 //Step5: close statement and connections
                 pStmt.close();
 
