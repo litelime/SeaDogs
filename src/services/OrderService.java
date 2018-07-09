@@ -316,7 +316,7 @@ public class OrderService implements Service<Order>{
                 System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2));
                 System.out.println("CUSTOMER and ORDER DETAILS");
                 System.out.println("--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
-                            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Paymeny Card Number: "+RS.getString(11));
+                            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Payment Card Number: "+RS.getString(11));
                 System.out.println("Items Ordered under Order no. 1 ");
                 System.out.println("Item No. 1: "+RS.getString(8)+
                             "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10));

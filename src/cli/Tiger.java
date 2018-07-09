@@ -169,7 +169,6 @@ public class Tiger{
 	    	currentUser = sw.register(first, last, phone, email, password);
                 OrderService os = new OrderService(con);
 			currentOrder = new Order(os.getNextOrderId());
-			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
 			currentOrder.setUser_id(currentUser.getUserId());
 			currentOrder.setDelivery_status_id("0");
 	    	homeScreen();
@@ -201,7 +200,7 @@ public class Tiger{
 			count++;
 			System.out.println(count + ". " + option);
 		}
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 		if(input==1) menuScreen();
 		if(input==2) currentOrderScreen();    	
 		if(input==3) accountScreen();
@@ -224,7 +223,7 @@ public class Tiger{
 			count++;
 			System.out.println(count + ". " + option);
 		}
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 		if(input==1) itemScreen();
 		if(input==2) specialScreen();    	
 		if(input==3) homeScreen();
@@ -234,7 +233,7 @@ public class Tiger{
 		MenuServices ms = new MenuServices(con);
 		ArrayList<Menu> menus = ms.getAll();
 		ServiceWrapper.printMenuItems(menus);
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    if(input==menus.size()+1) menuScreen();
 	    else menuItemScreen(menus.get(input-1));
         }
@@ -243,7 +242,7 @@ public class Tiger{
 		MenuServices ms = new MenuServices(con);
 		ArrayList<Menu> menus = ms.getAll();
 		ServiceWrapper.printMenuItems(menus);
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    if(input==menus.size()+1) menuScreen();
 	    else menuItemScreen(menus.get(input-1));
         }
@@ -253,14 +252,14 @@ public class Tiger{
 		System.out.println("$" + menu.getPrice());
 		System.out.println("1. Enter Quantity");
 		System.out.println("2. Go Back");
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    if(input==1) itemQuantityScreen(menu);
 	    else if(input==2) menuScreen();
 	}
 	//TODO finish this
 	public static void itemQuantityScreen(Menu menu){
 		System.out.println("Enter Quantity");
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    for(int i=0;i<input;i++) currentOrder.addItem_id(menu.getId());
 		System.out.println("Item(s) added");
 		menuScreen();
@@ -308,7 +307,7 @@ public class Tiger{
 		System.out.println("3. Edit Order");
 		System.out.println("4. Submit Order");
 		System.out.println("5. Go Back");
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    if(input==1 && confirm()) {
                 OrderService os = new OrderService(con);
 	    	currentOrder = new Order(os.getNextOrderId());
@@ -329,6 +328,7 @@ public class Tiger{
                 String cardId = cs.getUserCards(currentUser.getUserId()).get(0).getCardId();
                 currentOrder.setCard_id(cardId);
                 serviceWrap.submitOrder(currentOrder);
+                
                 os.generateInvoice(currentOrder.getOrder_id());
                 homeScreen();
             }else{
@@ -359,7 +359,7 @@ public class Tiger{
 			count++;
 			System.out.println(count + ". " + option);
 		}
-	    int input = sc.nextInt();
+	    int input = getAnInt();
     		if(input==1){
                     float newTip = 0;
                     try{
@@ -401,7 +401,7 @@ public class Tiger{
                         }
                         
                         System.out.println(methodCount + ". Go Back");
-                        int methodSelection = sc.nextInt();
+                        int methodSelection = getAnInt();
                         
                         if(methodSelection != methodCount){
                             currentOrder.setDelivery_method_id(all.get(methodSelection-1).getDelivery_method_id());
@@ -409,20 +409,20 @@ public class Tiger{
                         }
     		}
     		if(input==5){
-                        LocationService location = new LocationService(con);
-                        ArrayList<Location> all = location.getAll();
+                        StoreService location = new StoreService(con);
+                        ArrayList<Store> all = location.getAll();
                         int locationCount = 1;
-                        for (Location x : all){
-                            System.out.println(locationCount+". "+x.getAddress());
+                        for (Store x : all){
+                            System.out.println(locationCount+". "+x.getStoreName());
                             locationCount++;
                         }
                         
                         System.out.println(locationCount + ". Go Back");
-                        int locationSelection = sc.nextInt();
+                        int locationSelection = getAnInt();
                         
                         if(locationSelection != locationCount){
                             currentOrder.setStore_id(all.get(locationSelection-1).getLocationId());
-                            System.out.println("Store Changed to: " + all.get(locationSelection-1).getAddress());
+                            System.out.println("Store Changed to: " + all.get(locationSelection-1).getStoreName());
                         }
     		}
                 if(input==6){
@@ -438,7 +438,7 @@ public class Tiger{
                         System.out.println(countCards+ ". " +x.getCardNumber());
                         
                     }
-                    int userChoice = sc.nextInt();
+                    int userChoice = getAnInt();
                     userChoice --; //subtract because array index at 0. 
                     String cardId = userCards.get(userChoice).getCardId();
                     currentOrder.setCard_id(cardId);
@@ -457,7 +457,7 @@ public class Tiger{
 		ArrayList<Menu> items = sw.getMenuItems(itemIds);
 		if(items.isEmpty()) System.out.println("No items");
 		ServiceWrapper.printMenuItems(items);
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    if(input==items.size()) homeScreen();
 	    else if(input==items.size()+1) currentOrderScreen();
 	    else orderItemScreen(items.get(input));
@@ -490,16 +490,17 @@ public class Tiger{
 	    //os.update(currentOrder);
 	}
 	
-        private static int getAnInt(){
+        public static int getAnInt(){
             int choice=-1; 
+            
             while(choice<0){
                 try{
                     choice = sc.nextInt();
                 }catch(InputMismatchException e){
                     System.out.println("Enter a number to select an option");
+                    sc.nextLine();
                 }
             }
-            
             return choice;
         }
         
@@ -520,7 +521,7 @@ public class Tiger{
 			count++;
 			System.out.println(count + ". " + option);
 		}
-	    int input = sc.nextInt();
+	    int input = getAnInt();
     		if(input==1){
     			String newFirstName = editString();
     			currentUser.setFirstName(newFirstName);
@@ -581,7 +582,7 @@ public class Tiger{
                 System.out.println(count+". "+x);
             }
             
-            int input = sc.nextInt();
+            int input = getAnInt();
             if(input == 1){
                 sc.nextLine();
                 addLocation(ls);
@@ -597,7 +598,7 @@ public class Tiger{
                 System.out.println("2. Edit Location");
                 System.out.println("3. Go Back");
                 
-                int uChoice = sc.nextInt();
+                int uChoice = getAnInt();
                 
                 input--;//decrement again to pull from userCards array
                 switch(uChoice){
@@ -619,7 +620,7 @@ public class Tiger{
         System.out.println("5. Edit Zip: " + l.getZip());
         System.out.println("6. Back");
         
-        int input = sc.nextInt();
+        int input = getAnInt();
 
         switch(input){
             case 1: 
@@ -736,7 +737,7 @@ public class Tiger{
                 System.out.println(count+". "+x);
             }
             
-            int cardChoice = sc.nextInt();
+            int cardChoice = getAnInt();
 		
             if(cardChoice == 1){
                 addACard();
@@ -753,7 +754,7 @@ public class Tiger{
                 System.out.println("2. Edit Card");
                 System.out.println("3. Go Back");
                 
-                int viewChoice = sc.nextInt();
+                int viewChoice = getAnInt();
                 
                 switch(viewChoice){
                     case 1: cardServe.deleteById(userCards.get(cardChoice).getCardId());
@@ -773,7 +774,7 @@ public class Tiger{
 		return inp;
 	}
         
-	private static Date editDate() {
+	public static Date editDate() {
             System.out.println("Enter date in the format YYYY-MM-DD");
             String dateStr = sc.next();
            Date cardDate = new Date(1111,1,1);
@@ -806,7 +807,7 @@ public class Tiger{
 		OrderService os = new OrderService(con);
 		ArrayList<Order> orders = os.getUserOrders(currentUser.getUserId());
 		ServiceWrapper.printOrders(orders);
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    if(input==orders.size()) homeScreen();
 	    else oldOrderScreen(orders.get(input));
 	}
@@ -818,7 +819,7 @@ public class Tiger{
 		System.out.println("Status: " +order.getDelivery_status_id());
 		System.out.println("1. Reorder");
 		System.out.println("2. Go Back");
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    if(input==1 && confirm()) {
 	    	currentOrder=order;
 	    	//TODO find out what the status id this thing needs is
@@ -840,7 +841,7 @@ public class Tiger{
 		System.out.println("\n1*Confirm*");
 		System.out.println("1. Yes");
 		System.out.println("2. No");
-	    int input = sc.nextInt();
+	    int input = getAnInt();
 	    return input==1;
 	}
 
@@ -852,7 +853,7 @@ public class Tiger{
         System.out.println("3. Edit Expiration Date: "+editCard.getExpiryDate());
         System.out.println("4. Back");
         
-        int editChoice = sc.nextInt();
+        int editChoice = getAnInt();
 
         switch(editChoice){
             case 1: 
