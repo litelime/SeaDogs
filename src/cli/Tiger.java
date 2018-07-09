@@ -312,7 +312,7 @@ public class Tiger{
 	    }
 	    if(input==2) viewEditOrderItems(currentOrder);
 	    if(input==3) editOrder(currentOrder);
-	    if(input==4 && hasItems()){ 
+	    if(input==4 && hasItems()){
                 CardService cs = new CardService(con);
                 OrderService os = new OrderService(con);
                 ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
@@ -320,10 +320,15 @@ public class Tiger{
                     System.out.println("You must add a Card to your account first.");
                     currentOrderScreen();
                 }
+                //This causes an issue if you don't want to have only the first card for
+                // each order.
                 String cardId = cs.getUserCards(currentUser.getUserId()).get(0).getCardId();
                 currentOrder.setCard_id(cardId);
+                if(!hasLocation()&& currentOrder.getDelivery_method_id().equalsIgnoreCase("1")){
+                    System.out.println("You must have a location fo");
+                }
                 serviceWrap.submitOrder(currentOrder);
-                os.generateInvoice(currentOrder.getOrder_id());
+                //os.generateInvoice(currentOrder.getOrder_id());
                 homeScreen();
             }else{
                 System.out.println("No Orders in Cart. Redirecting to previous screen");
@@ -337,7 +342,14 @@ public class Tiger{
             }
             return confirm();
         }
-        
+        //Check if they have a location set.
+        public static boolean hasLocation(){
+            LocationService ls = new LocationService(con);
+            if(ls.getUserLocations(currentUser.getUserId()).isEmpty()){
+                return false;
+            }
+            else return true;
+        }
 	private static void editOrder(Order currentOrder2) {
 		System.out.println("\n*Edit Order*");
 		ArrayList<String> options = new ArrayList<>();
