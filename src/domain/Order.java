@@ -50,7 +50,6 @@ public class Order {
 		this.delivery_method_id = "0";
 		this.store_id = "0";
 		this.delivery_status_id = "0";
-            
         }
         
 	public Order() {
