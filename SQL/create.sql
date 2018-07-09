@@ -51,7 +51,9 @@ create table users(
 );
 create table locations(
 	location_id varchar(4000) primary key,
+	------- What is the point of this? ---------------
 	user_id varchar(4000) references users(user_id),
+	--------------------------------------------------
 	tax_rate number(5,2),
 	street varchar(4000),
 	city varchar(4000),
@@ -79,7 +81,7 @@ create table stores(
 );
 create table orders(
 	order_id varchar(4000) primary key,
-	user_id varchar(4000) references users(user_id),
+	user_id varchar(4000) references users(user_id) ON DELETE CASCADE,
 	tip number(5,2),
 	total_price number(7,2),
 	placed_timestamp int,
@@ -91,6 +93,6 @@ create table orders(
 	delivery_status_id varchar(4000) references delivery_statuses(delivery_status_id)
 );
 create table order_items(
-	order_id varchar(4000) references orders(order_id),
+	order_id varchar(4000) references orders(order_id) ON DELETE CASCADE,
 	item_id varchar(4000) references items(item_id) 
 );
