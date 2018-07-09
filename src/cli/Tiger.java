@@ -13,6 +13,8 @@ import domain.User;
 import domain.Card;
 import domain.Location;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -270,6 +272,10 @@ public class Tiger{
 	    if(input==3) editOrder(currentOrder);
 	    if(input==4 && hasItems()){ 
                 sw.submitOrder(currentOrder);
+                
+                System.out.println(currentOrder.getOrder_id());
+                currentOrder.generateInvoice(currentOrder.getOrder_id());
+                                     
                 homeScreen();
             }else{
                 System.out.println("No Orders in Cart. Redirecting to previous screen");
@@ -353,11 +359,12 @@ public class Tiger{
 	    if(input==1) itemQuantityScreen(menu);
 	    else if(input==2) System.exit(0);*/
 	}
-
+        
 	//TODO
 	public static void submitOrder(){
 		System.out.println("\n*Submit*");
-
+                
+                
 	    //OrderService os = new OrderService(con);
 	    //input should be equal to number of items in order
 	    //Menu menu = null;
