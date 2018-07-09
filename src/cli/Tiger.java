@@ -138,6 +138,11 @@ public class Tiger{
 		System.out.println("\n*Register*");
 		System.out.println("Enter email:");
 	    String email = sc.next();
+            // check if its a valid email
+            while(email.indexOf('@')==-1){
+                System.out.println("Please enter a valid email");
+                email=sc.next();
+            }
 		System.out.println("Enter password:");
 	    String password = sc.next();
 		System.out.println("Enter password again:");
@@ -148,6 +153,11 @@ public class Tiger{
 	    String last = sc.next();
 		System.out.println("Enter phone:");
 	    String phone = sc.next();
+            System.out.println(phone.matches("^[0-9]+$"));
+            while(!phone.matches("^[0-9]+$")){
+                System.out.println("Please enter a valid phone. Phone can only be numeric");
+                phone = sc.next();
+            }
 /*
 	    String street = sc.next();
 		System.out.println("Enter city:");
