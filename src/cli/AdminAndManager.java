@@ -26,12 +26,56 @@ import services.UserStatusService;
 public class AdminAndManager {
 	
 	static Connection con;
+        private User user;
+        private static String manager = "3";
+        private static String admin = "4";
 	
 	public AdminAndManager(Connection con){
 		AdminAndManager.con = con;
+                user = null;
 	}
 	
 	public void adminScreen(){
+            // Wait for login
+            Scanner sc = new Scanner(System.in);
+            UserService userHelper = new UserService(con);
+            while(user == null){
+                // Get email
+                String email = "";
+                do{
+                    System.out.println("Enter your email:");
+                    email = sc.nextLine();
+                } while(email.length() == 0);
+                
+                // Get password
+                String password = "";
+                do{
+                    System.out.println("Enter your password");
+                    password = sc.nextLine();
+                } while(password.length() == 0);
+                
+                // Check credentials
+                boolean emailExists = (userHelper.getByEmail(email) != null);
+                boolean passwordMatch = emailExists && 
+                                        (userHelper.getByEmail(email).getPassword().equals(password));
+                boolean isAdmin = passwordMatch &&
+                        (userHelper.getByEmail(email).getUserStatusId().equals(manager) ||
+                         userHelper.getByEmail(email).getUserStatusId().endsWith(admin));
+                
+                // Notify user of reason for failed login
+                if(!emailExists || !passwordMatch){
+                    System.out.println("Incorrect credentials. Please try again.");
+                } else if(!isAdmin){
+                    System.out.println("You are not an admin.");
+                    firstScreen();
+                }
+                
+                // Allow login
+                if(isAdmin){
+                    user = userHelper.getByEmail(email);
+                }
+            }
+            
 		ArrayList<String> options = new ArrayList<String>();
 		System.out.println("Admin View");
 		options.add("Alter Cards");
@@ -46,7 +90,6 @@ public class AdminAndManager {
 		options.add("Alter Users");
 		options.add("Alter User Statuses");
 		ServiceWrapper.printOptions(options);
-		Scanner sc = new Scanner(System.in);
 	    int input = sc.nextInt();
 	    int option = 0;
 	    switch(input){
@@ -176,7 +219,7 @@ public class AdminAndManager {
             UserStatusService statusHelper = new UserStatusService(con);
             Scanner kb = new Scanner(System.in);
             System.out.println("What status would you like to add?");
-            String newID = statusHelper.newStatusID() + "";
+            String newID = (statusHelper.newStatusID() + "").toLowerCase();
             String newStatus = kb.nextLine();
             
             // Make the status
@@ -536,19 +579,10 @@ public class AdminAndManager {
             User  toDelete = uArr.get(input-1);
             
             /*
-                If the employee deleted was a manager, then the location they
-                were managing will have no manager after the employee is
-                deleted. This loss of manager should be reflected in the table
-                by changing the user_id of the location to null.
-            */
-            // Update locations table
-            System.out.println("Deleting: " + toDelete);
-            //LocationService locationHelper = new LocationService(con);
-            //locationHelper.removeManager(toDelete.getUserId());
-            
-            /*
                 Tables who have records that reference this user will also be
-                deleted. For example, all of the 
+                deleted. See the table creation script in the SQL folder to see
+                how records referring to a user are handler when that user is
+                deleted.
             */
             // Delete the user
             System.out.println("Deleting user...");

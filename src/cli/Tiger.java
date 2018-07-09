@@ -72,6 +72,7 @@ public class Tiger{
 		ArrayList<String> options = new ArrayList<>();
 		options.add("Login");
 		options.add("Register");
+                options.add("Admin/Manager");
 		options.add("Quit");
 		int count = 0;
 		for(String option : options) {
@@ -82,16 +83,18 @@ public class Tiger{
 	    int input = sc.nextInt();
 	    switch(input){
     		case 1:
-    			loginScreen();break;
+    			loginScreen();
+                        break;
     		case 2:
-    			registerScreen();break; 	
+    			registerScreen();
+                        break; 	
     		case 3:
-    			System.out.println("Goodbye");
-    			System.exit(0);
+                        AdminAndManager aam = new AdminAndManager(con);
+    			aam.adminScreen();
                         break;
     		case 4:
-    			AdminAndManager aam = new AdminAndManager(con);
-    			aam.adminScreen();
+    			System.out.println("Goodbye");
+    			System.exit(0);
                         break;
 	    }
 
@@ -99,7 +102,7 @@ public class Tiger{
 		
 	public static void loginScreen(){
 		System.out.println("\n*Login*");
-		System.out.println("Enter email:");
+                System.out.println("Enter email:");
                 String email = sc.next();
 		System.out.println("Enter password:");
                 String password = sc.next();
