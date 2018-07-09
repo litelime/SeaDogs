@@ -533,11 +533,29 @@ public class AdminAndManager {
             System.out.println("Select user you'd like to delete");
             Scanner sc = new Scanner(System.in);
 	    int input = sc.nextInt();
+            User  toDelete = uArr.get(input-1);
             
+            /*
+                If the employee deleted was a manager, then the location they
+                were managing will have no manager after the employee is
+                deleted. This loss of manager should be reflected in the table
+                by changing the user_id of the location to null.
+            */
+            // Update locations table
+            System.out.println("Deleting: " + toDelete);
+            //LocationService locationHelper = new LocationService(con);
+            //locationHelper.removeManager(toDelete.getUserId());
+            
+            /*
+                Tables who have records that reference this user will also be
+                deleted. For example, all of the 
+            */
             // Delete the user
-	    us.deleteById(uArr.get(input-1).getUserId());
-	    System.out.println(uArr.get(input-1).getFirstName() + " has been deleted");	
-	}
+            System.out.println("Deleting user...");
+	    us.deleteById(toDelete.getUserId());
+	    System.out.println(toDelete.getFirstName() + " has been deleted");	
+        }
+
         
         private static String emptyToNull(String field){
             if(field.length() == 0){

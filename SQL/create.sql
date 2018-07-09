@@ -15,9 +15,9 @@ create table items(
 	item_id varchar(4000) primary key,
 	name varchar(4000),
 	vegetarian char(1),
-	item_type_id varchar(4000) references item_types(item_type_id),
+	item_type_id varchar(4000) references item_types(item_type_id) ON DELETE SET NULL,
 	description varchar(4000),
-	time_slot_id varchar(4000) references time_slots(time_slot_id),
+	time_slot_id varchar(4000) references time_slots(time_slot_id) ON DELETE SET NULL,
 	photo varchar(4000),
 	price number(5,2),
 	constraint check_vegetarian
@@ -47,12 +47,12 @@ create table users(
 	phone varchar(4000),
 	email varchar(4000) not null unique,
 	password varchar(4000) not null,
-	user_status_id varchar(4000) references user_statuses(user_status_id)
+	user_status_id varchar(4000) references user_statuses(user_status_id) ON DELETE SET NULL
 );
 create table locations(
 	location_id varchar(4000) primary key,
 	------- What is the point of this? ---------------
-	user_id varchar(4000) references users(user_id),
+	user_id varchar(4000) references users(user_id) on delete set null,
 	--------------------------------------------------
 	tax_rate number(5,2),
 	street varchar(4000),
@@ -72,10 +72,10 @@ create table cards(
 );
 create table stores(
 	store_id varchar(4000) primary key,
-	location_id varchar(4000) references locations(location_id),
+	location_id varchar(4000) references locations(location_id) ON DELETE CASCADE,
 	store varchar(4000),
 	phone_number int,
-	manager_id varchar(4000) references users(user_id),
+	manager_id varchar(4000) references users(user_id) ON DELETE CASCADE,
 	open_time int,
 	close_time int
 );
@@ -86,11 +86,11 @@ create table orders(
 	total_price number(7,2),
 	placed_timestamp int,
 	delivery_timestamp int,
-	card_id varchar(4000) references cards(card_id),
+	card_id varchar(4000) references cards(card_id) ON DELETE SET NULL,
 	instructions varchar(4000),
-	delivery_method_id varchar(4000) references delivery_methods(delivery_method_id),
-	store_id varchar(4000) references stores(store_id),
-	delivery_status_id varchar(4000) references delivery_statuses(delivery_status_id)
+	delivery_method_id varchar(4000) references delivery_methods(delivery_method_id) ON DELETE SET NULL,
+	store_id varchar(4000) references stores(store_id) ON DELETE SET NULL,
+	delivery_status_id varchar(4000) references delivery_statuses(delivery_status_id) ON DELETE SET NULL
 );
 create table order_items(
 	order_id varchar(4000) references orders(order_id) ON DELETE CASCADE,
