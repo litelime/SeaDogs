@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import services.CardService;
+import services.DeliveryMethod;
 import services.DeliveryMethodService;
 import services.LocationService;
 import services.MenuServices;
@@ -254,40 +255,40 @@ public class Tiger{
 	public static void currentOrderScreen() {
                 DeliveryMethodService method = new DeliveryMethodService(con);
 		System.out.println("\n*Current Order*");
-                
                 DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
 		System.out.println("Placed: " +currentOrder.getPlaced_timestamp().format(timeFormat));
 		System.out.println("Delivery Time: " +currentOrder.getDelivery_timestamp().format(timeFormat));
-                
-		System.out.println("\n*Current Order*");
-		System.out.println("Placed: " +currentOrder.getPlaced_timestamp());
-		System.out.println("Delivered: " +currentOrder.getDelivery_timestamp());
                 System.out.println("Items: ");
+                
                 MenuServices ms = new MenuServices(con);
                 ArrayList<String> idList = currentOrder.getItem_ids();
                 Comparator<String> c = Comparator.comparing(String::toString);
                 idList.sort(c);
-                String curId = idList.get(0);
-                int amount = 0;
-                for (int i = 0; i <= idList.size() - 1; i++) {
-                    if (i == idList.size() - 1 || !idList.get(i+1).equals(curId)) {
-                        System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
-                        amount = 0;
-                        if (i != idList.size() - 1) {
-                            System.out.print(", ");
-                            curId = idList.get(i+1);
+                if(!idList.isEmpty()){
+                    String curId = idList.get(0);
+                    //Tab so output can be read easier
+                    System.out.print("    ");
+                    int amount = 0;
+                    for (int i = 0; i <= idList.size() - 1; i++) {
+                        if (i == idList.size() - 1 || !idList.get(i+1).equals(curId)) {
+                            System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
+                            amount = 0;
+                            if (i != idList.size() - 1) {
+                                System.out.print(", ");
+                                curId = idList.get(i+1);
+                            } else {
+                                System.out.print("\n");
+                            }
                         } else {
-                            System.out.print("\n");
+                            amount += 1;
                         }
-                    } else {
-                        amount += 1;
                     }
                 }
 		ServiceWrapper sw = new ServiceWrapper(con);
 		currentOrder.setTotal_price(sw.calculateTotalPrice(currentOrder));
                 System.out.println("Tip: $"+currentOrder.getTip());
-		System.out.println("Total price: $" +currentOrder.getTotal_price());
-		System.out.println("Method: " +currentOrder.getDelivery_method_id());
+		System.out.printf("Total price: $%.2f\n",currentOrder.getTotal_price());
+		System.out.println("Method: " +method.getById(currentOrder.getDelivery_method_id()).getDelivery_method());
 		System.out.println("Status: " +currentOrder.getDelivery_status_id());
 		System.out.println("1. Cancel");
 		System.out.println("2. View\\Edit Items");
@@ -365,9 +366,21 @@ public class Tiger{
     			System.out.println("Instructions Changed to: " + newInstructions);
     		}
     		if(input==4){
-    			String newDelivery_method = editString();
-    			currentOrder.setDelivery_method_id(newDelivery_method);
-    			System.out.println("Delivery Method Changed to: " + newDelivery_method);
+                        DeliveryMethodService method = new DeliveryMethodService(con);
+                        ArrayList<DeliveryMethod> all = method.getAll();
+                        int methodCount = 1;
+                        for (DeliveryMethod x : all){
+                            System.out.println(methodCount+". "+x.getDelivery_method());
+                            methodCount++;
+                        }
+                        
+                        System.out.println(methodCount + ". Go Back");
+                        int methodSelection = sc.nextInt();
+                        
+                        if(methodSelection != methodCount){
+                            currentOrder.setDelivery_method_id(all.get(methodSelection-1).getDelivery_method_id());
+                            System.out.println("Method Changed to: " + all.get(methodSelection-1).getDelivery_method_id());
+                        }
     		}
     		if(input==5){
                         LocationService location = new LocationService(con);
