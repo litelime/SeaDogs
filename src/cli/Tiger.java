@@ -266,16 +266,22 @@ public class Tiger{
 		System.out.println("1. Enter Quantity");
 		System.out.println("2. Go Back");
 	    int input = getAnInt();
-	    if(input==1) itemQuantityScreen(menu);
+	    if(input==1){ 
+                itemQuantityScreen(menu);
+                
+            }
 	    else if(input==2) menuScreen();
 	}
 	//TODO finish this
 	public static void itemQuantityScreen(Menu menu){
-		System.out.println("Enter Quantity");
+	System.out.println("Enter Quantity");
 	    int input = getAnInt();
+            currentOrder.removeItem_id(menu.getId());
+            if(input!= 0){
 	    for(int i=0;i<input;i++) currentOrder.addItem_id(menu.getId());
 		System.out.println("Item(s) added");
 		menuScreen();
+            }
 	}
 	public static void currentOrderScreen() {
                 DeliveryMethodService method = new DeliveryMethodService(con);
@@ -321,42 +327,59 @@ public class Tiger{
 		System.out.println("4. Submit Order");
 		System.out.println("5. Go Back");
 	    int input = getAnInt();
-	    if(input==1 && confirm()) {
-                OrderService os = new OrderService(con);
-	    	currentOrder = new Order(os.getNextOrderId());
-			currentOrder.setUser_id(currentUser.getUserId());
-			currentOrder.setDelivery_status_id("0");
-	    }
-	    if(input==2) viewEditOrderItems(currentOrder);
-	    if(input==3) editOrder(currentOrder);
-	    if(input==4 && hasItems()){ 
-                
-                CardService cs = new CardService(con);
-                OrderService os = new OrderService(con);
-                ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
-                if(userCards.isEmpty()){
-                    System.out.println("You must add a Card to your account first.");
-                    currentOrderScreen();
-                }
-                String cardId = cs.getUserCards(currentUser.getUserId()).get(0).getCardId();
-                currentOrder.setCard_id(cardId);
-                serviceWrap.submitOrder(currentOrder);
-                
-                os.generateInvoice(currentOrder.getOrder_id());
-                homeScreen();
-            }else{
-                System.out.println("No Orders in Cart. Redirecting to previous screen");
-                homeScreen();
+            switch(input){
+                case 1: if(confirm()){
+                            OrderService os = new OrderService(con);
+                            //Creates a new Order rather then submitting.
+                            currentOrder = new Order(os.getNextOrderId());
+                            currentOrder.setUser_id(currentUser.getUserId());
+                            currentOrder.setDelivery_status_id("0");
+                        }
+                        break;
+                case 2: viewEditOrderItems(currentOrder);break;
+                case 3: editOrder(currentOrder); break;
+                case 4: if(hasItems()){
+                        CardService cs = new CardService(con);
+                        OrderService os = new OrderService(con);
+                        ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
+                        if(userCards.isEmpty()){
+                        System.out.println("You must add a Card to your account first.");
+                        currentOrderScreen();
+                        }
+                        //This causes an issue if you don't want to have only the first card for
+                        // each order.
+                        String cardId = cs.getUserCards(currentUser.getUserId()).get(0).getCardId();
+                        currentOrder.setCard_id(cardId);
+                        if(!hasLocation()&& currentOrder.getDelivery_method_id().equalsIgnoreCase("1")){
+                        System.out.println("You must have a location fo");
+                        }
+                        serviceWrap.submitOrder(currentOrder);
+                        os.generateInvoice(currentOrder.getOrder_id());
+                        //Gets ready for a new order.
+                        currentOrder = new Order(os.getNextOrderId());
+                        }else{
+                        System.out.println("No Orders in Cart. Redirecting to previous screen");
+                        }
+                        break;
+                case 5: break;
             }
-	    if(input==5) homeScreen();
+            homeScreen();
 	}
+            
 	public static boolean hasItems(){
             if(currentOrder.getItem_ids().isEmpty()){
                 return false;
             }
             return confirm();
         }
-        
+        //Check if they have a location set.
+        public static boolean hasLocation(){
+            LocationService ls = new LocationService(con);
+            if(ls.getUserLocations(currentUser.getUserId()).isEmpty()){
+                return false;
+            }
+            else return true;
+        }
 	private static void editOrder(Order currentOrder2) {
 		System.out.println("\n*Edit Order*");
 		ArrayList<String> options = new ArrayList<>();
@@ -465,26 +488,28 @@ public class Tiger{
 
 	//TODO get item from item id here
 	private static void viewEditOrderItems(Order order) {
-		System.out.println("*View Items*");
-		ArrayList<String> itemIds = currentOrder.getItem_ids();
-		ArrayList<Menu> items = sw.getMenuItems(itemIds);
-		if(items.isEmpty()) System.out.println("No items");
-		ServiceWrapper.printMenuItems(items);
+            System.out.println("*View Items*");
+            ArrayList<String> itemIds = currentOrder.getItem_ids();
+            ArrayList<Menu> items = sw.getMenuItems(itemIds);
+            if(items.isEmpty()) System.out.println("No items");
+            ServiceWrapper.printMenuItems(items);
 	    int input = getAnInt();
+            System.out.println("Items size: " + items.size());
 	    if(input==items.size()) homeScreen();
 	    else if(input==items.size()+1) currentOrderScreen();
 	    else orderItemScreen(items.get(input));
 	}
 	public static void orderItemScreen(Menu menu){
-		/*System.out.println(menu.getName());
-		System.out.println(menu.getDescription());
-		System.out.println(menu.getPrice());
-		System.out.println("1. Enter Quantity");
-		System.out.println("2. Go Back");
-		Scanner sc = new Scanner(System.in);
+            System.out.println("*** " + menu.getName() + " ***");
+            System.out.println("1. Remove item" );
+            System.out.println("2. Go Back");
+		
 	    int input = sc.nextInt();
-	    if(input==1) itemQuantityScreen(menu);
-	    else if(input==2) System.exit(0);*/
+	    if(input==1) {
+                currentOrder.removeItem_id(menu.getId());
+                currentOrderScreen();
+            }
+	    else if(input == 2) currentOrderScreen();
 	}
 
 	public static void submitOrder(){
