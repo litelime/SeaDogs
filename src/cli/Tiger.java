@@ -471,14 +471,65 @@ public class Tiger{
                     case 1: ls.deleteById(userLoc.get(input).getLocationId());
                             System.out.println("Location Deleted");
                             break;
-                    case 2: editLoc();   break;
+                    case 2: editALoc(userLoc.get(input));   break;
                     case 3: editLocations(); break;
                     default:break;
                 }
             }        	
 	}
-        private static void editLoc(){
-            
+        private static void editALoc(Location l){
+        System.out.printf("\n*** Edit Location: ***\n");
+        System.out.println("1. Edit Street: " +l.getStreet());
+        System.out.println("2. Edit City:  "+l.getCity());
+        System.out.println("3. Edit State: "+l.getState());
+        System.out.println("4. Edit Country: " + l.getCountry());
+        System.out.println("5. Edit Zip: " + l.getZip());
+        System.out.println("6. Back");
+        
+        int input = sc.nextInt();
+
+        switch(input){
+            case 1: 
+                String street = editStringLine(); 
+                l.setStreet(street);
+                System.out.println("Street changed to "+street);
+                editALoc(l);
+                break;
+            case 2: 
+                String city = editStringLine();
+                l.setCity(city);
+                System.out.println("City changed to "+city);
+                editALoc(l);
+                break;
+            case 3: 
+                String state = editStringLine(); 
+                l.setState(state);
+                System.out.println("State changed to " + state);
+                editALoc(l);
+                break;
+            case 4: 
+                String country = editStringLine();
+                l.setCountry(country);
+                System.out.println("Country changed to " + country);
+                editALoc(l);
+                break;
+            case 5:
+                String zip = editStringLine();
+                l.setZip(zip);
+                System.out.println("Zip changed to "+ zip);
+                editALoc(l);
+                break;
+            default: break;
+        }
+        LocationService ls = new LocationService(con);
+        ls.update(l);
+        editLocations();
+        }
+        private static String editStringLine(){
+            sc.nextLine();
+            System.out.println("Enter new value");
+            String in = sc.nextLine();
+            return in;
         }
         private static void addLocation(LocationService ls){
             System.out.println("Enter Street");
