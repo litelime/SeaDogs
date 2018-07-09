@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.InputMismatchException;
 import services.CardService;
 import services.DeliveryMethod;
 import services.DeliveryMethodService;
@@ -76,8 +77,10 @@ public class Tiger{
 			count++;
 			System.out.println(count + ". " + option);
 		}
-		
-	    int input = sc.nextInt();
+           
+                int input = getAnInt();
+            
+            
 	    switch(input){
     		case 1:
     			loginScreen();break;
@@ -484,6 +487,19 @@ public class Tiger{
 	    //os.update(currentOrder);
 	}
 	
+        private static int getAnInt(){
+            int choice=-1; 
+            while(choice<0){
+                try{
+                    choice = sc.nextInt();
+                }catch(InputMismatchException e){
+                    System.out.println("Enter a number to select an option");
+                }
+            }
+            
+            return choice;
+        }
+        
 	public static void accountScreen(){
 		System.out.println("\n*Account*");
 		ArrayList<String> options = new ArrayList<>();
