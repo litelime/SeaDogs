@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import services.CardService;
@@ -252,12 +253,22 @@ public class Tiger{
                 System.out.println("Items: ");
                 MenuServices ms = new MenuServices(con);
                 ArrayList<String> idList = currentOrder.getItem_ids();
-                for (String itemId : idList) {
-                    System.out.print(ms.getById(itemId).getName());
-                    if (itemId != idList.get(idList.size() - 1)) {
-                        System.out.print(", ");
+                Comparator<String> c = Comparator.comparing(String::toString);
+                idList.sort(c);
+                String curId = idList.get(0);
+                int amount = 0;
+                for (int i = 0; i <= idList.size() - 1; i++) {
+                    if (i == idList.size() - 1 || !idList.get(i+1).equals(curId)) {
+                        System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
+                        amount = 0;
+                        if (i != idList.size() - 1) {
+                            System.out.print(", ");
+                            curId = idList.get(i+1);
+                        } else {
+                            System.out.print("\n");
+                        }
                     } else {
-                        System.out.print("\n");
+                        amount += 1;
                     }
                 }
 		ServiceWrapper sw = new ServiceWrapper(con);
