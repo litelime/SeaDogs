@@ -132,7 +132,7 @@ public class AdminAndManager {
                                 break;
                         }
                 case 12:
-	    		adminScreen();
+	    		firstScreen();
 	    	case 13:
 	    		System.exit(0);
 	    }
@@ -183,6 +183,7 @@ public class AdminAndManager {
             UserStatus toInsert = new UserStatus(newID, newStatus);
             statusHelper.add(toInsert);
             System.out.println(newStatus + " added");
+            adminScreen();
         }
         
         void deleteStatus(){
