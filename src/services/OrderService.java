@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import domain.Order;
 import java.sql.DriverManager;
+import java.time.LocalTime;
 
 public class OrderService implements Service<Order>{
 	/*
@@ -38,8 +39,8 @@ public class OrderService implements Service<Order>{
 			statement.setString(2,order.getUser_id());
 			statement.setFloat(3,order.getTip());
 			statement.setFloat(4,order.getTotal_price());
-			statement.setInt(5,order.getPlaced_timestamp());
-			statement.setInt(6,order.getDelivery_timestamp());
+			statement.setInt(5,order.getPlaced_timestamp().toSecondOfDay());
+			statement.setInt(6,order.getDelivery_timestamp().toSecondOfDay());
 			statement.setString(7,order.getCard_id());
 			statement.setString(8,order.getInstuctions());
 			statement.setString(9,order.getDelivery_method_id());
@@ -114,8 +115,8 @@ public class OrderService implements Service<Order>{
 						resultSetOrders.getString("USER_ID"),
 						resultSetOrders.getFloat("TIP"),
 						resultSetOrders.getFloat("TOTAL_PRICE"),
-						resultSetOrders.getInt("PLACED_TIMESTAMP"),
-						resultSetOrders.getInt("DELIVERY_TIMESTAMP"),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("PLACED_TIMESTAMP")),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("DELIVERY_TIMESTAMP")),
 						resultSetOrders.getString("CARD_ID"),
 						resultSetOrders.getString("INSTRUCTIONS"),
 						resultSetOrders.getString("DELIVERY_METHOD_ID"),
@@ -142,8 +143,8 @@ public class OrderService implements Service<Order>{
 			statement.setString("USER_ID",order.getUser_id());
 			statement.setFloat("TIP",order.getTip());
 			statement.setFloat("TOTAL_PRICE",order.getTotal_price());
-			statement.setInt("PLACED_TIMESTAMP",order.getPlaced_timestamp());
-			statement.setInt("DELIVERY_TIMESTAMP",order.getDelivery_timestamp());
+			statement.setInt("PLACED_TIMESTAMP",order.getPlaced_timestamp().toSecondOfDay());
+			statement.setInt("DELIVERY_TIMESTAMP",order.getDelivery_timestamp().toSecondOfDay());
 			statement.setString("CARD_ID",order.getCard_id());
 			statement.setString("INSTRUCTIONS",order.getInstuctions());
 			statement.setString("DELIVERY_METHOD_ID",order.getDelivery_method_id());
@@ -187,8 +188,8 @@ public class OrderService implements Service<Order>{
 			order.setUser_id(resultSet.getString("USER_ID"));
 			order.setTip(resultSet.getFloat("TIP"));
 			order.setTip(resultSet.getFloat("TOTAL_PRICE"));
-			order.setPlaced_timestamp(resultSet.getInt("PLACED_TIMESTAMP"));
-			order.setDelivery_timestamp(resultSet.getInt("DELIVERY_TIMESTAMP"));
+			order.setPlaced_timestamp(LocalTime.ofSecondOfDay(resultSet.getInt("PLACED_TIMESTAMP")));
+			order.setDelivery_timestamp(LocalTime.ofSecondOfDay(resultSet.getInt("DELIVERY_TIMESTAMP")));
 			order.setCard_id(resultSet.getString("CARD_ID"));
 			order.setInstuctions(resultSet.getString("INSTRUCTIONS"));
 			order.setDelivery_method_id(resultSet.getString("DELIVERY_METHOD_ID"));
@@ -238,8 +239,8 @@ public class OrderService implements Service<Order>{
 						resultSetOrders.getString("USER_ID"),
 						resultSetOrders.getFloat("TIP"),
 						resultSetOrders.getFloat("TOTAL_PRICE"),
-						resultSetOrders.getInt("PLACED_TIMESTAMP"),
-						resultSetOrders.getInt("DELIVERY_TIMESTAMP"),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("PLACED_TIMESTAMP")),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("DELIVERY_TIMESTAMP")),
 						resultSetOrders.getString("CARD_ID"),
 						resultSetOrders.getString("INSTRUCTIONS"),
 						resultSetOrders.getString("DELIVERY_METHOD_ID"),

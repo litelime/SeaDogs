@@ -16,9 +16,9 @@ import domain.Location;
 import java.sql.Date;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -238,12 +238,15 @@ public class Tiger{
 	}
 	public static void currentOrderScreen() {
                 DeliveryMethodService method = new DeliveryMethodService(con);
-            
 		System.out.println("\n*Current Order*");
-		System.out.println("Placed: " +currentOrder.getPlaced_timestamp());
-		System.out.println("Delivery Time: " +currentOrder.getDelivery_timestamp());
+                
+                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+		System.out.println("Placed: " +currentOrder.getPlaced_timestamp().format(timeFormat));
+		System.out.println("Delivery Time: " +currentOrder.getDelivery_timestamp().format(timeFormat));
+                
 		ServiceWrapper sw = new ServiceWrapper(con);
-		currentOrder.setTotal_price(sw.calculateTotalPrice(currentOrder.getItem_ids()));
+		currentOrder.setTotal_price(sw.calculateTotalPrice(currentOrder));
+                System.out.println("Tip: $"+currentOrder.getTip());
 		System.out.println("Total price: $" +currentOrder.getTotal_price());
 		System.out.println("Method: " + method.getById(currentOrder.getDelivery_method_id()).getDelivery_method());
 		System.out.println("Status: " +currentOrder.getDelivery_status_id());
@@ -292,13 +295,29 @@ public class Tiger{
 		}
 	    int input = sc.nextInt();
     		if(input==1){
-    			int newTip = Integer.parseInt(editString());
-    			currentOrder.setTip(newTip);
-    			System.out.println("Tip Changed to: $" + newTip);
+                    float newTip = 0;
+                    try{
+                        newTip = Float.parseFloat(editString());
+                    }catch(NumberFormatException e){
+                        System.out.println("Tip value must be a number");
+                        currentOrderScreen();
+                    }
+                    
+                    currentOrder.setTip(newTip);
+                    System.out.println("Tip Changed to: $" + newTip);
     		}
     		if(input==2){
-    			int newDelivery_timestamp = Integer.parseInt(editString());
-    			currentOrder.setDelivery_timestamp(newDelivery_timestamp);
+                        System.out.println("Enter a time (hh:mm)");
+                        String timeStr = sc.next();
+                        LocalTime newDelivery_timestamp = LocalTime.now();
+                        try{
+                            newDelivery_timestamp = LocalTime.parse(timeStr);
+                        }catch(DateTimeParseException e){
+                            System.out.println("Time should be in the format (hh:mm)");
+                            currentOrderScreen();
+                        }
+                        
+                        currentOrder.setDelivery_timestamp(newDelivery_timestamp);
     			System.out.println("Delivery Time Changed to: " + newDelivery_timestamp);
     		}
     		if(input==3){
@@ -324,9 +343,21 @@ public class Tiger{
                         }
     		}
     		if(input==5){
-    			String newStore = editString();
-    			currentOrder.setStore_id(newStore);
-    			System.out.println("Delivery Method Changed to: " + newStore);
+                        LocationService location = new LocationService(con);
+                        ArrayList<Location> all = location.getAll();
+                        int locationCount = 1;
+                        for (Location x : all){
+                            System.out.println(locationCount+". "+x.getAddress());
+                            locationCount++;
+                        }
+                        
+                        System.out.println(locationCount + ". Go Back");
+                        int locationSelection = sc.nextInt();
+                        
+                        if(locationSelection != locationCount){
+                            currentOrder.setStore_id(all.get(locationSelection-1).getLocationId());
+                            System.out.println("Store Changed to: " + all.get(locationSelection-1).getAddress());
+                        }
     		}
 
     		if(input==6) homeScreen();

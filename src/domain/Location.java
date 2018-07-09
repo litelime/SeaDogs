@@ -81,6 +81,12 @@ public class Location {
 		this.zip = zip;
 	}
 
+        public String getAddress(){
+            
+            String address = this.street + ", " + this.city + ", " + this.state +", "+this.zip;
+            return address;
+        }
+        
 	@Override
 	public String toString() {
 		return "Locations [locationId=" + locationId + ", street=" + street + ", city=" + city + ", country="
