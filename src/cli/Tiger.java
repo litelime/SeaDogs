@@ -274,7 +274,7 @@ public class Tiger{
                 sw.submitOrder(currentOrder);
                 
                 System.out.println(currentOrder.getOrder_id());
-                currentOrder.generateInvoice(currentOrder.getOrder_id());
+                
                                      
                 homeScreen();
             }else{
