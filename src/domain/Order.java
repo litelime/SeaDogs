@@ -40,6 +40,19 @@ public class Order {
 		this.item_ids = item_ids;
 	}
 
+        public Order(String orderId){
+                this.order_id = orderId;
+            	this.tip = 0;
+		this.total_price = 0;
+		this.placed_timestamp = LocalTime.now();
+		this.delivery_timestamp = LocalTime.now();
+		this.instuctions = "";
+		this.delivery_method_id = "0";
+		this.store_id = "0";
+		this.delivery_status_id = "0";
+            
+        }
+        
 	public Order() {
 		super();
 		this.tip = 0;
