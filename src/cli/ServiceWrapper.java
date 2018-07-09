@@ -37,11 +37,12 @@ public class ServiceWrapper {
 	public User register(String firstName, String lastName, String phone, String email, String password){
 		//, String street, String city, String state, String country, String zip, String userStatus
 		boolean result = false;
-		String userId = Double.toString(Math.random()* 10001);
+                UserService us = new UserService(con);
+
+		String userId = ""+us.newUserId();
 		String userStatusId = "1";
 
 		User user = new User(userId,firstName,lastName,phone, email,password,userStatusId);
-		UserService us = new UserService(con);
 		result =  us.add(user);
 		return user;
 	}
@@ -81,7 +82,6 @@ public class ServiceWrapper {
 	}
 
 	public void submitOrder(Order currentOrder) {
-		// TODO Auto-generated method stub
 		
 		currentOrder.setDelivery_status_id("0");
 		OrderService os = new OrderService(con);

@@ -50,9 +50,11 @@ public class UserService implements Service<User>{
 	}
 	public void deleteById(String id){
 		try{
-			Statement usersSt = connection.createStatement();
-			usersSt.executeQuery("Delete from users where user_id = "+id);
-		}catch(SQLException e){
+			CallableStatement stmnt = connection.prepareCall("{call sp_delete_user_by_id(?)}");
+                        stmnt.setString(1, id);
+                        stmnt.execute();
+                        stmnt.close();
+                }catch(SQLException e){
 			System.out.println(e.getMessage());
 		}
 	}

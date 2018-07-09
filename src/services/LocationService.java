@@ -174,4 +174,19 @@ public class LocationService implements Service<Location>{
             return id;
         }
 	
+        /*
+            If a location is managed by manager_id, then the location's user_id
+            (the field for storing the manager ID) is set to null. This is was
+            writtten to reflect changes in the 
+        */
+        public void removeManager(String managerID){
+            try {
+                CallableStatement stmnt = connection.prepareCall("call sp_null_store_manager(?)");
+                stmnt.setString(1, managerID);
+                stmnt.execute();
+                stmnt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 }
