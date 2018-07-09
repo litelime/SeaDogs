@@ -78,7 +78,30 @@ public class MenuServices implements Service<Menu> {
 		
 	}
 	
-	
+	public ArrayList<Menu> getAllSpecials(){
+		ArrayList<Menu> menArr = new ArrayList<Menu>();
+		ArrayList<TimeSlots> times = timServ.getAll();
+		try {
+			ResultSet rs = con.createStatement().executeQuery("SELECT * FROM items");
+			while(rs.next()){
+				float price = rs.getFloat("price");
+				String tid = rs.getString("time_slot_id");
+				String tName = getTimeName(times, tid);
+				Menu men = new Menu(rs.getString("item_id"), rs.getString("name"), rs.getString("vegetarian").charAt(0), 
+						rs.getString("item_type_id"), rs.getString("description"), tName, 
+						rs.getString("photo"), price);
+				menArr.add(men);
+			}
+			return menArr;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
 	public boolean add(Menu men){		
 		try{
 								

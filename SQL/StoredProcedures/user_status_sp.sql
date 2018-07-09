@@ -20,11 +20,3 @@ begin
   Delete from user_statuses where user_status_id = user_status_num;
 end sp_delete_user_status_by_id;
 /
-create or replace PROCEDURE SP_SWAP_STATUS(old VARCHAR2, new VARCHAR2)
-AS 
-BEGIN
-  UPDATE users
-  SET user_status_id = new
-  WHERE user_status_id = old;
-END SP_SWAP_STATUS;
-/

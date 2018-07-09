@@ -1,5 +1,6 @@
 package cli;
 
+import Exceptions.IllegalExpiryDateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -17,12 +18,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Calendar;
+import java.util.Comparator;
 import services.CardService;
+import services.DeliveryMethod;
+import services.DeliveryMethodService;
 import services.LocationService;
 import services.MenuServices;
 import services.OrderService;
@@ -44,8 +47,7 @@ public class Tiger{
 			Class.forName("oracle.jdbc.driver.OracleDriver");
         	        con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "db_uSpring", "pass");
 		} catch (ClassNotFoundException | SQLException e) {
-
-			e.printStackTrace();
+                    System.out.println(e.getMessage());
 		}
 		sw  = new ServiceWrapper(con);
 		sc = new Scanner(System.in);
@@ -53,9 +55,21 @@ public class Tiger{
 		sc.close();
 	}
 	
+        
+        public static void printArt(){
+                   
+            System.out.println(" _______  _______  _______  _____    _______  _______  _______ ");
+            System.out.println("|       ||       ||       ||     |  |       ||       ||       |");
+            System.out.println("|  _____||    ___||   _   ||  _   | |   _   ||    ___||  _____|");
+            System.out.println("| |_____ |   |___ |  |_|  || | |   ||  | |  ||   | __ | |_____ ");
+            System.out.println("|_____  ||    ___||       || |_|   ||  |_|  ||   ||  ||_____  |");
+            System.out.println(" _____| ||   |___ |   _   ||      | |       ||   |_| | _____| |");
+            System.out.println("|_______||_______||__| |__||_____|  |_______||_______||_______|");
+        }
+        
 	public static void firstScreen(){
-		System.out.println(" __  __ _                     _ _        _____       __     \n|  \\/  (_)                   (_| )      / ____|     / _|    \n| \\  / |_ _ __ ___  _ __ ___  _|/ ___  | |     __ _| |_ ___ \n| |\\/| | | '_ ` _ \\| '_ ` _ \\| | / __| | |    / _` |  _/ _ \\\n| |  | | | | | | | | | | | | | | \\__ \\ | |___| (_| | ||  __/\n|_|  |_|_|_| |_| |_|_| |_| |_|_| |___/  \\_____\\__,_|_| \\___|");
-		ArrayList<String> options = new ArrayList<String>();
+                printArt();
+		ArrayList<String> options = new ArrayList<>();
 		options.add("Login");
 		options.add("Register");
 		options.add("Quit");
@@ -98,9 +112,9 @@ public class Tiger{
 		}
 		if(password.equals(candidate.getPassword())){
 
+                        OrderService os = new OrderService(con);
 			currentUser = candidate;
-			currentOrder = new Order();
-			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
+			currentOrder = new Order(os.getNextOrderId());
 			currentOrder.setUser_id(currentUser.getUserId());
 			currentOrder.setDelivery_status_id("0");
 			//currentOrder.setCard_id();
@@ -150,7 +164,8 @@ public class Tiger{
 	    if(password.equals(passwordConfirm)){
 	    	System.out.println("Registered");
 	    	currentUser = sw.register(first, last, phone, email, password);
-			currentOrder = new Order();
+                OrderService os = new OrderService(con);
+			currentOrder = new Order(os.getNextOrderId());
 			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
 			currentOrder.setUser_id(currentUser.getUserId());
 			currentOrder.setDelivery_status_id("0");
@@ -248,13 +263,42 @@ public class Tiger{
 		menuScreen();
 	}
 	public static void currentOrderScreen() {
+                DeliveryMethodService method = new DeliveryMethodService(con);
 		System.out.println("\n*Current Order*");
-		System.out.println("Placed: " +currentOrder.getPlaced_timestamp());
-		System.out.println("Delivered: " +currentOrder.getDelivery_timestamp());
-		ServiceWrapper sw = new ServiceWrapper(con);
-		currentOrder.setTotal_price(sw.calculateTotalPrice(currentOrder.getItem_ids()));
-		System.out.println("Total price: $" +currentOrder.getTotal_price());
-		System.out.println("Method: " +currentOrder.getDelivery_method_id());
+                DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+		System.out.println("Placed: " +currentOrder.getPlaced_timestamp().format(timeFormat));
+		System.out.println("Delivery Time: " +currentOrder.getDelivery_timestamp().format(timeFormat));
+                System.out.println("Items: ");
+                
+                MenuServices ms = new MenuServices(con);
+                ArrayList<String> idList = currentOrder.getItem_ids();
+                Comparator<String> c = Comparator.comparing(String::toString);
+                idList.sort(c);
+                if(!idList.isEmpty()){
+                    String curId = idList.get(0);
+                    //Tab so output can be read easier
+                    System.out.print("    ");
+                    int amount = 0;
+                    for (int i = 0; i <= idList.size() - 1; i++) {
+                        if (i == idList.size() - 1 || !idList.get(i+1).equals(curId)) {
+                            System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
+                            amount = 0;
+                            if (i != idList.size() - 1) {
+                                System.out.print(", ");
+                                curId = idList.get(i+1);
+                            } else {
+                                System.out.print("\n");
+                            }
+                        } else {
+                            amount += 1;
+                        }
+                    }
+                }
+		ServiceWrapper serviceWrap = new ServiceWrapper(con);
+		currentOrder.setTotal_price(serviceWrap.calculateTotalPrice(currentOrder));
+                System.out.println("Tip: $"+currentOrder.getTip());
+		System.out.printf("Total price: $%.2f\n",currentOrder.getTotal_price());
+		System.out.println("Method: " +method.getById(currentOrder.getDelivery_method_id()).getDelivery_method());
 		System.out.println("Status: " +currentOrder.getDelivery_status_id());
 		System.out.println("1. Cancel");
 		System.out.println("2. View\\Edit Items");
@@ -263,19 +307,26 @@ public class Tiger{
 		System.out.println("5. Go Back");
 	    int input = sc.nextInt();
 	    if(input==1 && confirm()) {
-	    	currentOrder = new Order();
-			currentOrder.setOrder_id(Double.toString(Math.random()* 10001));
+                OrderService os = new OrderService(con);
+	    	currentOrder = new Order(os.getNextOrderId());
 			currentOrder.setUser_id(currentUser.getUserId());
 			currentOrder.setDelivery_status_id("0");
 	    }
 	    if(input==2) viewEditOrderItems(currentOrder);
 	    if(input==3) editOrder(currentOrder);
 	    if(input==4 && hasItems()){ 
-                sw.submitOrder(currentOrder);
                 
-                System.out.println(currentOrder.getOrder_id());
-                
-                                     
+                CardService cs = new CardService(con);
+                OrderService os = new OrderService(con);
+                ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
+                if(userCards.isEmpty()){
+                    System.out.println("You must add a Card to your account first.");
+                    currentOrderScreen();
+                }
+                String cardId = cs.getUserCards(currentUser.getUserId()).get(0).getCardId();
+                currentOrder.setCard_id(cardId);
+                serviceWrap.submitOrder(currentOrder);
+                os.generateInvoice(currentOrder.getOrder_id());
                 homeScreen();
             }else{
                 System.out.println("No Orders in Cart. Redirecting to previous screen");
@@ -289,14 +340,16 @@ public class Tiger{
             }
             return confirm();
         }
+        
 	private static void editOrder(Order currentOrder2) {
 		System.out.println("\n*Edit Order*");
-		ArrayList<String> options = new ArrayList<String>();
+		ArrayList<String> options = new ArrayList<>();
 		options.add("Edit Tip");
 		options.add("Edit delivery time");
 		options.add("Edit Instructions");
 		options.add("Edit Delivery Method");
 		options.add("Edit Store");
+                options.add("Edit Payment");
 		options.add("Go Back");
 		int count = 0;
 		for(String option : options) {
@@ -305,13 +358,29 @@ public class Tiger{
 		}
 	    int input = sc.nextInt();
     		if(input==1){
-    			int newTip = Integer.parseInt(editString());
-    			currentOrder.setTip(newTip);
-    			System.out.println("Tip Changed to: $" + newTip);
+                    float newTip = 0;
+                    try{
+                        newTip = Float.parseFloat(editString());
+                    }catch(NumberFormatException e){
+                        System.out.println("Tip value must be a number");
+                        currentOrderScreen();
+                    }
+                    
+                    currentOrder.setTip(newTip);
+                    System.out.println("Tip Changed to: $" + newTip);
     		}
     		if(input==2){
-    			int newDelivery_timestamp = Integer.parseInt(editString());
-    			currentOrder.setDelivery_timestamp(newDelivery_timestamp);
+                        System.out.println("Enter a time (hh:mm)");
+                        String timeStr = sc.next();
+                        LocalTime newDelivery_timestamp = LocalTime.now();
+                        try{
+                            newDelivery_timestamp = LocalTime.parse(timeStr);
+                        }catch(DateTimeParseException e){
+                            System.out.println("Time should be in the format (hh:mm)");
+                            currentOrderScreen();
+                        }
+                        
+                        currentOrder.setDelivery_timestamp(newDelivery_timestamp);
     			System.out.println("Delivery Time Changed to: " + newDelivery_timestamp);
     		}
     		if(input==3){
@@ -320,17 +389,59 @@ public class Tiger{
     			System.out.println("Instructions Changed to: " + newInstructions);
     		}
     		if(input==4){
-    			String newDelivery_method = editString();
-    			currentOrder.setDelivery_method_id(newDelivery_method);
-    			System.out.println("Delivery Method Changed to: " + newDelivery_method);
+                        DeliveryMethodService method = new DeliveryMethodService(con);
+                        ArrayList<DeliveryMethod> all = method.getAll();
+                        int methodCount = 1;
+                        for (DeliveryMethod x : all){
+                            System.out.println(methodCount+". "+x.getDelivery_method());
+                            methodCount++;
+                        }
+                        
+                        System.out.println(methodCount + ". Go Back");
+                        int methodSelection = sc.nextInt();
+                        
+                        if(methodSelection != methodCount){
+                            currentOrder.setDelivery_method_id(all.get(methodSelection-1).getDelivery_method_id());
+                            System.out.println("Method Changed to: " + all.get(methodSelection-1).getDelivery_method_id());
+                        }
     		}
     		if(input==5){
-    			String newStore = editString();
-    			currentOrder.setStore_id(newStore);
-    			System.out.println("Delivery Method Changed to: " + newStore);
+                        LocationService location = new LocationService(con);
+                        ArrayList<Location> all = location.getAll();
+                        int locationCount = 1;
+                        for (Location x : all){
+                            System.out.println(locationCount+". "+x.getAddress());
+                            locationCount++;
+                        }
+                        
+                        System.out.println(locationCount + ". Go Back");
+                        int locationSelection = sc.nextInt();
+                        
+                        if(locationSelection != locationCount){
+                            currentOrder.setStore_id(all.get(locationSelection-1).getLocationId());
+                            System.out.println("Store Changed to: " + all.get(locationSelection-1).getAddress());
+                        }
     		}
+                if(input==6){
+                    CardService cs = new CardService(con);
+                    ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
+                    if(userCards.isEmpty()){
+                        System.out.println("You must add a Card to your account first.");
+                        currentOrderScreen();
+                    }
+                    int countCards = 0;
+                    for(Card x : userCards){
+                        countCards++;
+                        System.out.println(countCards+ ". " +x.getCardNumber());
+                        
+                    }
+                    int userChoice = sc.nextInt();
+                    userChoice --; //subtract because array index at 0. 
+                    String cardId = userCards.get(userChoice).getCardId();
+                    currentOrder.setCard_id(cardId);
 
-    		if(input==6) homeScreen();
+                }
+    		if(input==7) homeScreen();
 	    
 	    currentOrderScreen();
 		
@@ -359,8 +470,7 @@ public class Tiger{
 	    if(input==1) itemQuantityScreen(menu);
 	    else if(input==2) System.exit(0);*/
 	}
-        
-	//TODO
+
 	public static void submitOrder(){
 		System.out.println("\n*Submit*");
                 
@@ -379,7 +489,7 @@ public class Tiger{
 	
 	public static void accountScreen(){
 		System.out.println("\n*Account*");
-		ArrayList<String> options = new ArrayList<String>();
+		ArrayList<String> options = new ArrayList<>();
 		options.add("Edit First Name");
 		options.add("Edit Last Name");
 		options.add("Edit Email");
@@ -432,7 +542,7 @@ public class Tiger{
 	private static void editLocations() {
             System.out.println("\n *** Locations ***\n");
             
-            ArrayList<String> options = new ArrayList<String>();
+            ArrayList<String> options = new ArrayList<>();
             options.add("Add Location");
             
             LocationService ls = new LocationService(con);
@@ -648,23 +758,32 @@ public class Tiger{
 	}
         
 	private static Date editDate() {
-            System.out.println("Enter date in the format DD-MM-YYYY");
+            System.out.println("Enter date in the format YYYY-MM-DD");
             String dateStr = sc.next();
-            String[] dateArr = dateStr.split("-");
-            
-            while(dateArr.length!=3){
-                System.out.println("Enter date in the format DD-MM-YYYY");
-                dateStr = sc.next();
-                dateArr = dateStr.split("-");
+           Date cardDate = new Date(1111,1,1);
+
+            while(true){
+                try{
+                    cardDate = Date.valueOf(dateStr);
+                    Calendar cardCal = Calendar.getInstance();
+                    Calendar currCal = Calendar.getInstance();
+                    cardCal.setTime(cardDate);
+                    if(cardCal.compareTo(currCal) < 0 )
+                        throw new IllegalExpiryDateException();
+                    break;
+                }catch(IllegalArgumentException e){
+                    System.out.println("Date Format Incorrect");
+                    System.out.println("Enter date in the format YYYY-MM-DD");
+                    dateStr = sc.next();
+                }catch(IllegalExpiryDateException e){
+                    System.out.println("May not enter a past date for card expiry date");
+                    System.out.println("Enter date in the format YYYY-MM-DD");
+                    dateStr = sc.next();
+                }
             }
-            int day = Integer.parseInt(dateArr[0]);
-            int month = Integer.parseInt(dateArr[1]);
-            int year = Integer.parseInt(dateArr[2]) - 1901;
-                    
-            Date cardDate = new Date(year,month,day);
+            cardDate = Date.valueOf(dateStr);
             return cardDate;
         }
-        
         
 	public static void allOrdersScreen(){
 		System.out.println("\n*All orders*");

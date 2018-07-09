@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import domain.Order;
 import java.sql.DriverManager;
+import java.time.LocalTime;
 
 public class OrderService implements Service<Order>{
 	/*
@@ -38,8 +39,8 @@ public class OrderService implements Service<Order>{
 			statement.setString(2,order.getUser_id());
 			statement.setFloat(3,order.getTip());
 			statement.setFloat(4,order.getTotal_price());
-			statement.setInt(5,order.getPlaced_timestamp());
-			statement.setInt(6,order.getDelivery_timestamp());
+			statement.setInt(5,order.getPlaced_timestamp().toSecondOfDay());
+			statement.setInt(6,order.getDelivery_timestamp().toSecondOfDay());
 			statement.setString(7,order.getCard_id());
 			statement.setString(8,order.getInstuctions());
 			statement.setString(9,order.getDelivery_method_id());
@@ -114,8 +115,8 @@ public class OrderService implements Service<Order>{
 						resultSetOrders.getString("USER_ID"),
 						resultSetOrders.getFloat("TIP"),
 						resultSetOrders.getFloat("TOTAL_PRICE"),
-						resultSetOrders.getInt("PLACED_TIMESTAMP"),
-						resultSetOrders.getInt("DELIVERY_TIMESTAMP"),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("PLACED_TIMESTAMP")),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("DELIVERY_TIMESTAMP")),
 						resultSetOrders.getString("CARD_ID"),
 						resultSetOrders.getString("INSTRUCTIONS"),
 						resultSetOrders.getString("DELIVERY_METHOD_ID"),
@@ -142,8 +143,8 @@ public class OrderService implements Service<Order>{
 			statement.setString("USER_ID",order.getUser_id());
 			statement.setFloat("TIP",order.getTip());
 			statement.setFloat("TOTAL_PRICE",order.getTotal_price());
-			statement.setInt("PLACED_TIMESTAMP",order.getPlaced_timestamp());
-			statement.setInt("DELIVERY_TIMESTAMP",order.getDelivery_timestamp());
+			statement.setInt("PLACED_TIMESTAMP",order.getPlaced_timestamp().toSecondOfDay());
+			statement.setInt("DELIVERY_TIMESTAMP",order.getDelivery_timestamp().toSecondOfDay());
 			statement.setString("CARD_ID",order.getCard_id());
 			statement.setString("INSTRUCTIONS",order.getInstuctions());
 			statement.setString("DELIVERY_METHOD_ID",order.getDelivery_method_id());
@@ -187,8 +188,8 @@ public class OrderService implements Service<Order>{
 			order.setUser_id(resultSet.getString("USER_ID"));
 			order.setTip(resultSet.getFloat("TIP"));
 			order.setTip(resultSet.getFloat("TOTAL_PRICE"));
-			order.setPlaced_timestamp(resultSet.getInt("PLACED_TIMESTAMP"));
-			order.setDelivery_timestamp(resultSet.getInt("DELIVERY_TIMESTAMP"));
+			order.setPlaced_timestamp(LocalTime.ofSecondOfDay(resultSet.getInt("PLACED_TIMESTAMP")));
+			order.setDelivery_timestamp(LocalTime.ofSecondOfDay(resultSet.getInt("DELIVERY_TIMESTAMP")));
 			order.setCard_id(resultSet.getString("CARD_ID"));
 			order.setInstuctions(resultSet.getString("INSTRUCTIONS"));
 			order.setDelivery_method_id(resultSet.getString("DELIVERY_METHOD_ID"));
@@ -213,6 +214,32 @@ public class OrderService implements Service<Order>{
 		return order;
 	}
 	
+         public String getNextOrderId(){
+            
+            int orderId=0;
+            
+            try{
+		Statement orderSt = connection.createStatement();
+
+		ResultSet orderRs = orderSt.executeQuery("Select order_id from Orders");
+                
+                ArrayList<Integer> ints = new ArrayList();
+                while(orderRs.next()){
+                    ints.add(orderRs.getInt("order_id"));
+                }
+                //orderId = greatest value. 
+                for(int x: ints){
+                    if(x>orderId)
+                        orderId = x;
+                }
+            }catch(SQLException e){
+                System.out.println("ERROR: getNextOrderID");
+		System.out.println(e.getMessage());
+            }
+            orderId++;
+            return Integer.toString(orderId);
+        }
+        
 	public ArrayList<Order> getUserOrders(String userId){
 		ArrayList<Order> orders = new ArrayList<Order>();
 		Order order;
@@ -238,8 +265,8 @@ public class OrderService implements Service<Order>{
 						resultSetOrders.getString("USER_ID"),
 						resultSetOrders.getFloat("TIP"),
 						resultSetOrders.getFloat("TOTAL_PRICE"),
-						resultSetOrders.getInt("PLACED_TIMESTAMP"),
-						resultSetOrders.getInt("DELIVERY_TIMESTAMP"),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("PLACED_TIMESTAMP")),
+						LocalTime.ofSecondOfDay(resultSetOrders.getInt("DELIVERY_TIMESTAMP")),
 						resultSetOrders.getString("CARD_ID"),
 						resultSetOrders.getString("INSTRUCTIONS"),
 						resultSetOrders.getString("DELIVERY_METHOD_ID"),
@@ -268,37 +295,29 @@ public class OrderService implements Service<Order>{
 		
 	}
         
-        public void generateInvoice(String order_id){
-            Connection conn;
+
+        public void generateInvoice(String Order_ID){
+            
             PreparedStatement pStmt;
             ResultSet RS;
             try{
-                //Step 1: get the driver
-                Class.forName("oracle.jdbc.OracleDriver");
-                //Step 2:Get connected
-                conn=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "db_uSpring", "pass");
-                System.out.println("Connection successful");
-                //Step3: Create the statement
-                pStmt=conn.prepareStatement("SELECT S.store, S.PHONE_NUMBER, O.order_id, U.first, U.last, U.phone, U.email, I.name, I.description, I.price,C.CARD_NUMBER "
+                pStmt=connection.prepareStatement("SELECT S.store, S.PHONE_NUMBER, O.order_id, U.first, U.last, U.phone, U.email, I.name, I.description, I.price,C.CARD_NUMBER "
                                            +"FROM orders O, USERS U, Order_items OI, stores S, cards C, items I WHERE "
                                            + "O.order_id=OI.ORDER_ID AND OI.ITEM_ID=I.ITEM_ID AND U.user_id=O.user_id AND O.Store_id=S.STORE_ID AND O.card_id=C.CARD_ID AND O.order_id=?");
-                pStmt.setString(1, order_id);
+                pStmt.setString(1, Order_ID);
                 pStmt.execute();
                 //Step4: get the output ResultSet
                 RS=pStmt.getResultSet();
 
-                System.out.println("Connection successful12");
                 while(RS.next()){
                     System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
                             "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
-                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Paymeny Card Number: "+RS.getString(11));
+                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Payment Card Number: "+RS.getString(11));
                 }
-                System.out.println("Connection successful123");
                 //Step5: close statement and connections
                 pStmt.close();
-                conn.close();
 
-            }catch (Exception e){
+            }catch (SQLException e){
                 System.out.println(e.getMessage());
             }
         }

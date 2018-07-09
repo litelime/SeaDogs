@@ -101,14 +101,17 @@ public class ServiceWrapper {
 
 		return items;
 	}
-
-	public int calculateTotalPrice(ArrayList<String> item_ids) {
-		int total = 0;
+        
+	public float calculateTotalPrice(Order currentOrders) {
+                ArrayList<String> item_ids = currentOrders.getItem_ids();
+		float total = 0;
 		ServiceWrapper sw = new ServiceWrapper(con);
 		ArrayList<Menu> items = sw.getMenuItems(item_ids);
 		for(Menu item: items){
 			total += item.getPrice();
 		}
+                total+=currentOrders.getTip();
+                
 		return total;
 	}
 
