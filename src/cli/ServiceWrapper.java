@@ -102,8 +102,8 @@ public class ServiceWrapper {
 		return items;
 	}
 
-	public int calculateTotalPrice(ArrayList<String> item_ids) {
-		int total = 0;
+	public float calculateTotalPrice(ArrayList<String> item_ids) {
+		float total = 0;
 		ServiceWrapper sw = new ServiceWrapper(con);
 		ArrayList<Menu> items = sw.getMenuItems(item_ids);
 		for(Menu item: items){

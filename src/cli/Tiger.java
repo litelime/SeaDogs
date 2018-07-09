@@ -249,6 +249,17 @@ public class Tiger{
 		System.out.println("\n*Current Order*");
 		System.out.println("Placed: " +currentOrder.getPlaced_timestamp());
 		System.out.println("Delivered: " +currentOrder.getDelivery_timestamp());
+                System.out.println("Items: ");
+                MenuServices ms = new MenuServices(con);
+                ArrayList<String> idList = currentOrder.getItem_ids();
+                for (String itemId : idList) {
+                    System.out.print(ms.getById(itemId).getName());
+                    if (itemId != idList.get(idList.size() - 1)) {
+                        System.out.print(", ");
+                    } else {
+                        System.out.print("\n");
+                    }
+                }
 		ServiceWrapper sw = new ServiceWrapper(con);
 		currentOrder.setTotal_price(sw.calculateTotalPrice(currentOrder.getItem_ids()));
 		System.out.println("Total price: $" +currentOrder.getTotal_price());
