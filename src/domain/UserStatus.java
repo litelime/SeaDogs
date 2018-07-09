@@ -8,7 +8,7 @@ public class UserStatus {
 		super();
 	}
 	
-	public UserStatus(String userStatusId, String userStatus) throws IdException {
+	public UserStatus(String userStatusId, String userStatus) /*throws IdException*/ {
 		super();
 	
         /* Don't see the point of this and it breaks get all for the service
@@ -38,6 +38,6 @@ public class UserStatus {
 	}
 	@Override
 	public String toString() {
-		return "UserStatus [userStatusId=" + userStatusId + ", userStatus=" + userStatus + "]";
+		return userStatus;
 	}
 }

@@ -108,19 +108,24 @@ public class LocationService implements Service<Location>{
 	public void update(Location location){
 		try{
 			String locationId = location.getLocationId();
+                        String userId = location.getUserId();
 			String street = location.getStreet();
 			String city = location.getCity();
 			String state = location.getState();
 			String country = location.getCountry();
 			String zip = location.getZip();
 			
-			CallableStatement oCSF = connection.prepareCall("{?=call sp_update_location(?,?,?,?,?)}");
-			oCSF.setString(2, locationId);
+			CallableStatement oCSF = connection.prepareCall("{call sp_update_location(?,?,?,?,?,?,?)}");
+			oCSF.setString(1, locationId);
+                        oCSF.setString(2, userId);
 			oCSF.setString(3, street);
 			oCSF.setString(4, city);
 			oCSF.setString(5, state);
 			oCSF.setString(6, country);
 			oCSF.setString(7, zip);
+                        
+                        oCSF.execute();
+                        oCSF.close();
 		}catch(SQLException e){
 			System.out.println(e.getMessage());
 		}	

@@ -111,6 +111,9 @@ public class AdminAndManager {
 	    			case 3:
 	    				deleteUserScreen();
                                         break;
+                                case 4:
+                                    adminScreen();
+                                    break;
 	    		}
 	    			
 	    	}
@@ -118,13 +121,14 @@ public class AdminAndManager {
 	    		option = optionsScreen("User Statuses");
                         switch(option){
                             case 1:
-                                System.out.println("Altering not supported");
+                                alterStatus();
                                 break;
                             case 2:
-                                System.out.println("Adding not supported");
+                                addStatus();
                                 break;
                             case 3:
                                 System.out.println("Deleting not supported");
+                                deleteStatus();
                                 break;
                         }
                 case 12:
@@ -149,21 +153,63 @@ public class AdminAndManager {
 		return input;
 	}
         
-        void alterStatuses(){
-            
-        }
-        void addStatuses(){}
-        
-        void deleteStatuses(){
-            // Get the user_status
+        void alterStatus(){
+            // Ask for which status to alter
+            UserStatusService statusHelper = new UserStatusService(con);
+            ArrayList<UserStatus> statuses = statusHelper.getAll();
+            System.out.println("Select a user status to alter:" + statuses.size());
+            for(int i = 0; i < statuses.size(); i++){
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
             Scanner kb = new Scanner(System.in);
+            UserStatus toAlter = statuses.get(Integer.parseInt(kb.nextLine()));
+            
+            // Alter it
+            System.out.println("What would you like to change the status to?");
+            String newStatus = kb.nextLine();
+            toAlter.setUserStatus(newStatus);
+            statusHelper.update(toAlter);
+            System.out.println("Status altered");
+        }
+        void addStatus(){
+            // Ask for a new status
+            UserStatusService statusHelper = new UserStatusService(con);
+            Scanner kb = new Scanner(System.in);
+            System.out.println("What status would you like to add?");
+            String newID = statusHelper.newStatusID() + "";
             String newStatus = kb.nextLine();
             
-            // Generate a user_id for the status
+            // Make the status
+            UserStatus toInsert = new UserStatus(newID, newStatus);
+            statusHelper.add(toInsert);
+            System.out.println(newStatus + " added");
+        }
+        
+        void deleteStatus(){
+            // Ask for the user status to delete
+            UserStatusService statusHelper = new UserStatusService(con);
+            Scanner kb = new Scanner(System.in);
+            ArrayList<UserStatus> statuses = statusHelper.getAll();
+            System.out.println("Select a user status to delete");
+            for (int i = 0; i < statuses.size(); i++) {
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            int choiceIndex = Integer.parseInt(kb.nextLine()) - 1;
+            UserStatus toDelete = statuses.get(choiceIndex);
             
+            // Ask for the replacement status
+            System.out.println("Users with status " + toDelete.toString() + " should take on which status?");
+            statuses.remove(choiceIndex);
+            for (int i = 0; i < statuses.size(); i++) {
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            UserStatus replacement = statuses.get(Integer.parseInt(kb.nextLine()) - 1);
             
-            // Find users who will lose their status
+            // Update the users statuses
+            statusHelper.replace(toDelete.getUserStatusId(), replacement.getUserStatusId());
             
+            // Delete the user status from the table
+            statusHelper.deleteById(toDelete.getUserStatusId());
         }
         
         /*
@@ -464,7 +510,6 @@ public class AdminAndManager {
                 
                 // Create and add the user
                 User u = new User(userID, firstName, lastName, phone, email, password, userStatusId);
-                System.out.println(u);
                 helper.add(u);
 		
                 // Not sure why this is here
@@ -473,21 +518,24 @@ public class AdminAndManager {
 	}
 	
 	public static void deleteUserScreen() {
-		System.out.println("List of users");
-		UserService us = new UserService(con);
-		ArrayList<User> uArr = us.getAll();
-		int count=1;
-		for(User u:uArr){
-			System.out.println(count + " " + u.getFirstName() + " " + u.getLastName());
-			count++;
-		}
-		
-		System.out.println("Select user you'd like to delete");
-		Scanner sc = new Scanner(System.in);
+            // List existing users
+            System.out.println("List of users");
+            UserService us = new UserService(con);
+            ArrayList<User> uArr = us.getAll();
+            int count=1;
+            for(User u:uArr){
+		System.out.println(count + " " + u.getFirstName() + " " + u.getLastName());
+		count++;
+            }
+	
+            // Ask for the user to delete
+            System.out.println("Select user you'd like to delete");
+            Scanner sc = new Scanner(System.in);
 	    int input = sc.nextInt();
+            
+            // Delete the user
 	    us.deleteById(uArr.get(input-1).getUserId());
-	    System.out.println(uArr.get(input-1).getFirstName() + "has been deleted");
-		
+	    System.out.println(uArr.get(input-1).getFirstName() + " has been deleted");	
 	}
         
         private static String emptyToNull(String field){
