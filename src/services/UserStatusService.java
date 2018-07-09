@@ -28,10 +28,10 @@ public class UserStatusService implements Service<UserStatus>{
 		try{
 			String userStatusId = userStatus.getUserStatusId();
 			String userStatusName = userStatus.getUserStatus();
-			
-			CallableStatement oCSF = connection.prepareCall("{?=call sp_insert_user_status(?,?)}");
-			oCSF.setString(2,userStatusId);
-			oCSF.setString(3, userStatusName);
+                                                
+			CallableStatement oCSF = connection.prepareCall("{call sp_insert_user_status(?,?)}");
+                        oCSF.setString(1, userStatusId);
+			oCSF.setString(2, userStatusName);
 			oCSF.execute();
 			oCSF.close();
 			return true;
@@ -71,7 +71,8 @@ public class UserStatusService implements Service<UserStatus>{
 		
 		try{
 			Statement userStatusesSt = connection.createStatement();
-			ResultSet userStatusesRs = userStatusesSt.executeQuery("Select * from Users");
+                        userStatusesSt.execute("select * from user_statuses");
+			ResultSet userStatusesRs = userStatusesSt.getResultSet();
 			
 			while(userStatusesRs.next()){
 				UserStatus userStatus = new UserStatus(
@@ -81,7 +82,7 @@ public class UserStatusService implements Service<UserStatus>{
 				userStatuses.add(userStatus);
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			System.out.println("UserStatusService Error: " + e.getMessage());
 		}
 		return userStatuses;
 	}
@@ -90,9 +91,9 @@ public class UserStatusService implements Service<UserStatus>{
 			String userStatusId = userStatus.getUserStatusId();
 			String userStatusName = userStatus.getUserStatus();
 			
-			CallableStatement oCSF = connection.prepareCall("{?=call sp_update_user_status(?,?)}");
-			oCSF.setString(2,userStatusId);
-			oCSF.setString(3, userStatusName);
+			CallableStatement oCSF = connection.prepareCall("{call sp_update_user_status(?,?)}");
+			oCSF.setString(1,userStatusId);
+			oCSF.setString(2, userStatusName);
 			oCSF.execute();
 			oCSF.close();
 		}catch(SQLException e){
@@ -122,5 +123,16 @@ public class UserStatusService implements Service<UserStatus>{
                 return -1;
             }
         }        
-        
+ 
+        public void replace(String oldOne, String newOne){
+            try {
+                CallableStatement stmnt = connection.prepareCall("{call sp_swap_status(?,?)}");
+                stmnt.setString(1, oldOne);
+                stmnt.setString(2, newOne);
+                stmnt.execute();
+                stmnt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 }
