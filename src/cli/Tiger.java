@@ -1,5 +1,6 @@
 package cli;
 
+import Exceptions.IllegalExpiryDateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -19,12 +20,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Comparator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import services.CardService;
 import services.DeliveryMethod;
 import services.DeliveryMethodService;
@@ -49,8 +45,7 @@ public class Tiger{
 			Class.forName("oracle.jdbc.driver.OracleDriver");
         	        con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "db_uSpring", "pass");
 		} catch (ClassNotFoundException | SQLException e) {
-
-			e.printStackTrace();
+                    System.out.println(e.getMessage());
 		}
 		sw  = new ServiceWrapper(con);
 		sc = new Scanner(System.in);
@@ -72,7 +67,7 @@ public class Tiger{
         
 	public static void firstScreen(){
                 printArt();
-		ArrayList<String> options = new ArrayList<String>();
+		ArrayList<String> options = new ArrayList<>();
 		options.add("Login");
 		options.add("Register");
 		options.add("Quit");
@@ -297,8 +292,8 @@ public class Tiger{
                         }
                     }
                 }
-		ServiceWrapper sw = new ServiceWrapper(con);
-		currentOrder.setTotal_price(sw.calculateTotalPrice(currentOrder));
+		ServiceWrapper serviceWrap = new ServiceWrapper(con);
+		currentOrder.setTotal_price(serviceWrap.calculateTotalPrice(currentOrder));
                 System.out.println("Tip: $"+currentOrder.getTip());
 		System.out.printf("Total price: $%.2f\n",currentOrder.getTotal_price());
 		System.out.println("Method: " +method.getById(currentOrder.getDelivery_method_id()).getDelivery_method());
@@ -327,7 +322,7 @@ public class Tiger{
                 }
                 String cardId = cs.getUserCards(currentUser.getUserId()).get(0).getCardId();
                 currentOrder.setCard_id(cardId);
-                sw.submitOrder(currentOrder);
+                serviceWrap.submitOrder(currentOrder);
                 os.generateInvoice(currentOrder.getOrder_id());
                 homeScreen();
             }else{
@@ -342,14 +337,16 @@ public class Tiger{
             }
             return confirm();
         }
+        
 	private static void editOrder(Order currentOrder2) {
 		System.out.println("\n*Edit Order*");
-		ArrayList<String> options = new ArrayList<String>();
+		ArrayList<String> options = new ArrayList<>();
 		options.add("Edit Tip");
 		options.add("Edit delivery time");
 		options.add("Edit Instructions");
 		options.add("Edit Delivery Method");
 		options.add("Edit Store");
+                options.add("Edit Payment");
 		options.add("Go Back");
 		int count = 0;
 		for(String option : options) {
@@ -422,8 +419,26 @@ public class Tiger{
                             System.out.println("Store Changed to: " + all.get(locationSelection-1).getAddress());
                         }
     		}
+                if(input==6){
+                    CardService cs = new CardService(con);
+                    ArrayList<Card> userCards = cs.getUserCards(currentUser.getUserId());
+                    if(userCards.isEmpty()){
+                        System.out.println("You must add a Card to your account first.");
+                        currentOrderScreen();
+                    }
+                    int countCards = 0;
+                    for(Card x : userCards){
+                        countCards++;
+                        System.out.println(countCards+ ". " +x.getCardNumber());
+                        
+                    }
+                    int userChoice = sc.nextInt();
+                    userChoice --; //subtract because array index at 0. 
+                    String cardId = userCards.get(userChoice).getCardId();
+                    currentOrder.setCard_id(cardId);
 
-    		if(input==6) homeScreen();
+                }
+    		if(input==7) homeScreen();
 	    
 	    currentOrderScreen();
 		
@@ -471,7 +486,7 @@ public class Tiger{
 	
 	public static void accountScreen(){
 		System.out.println("\n*Account*");
-		ArrayList<String> options = new ArrayList<String>();
+		ArrayList<String> options = new ArrayList<>();
 		options.add("Edit First Name");
 		options.add("Edit Last Name");
 		options.add("Edit Email");
@@ -524,7 +539,7 @@ public class Tiger{
 	private static void editLocations() {
             System.out.println("\n *** Locations ***\n");
             
-            ArrayList<String> options = new ArrayList<String>();
+            ArrayList<String> options = new ArrayList<>();
             options.add("Add Location");
             
             LocationService ls = new LocationService(con);
@@ -740,20 +755,30 @@ public class Tiger{
 	}
         
 	private static Date editDate() {
-            System.out.println("Enter date in the format DD-MM-YYYY");
+            System.out.println("Enter date in the format YYYY-MM-DD");
             String dateStr = sc.next();
-            String[] dateArr = dateStr.split("-");
-            
-            while(dateArr.length!=3){
-                System.out.println("Enter date in the format DD-MM-YYYY");
-                dateStr = sc.next();
-                dateArr = dateStr.split("-");
+           Date cardDate = new Date(1111,1,1);
+
+            while(true){
+                try{
+                    cardDate = Date.valueOf(dateStr);
+                    Calendar cardCal = Calendar.getInstance();
+                    Calendar currCal = Calendar.getInstance();
+                    cardCal.setTime(cardDate);
+                    if(cardCal.compareTo(currCal) < 0 )
+                        throw new IllegalExpiryDateException();
+                    break;
+                }catch(IllegalArgumentException e){
+                    System.out.println("Date Format Incorrect");
+                    System.out.println("Enter date in the format YYYY-MM-DD");
+                    dateStr = sc.next();
+                }catch(IllegalExpiryDateException e){
+                    System.out.println("May not enter a past date for card expiry date");
+                    System.out.println("Enter date in the format YYYY-MM-DD");
+                    dateStr = sc.next();
+                }
             }
-            int day = Integer.parseInt(dateArr[0]);
-            int month = Integer.parseInt(dateArr[1]);
-            int year = Integer.parseInt(dateArr[2]) - 1901;
-                    
-            Date cardDate = new Date(year,month,day);
+            cardDate = Date.valueOf(dateStr);
             return cardDate;
         }
         

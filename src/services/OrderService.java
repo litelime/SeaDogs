@@ -311,7 +311,7 @@ public class OrderService implements Service<Order>{
                 while(RS.next()){
                     System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
                             "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
-                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Paymeny Card Number: "+RS.getString(11));
+                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Payment Card Number: "+RS.getString(11));
                 }
                 //Step5: close statement and connections
                 pStmt.close();
