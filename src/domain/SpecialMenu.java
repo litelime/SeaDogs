@@ -11,14 +11,8 @@ import java.util.ArrayList;
  *
  * @author syntel
  */
-public class SpecialMenu {
-        String id;
-	String name;
-	char vegetarian;
-	String description;
-	String slot_ID;
-	String photo;
-	float price;
+public class SpecialMenu extends Menu {
+        
         float discount;
 	ArrayList<String> itemIds;
         public SpecialMenu() {
@@ -47,61 +41,7 @@ public class SpecialMenu {
 	
 
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public char getVegetarian() {
-		return vegetarian;
-	}
-
-	public void setVegetarian(char vegetarian) {
-		this.vegetarian = vegetarian;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getSlot_ID() {
-		return slot_ID;
-	}
-
-	public void setSlot_ID(String slot_ID) {
-		this.slot_ID = slot_ID;
-	}
-
-	public String getPhoto() {
-		return photo;
-	}
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
-
-	public float getPrice() {
-		return price;
-	}
-
-	public void setPrice(float price) {
-		this.price = price;
-	}
+	
 
         public float getDiscount() {
             return discount;

@@ -10,6 +10,9 @@ public class Menu {
 	String photo;
 	float price;
 	
+        public Menu() {
+            
+        }
 	public Menu(String id, String name, char vegetarian, String type, String description, String slot_ID, String photo, float price) {
 		super();
 		this.id = id;
