@@ -47,6 +47,7 @@ public class Order {
 		this.placed_timestamp = LocalTime.now();
 		this.delivery_timestamp = LocalTime.now();
 		this.instuctions = "";
+                this.card_id = "-1";
 		this.delivery_method_id = "0";
 		this.store_id = "0";
 		this.delivery_status_id = "0";
