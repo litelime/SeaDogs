@@ -213,37 +213,41 @@ public class MenuServices implements Service<Menu> {
                     + "WHERE s.item_id = i.item_id "
                     + "ORDER BY special_id";
             ResultSet rs = con.createStatement().executeQuery(query);
-            String curSpecialId = "";
             SpecialMenu sm = new SpecialMenu();
             sm.setPrice(0);
             while (rs.next()) {
-                curSpecialId = rs.getString("special_id");
-                if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
-                    sm.setName(rs.getString("special_name"));
-                    if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
-                        sm.setDescription(rs.getString("special_description"));
-                    }
-                    if (rs.getFloat("new_price") == 0.0) {
-                        if (rs.getFloat("discount_percentage") == 0.0) {
-                            sm.setPrice(sm.getPrice() + rs.getFloat("price"));
-                        } else {
-                            sm.setPrice(sm.getPrice() + rs.getFloat("price") * rs.getFloat("discount_percentage"));
-                        }
-                    } else {
-                        if (rs.getFloat("discount_percentage") == 0.0) {
-                            sm.setPrice(sm.getPrice() + rs.getFloat("new_price"));
-                        } else {
-                            sm.setPrice(sm.getPrice() + rs.getFloat("new_price") * rs.getFloat("discount_percentage"));
-                        }
-                    }
-                    sm.addItemId(rs.getString("item_id"));
-                    String tid = rs.getString("time_slot_id");
-                    String tName = getTimeName(times, tid);
-                    sm.setPhoto(rs.getString("photo"));
-                    sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                if (!sm.getId().equals("")) {
+                    sm.setId(rs.getString("special_id"));
                 }
+                if (sm.getId().equals(rs.getString("special_id"))) {
+                    if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
+                        sm.setName(rs.getString("special_name"));
+                        if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
+                            sm.setDescription(rs.getString("special_description"));
+                        }
+                        if (rs.getFloat("new_price") == 0.0) {
+                            if (rs.getFloat("discount_percentage") == 0.0) {
+                                sm.setPrice(sm.getPrice() + rs.getFloat("price"));
+                            } else {
+                                sm.setPrice(sm.getPrice() + rs.getFloat("price") * rs.getFloat("discount_percentage"));
+                            }
+                        } else {
+                            if (rs.getFloat("discount_percentage") == 0.0) {
+                                sm.setPrice(sm.getPrice() + rs.getFloat("new_price"));
+                            } else {
+                                sm.setPrice(sm.getPrice() + rs.getFloat("new_price") * rs.getFloat("discount_percentage"));
+                            }
+                        }
+                        sm.addItemId(rs.getString("item_id"));
+                        String tid = rs.getString("time_slot_id");
+                        String tName = getTimeName(times, tid);
+                        sm.setPhoto(rs.getString("photo"));
+                        sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                    }
+                }
+                
 
-                //menArr.add(sm);
+                menArr.add(sm);
             }
             return menArr;
 
