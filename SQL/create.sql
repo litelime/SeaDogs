@@ -10,7 +10,6 @@ create table item_types(
 	item_type varchar(4000)
 );
 
-
 create table items(
 	item_id varchar(4000) primary key,
 	name varchar(4000),

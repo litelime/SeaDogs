@@ -200,9 +200,11 @@ public class UserService implements Service<User>{
                 }
                 
                 // Generate a new id
+                if(ids.isEmpty())
+                    return 0;
                 return Collections.max(ids) + 1;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (NumberFormatException | SQLException e) {
+                System.out.println(e.getMessage());
                 System.exit(1);
                 return -1;
             }

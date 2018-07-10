@@ -151,19 +151,7 @@ public class Tiger{
 	    String last = sc.next();
 		System.out.println("Enter phone:");
 	    String phone = sc.next();
-/*
-	    String street = sc.next();
-		System.out.println("Enter city:");
-	    String city = sc.next();
-		System.out.println("Enter state:");
-	    String state = sc.next();
-		System.out.println("Enter country:");
-	    String country = sc.next();
-		System.out.println("Enter zip:");
-	    String zip = sc.next();
-		System.out.println("Enter status:");
-	    String status = sc.next();*/
-	    //, street, city, state, country, zip, status
+
 	    if(password.equals(passwordConfirm)){
 	    	System.out.println("Registered");
 	    	currentUser = sw.register(first, last, phone, email, password);
