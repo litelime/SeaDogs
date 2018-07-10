@@ -1,6 +1,7 @@
 package cli;
 
 import static cli.Tiger.firstScreen;
+
 import domain.Card;
 import domain.Menu;
 import domain.Special;
@@ -12,6 +13,9 @@ import java.util.Scanner;
 import domain.UserStatus;
 import java.sql.Date;
 import services.CardService;
+import services.DeliveryMethod;
+import services.DeliveryMethodService;
+import services.LocationService;
 import services.MenuServices;
 import services.SpecialServices;
 import services.UserService;
@@ -85,105 +89,115 @@ public class AdminAndManager {
 		ServiceWrapper.printOptions(options);
 	    int input = sc.nextInt();
 	    int option = 0;
-        switch (input) {
-            case 1: {
-                option = optionsScreen("Card");
-                switch (option) {
-                    case 1:
-                        alterCardScreen();
-                    case 2:
-                        addCardScreen();
-                    case 3:
-                        deleteCardScreen();
-                    case 4:
-                        adminScreen();
-                }
-                break;
-            }
-            case 2: {
-                option = optionsScreen("Combos");
-                switch (option) {
-                    case 1:
-                        alterComboScreen();
-                    case 2:
-                        addComboScreen();
-                    case 3:
-                        deleteComboScreen();
-                    case 4:
-                        adminScreen();break;
-                }
-            }
-            case 3:
-                optionsScreen("Delivery Method");
-            case 4:
-                optionsScreen("Delivery Statuses");
-            case 5: {
-                option = optionsScreen("Item");
-                switch (option) {
-                    case 1:
-                        alterItemScreen();
-                        break;
-                    case 2:
-                        addItemScreen();
-                        break;
-                    case 3:
-                        deleteItemScreen();
-                        break;
-                    case 4:
-                        adminScreen();
-                        break;
-                    case 5:
-                        System.exit(0);
-                }
-                break;
-            }
-            case 6:
-                optionsScreen("Item Type");
-            case 7:
-                optionsScreen("Location");
-            case 8:
-                optionsScreen("Order");
-            case 9: {
-                option = optionsScreen("User");
-                switch (option) {
-                    case 1:
-                        alterUserScreen();
-                        break;
-                    case 2:
-                        addUserScreen();
-                        break;
-                    case 3:
-                        deleteUserScreen();
-                        break;
-                    case 4:
-                        adminScreen();
-                        break;
-                }
-
-            }
-            case 10:
-                option = optionsScreen("User Statuses");
-                switch (option) {
-                    case 1:
-                        alterStatus();
-                        break;
-                    case 2:
-                        addStatus();
-                        break;
-                    case 3:
-                        System.out.println("Deleting not supported");
-                        deleteStatus();
-                        break;
-                }
-            case 11:
-                firstScreen();
-            case 12:
-                System.exit(0);
-        }
-
-        adminScreen();
-
-    }
+	    switch(input){
+	    	case 1:
+	    		{
+	    			option = optionsScreen("Card");
+	    			switch(option){
+	    				case 1:
+	    					alterCardScreen();
+	    				case 2:
+	    					addCardScreen();
+	    				case 3:
+	    					deleteCardScreen();
+	    				case 4: 
+	    					adminScreen();
+	    			}
+	    			break;
+	    		}
+	    	case 3:
+	    		option = optionsScreen("Delivery Method");
+                        // Goes to item menu. Fix that later
+                        switch(option){
+                            case 1:
+                                editDeliveryMethod();
+                                break;
+                            case 2:
+                                addDeliveryMethod();
+                                break;
+                            case 3:
+                                deleteDeliveryMethod();
+                                break;
+                            case 5:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
+	    	case 4:
+	    		optionsScreen("Delivery Statuse");
+	    	case 5:
+	    	{
+	    		option = optionsScreen("Item");
+    			switch(option){
+    				case 1:
+    					alterItemScreen();
+    					break;
+    				case 2:
+    					addItemScreen();
+    					break;
+    				case 3:
+    					deleteItemScreen();
+    					break;
+    				case 4:
+    					adminScreen();
+    					break;
+    				case 5:
+    					System.exit(0);
+    			}
+	    	}
+	    	case 6:
+	    		optionsScreen("Item Type");
+	    	case 7:
+	    		optionsScreen("Location");
+	    	case 8:
+	    		optionsScreen("Order");
+	    	case 9:
+	    		optionsScreen("Order Item");
+	    	case 10:
+	    	{
+	    		option = optionsScreen("User");
+	    		switch(option){
+	    			case 1:
+                                        alterUserScreen();
+                                        break;
+	    			case 2:
+	    				addUserScreen();
+                                        break;
+	    			case 3:
+	    				deleteUserScreen();
+                                        break;
+                                case 4:
+                                    adminScreen();
+                                    break;
+	    		}
+	    			
+	    	}
+	    	case 11:
+	    		option = optionsScreen("User Statuses");
+                        switch(option){
+                            case 1:
+                                alterStatus();
+                                break;
+                            case 2:
+                                addStatus();
+                                break;
+                            case 3:
+                                System.out.println("Deleting not supported");
+                                deleteStatus();
+                                break;
+                        }
+                case 12:
+	    		firstScreen();
+	    	case 13:
+	    		System.exit(0);
+                default:
+                    adminScreen();
+	    }
+	    
+	    adminScreen();
+	    
+	}
 
 	
         public static int optionsScreen(String thing){
@@ -198,7 +212,69 @@ public class AdminAndManager {
 		return input;
 	}
         
-        void alterStatus(){
+        /*
+        **************************
+        * Delivery Method Status *
+        **************************
+        */
+        
+        public void editDeliveryMethod(){
+            // Ask for a delivery method to delete
+            Scanner kb = new Scanner(System.in);
+            DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
+            ArrayList<DeliveryMethod> methods = deliveryHelper.getAll();
+            for(int i = 0; i < methods.size(); i++){
+                System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
+            }
+            System.out.println("Chose a delivery method to edit:");
+            DeliveryMethod choice = methods.get(Integer.parseInt(kb.nextLine()) - 1);
+            
+            // Ask for the new value
+            System.out.println("What would you like to change it to?");
+            choice.setDelivery_method(kb.nextLine());
+            
+            // Edit the method
+            deliveryHelper.update(choice);
+            System.out.println("Alteration successful.");
+        }
+        
+        public void deleteDeliveryMethod(){
+            // Ask for a delivery method to delete
+            Scanner kb = new Scanner(System.in);
+            DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
+            ArrayList<DeliveryMethod> methods = deliveryHelper.getAll();
+            for(int i = 0; i < methods.size(); i++){
+                System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
+            }
+            System.out.println("Chose a delivery method to delete:");
+            DeliveryMethod choice = methods.get(Integer.parseInt(kb.nextLine()) - 1);
+            
+            // Delete the method
+            deliveryHelper.deleteById(choice.getDelivery_method_id());
+            System.out.println(choice.getDelivery_method() + " deleted");
+        }
+        
+        public void addDeliveryMethod(){
+            // Get the delivery method
+            Scanner kb = new Scanner(System.in);
+            DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
+            System.out.println("Enter a delivery method:");
+            String newMethod = kb.nextLine();
+            String newID = deliveryHelper.nextID() + "";
+            
+            // Build the delivery method and add it
+            DeliveryMethod method = new DeliveryMethod(newID, newMethod);
+            deliveryHelper.add(method);
+            System.out.println(newMethod + " added.");
+        }
+        
+        /*
+        ***************
+        * User Status *
+        ***************
+        */
+        
+        public void alterStatus(){
             // Ask for which status to alter
             UserStatusService statusHelper = new UserStatusService(con);
             ArrayList<UserStatus> statuses = statusHelper.getAll();
@@ -216,7 +292,8 @@ public class AdminAndManager {
             statusHelper.update(toAlter);
             System.out.println("Status altered");
         }
-        void addStatus(){
+        
+        public void addStatus(){
             // Ask for a new status
             UserStatusService statusHelper = new UserStatusService(con);
             Scanner kb = new Scanner(System.in);
@@ -231,33 +308,32 @@ public class AdminAndManager {
             adminScreen();
         }
         
-
-    void deleteStatus() {
-        // Ask for the user status to delete
-        UserStatusService statusHelper = new UserStatusService(con);
-        Scanner kb = new Scanner(System.in);
-        ArrayList<UserStatus> statuses = statusHelper.getAll();
-        System.out.println("Select a user status to delete");
-        for (int i = 0; i < statuses.size(); i++) {
-            System.out.println((i + 1) + ". " + statuses.get(i));
+        public void deleteStatus(){
+            // Ask for the user status to delete
+            UserStatusService statusHelper = new UserStatusService(con);
+            Scanner kb = new Scanner(System.in);
+            ArrayList<UserStatus> statuses = statusHelper.getAll();
+            System.out.println("Select a user status to delete");
+            for (int i = 0; i < statuses.size(); i++) {
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            int choiceIndex = Integer.parseInt(kb.nextLine()) - 1;
+            UserStatus toDelete = statuses.get(choiceIndex);
+            
+            // Ask for the replacement status
+            System.out.println("Users with status " + toDelete.toString() + " should take on which status?");
+            statuses.remove(choiceIndex);
+            for (int i = 0; i < statuses.size(); i++) {
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            UserStatus replacement = statuses.get(Integer.parseInt(kb.nextLine()) - 1);
+            
+            // Update the users statuses
+            statusHelper.replace(toDelete.getUserStatusId(), replacement.getUserStatusId());
+            
+            // Delete the user status from the table
+            statusHelper.deleteById(toDelete.getUserStatusId());
         }
-        int choiceIndex = Integer.parseInt(kb.nextLine()) - 1;
-        UserStatus toDelete = statuses.get(choiceIndex);
-
-        // Ask for the replacement status
-        System.out.println("Users with status " + toDelete.toString() + " should take on which status?");
-        statuses.remove(choiceIndex);
-        for (int i = 0; i < statuses.size(); i++) {
-            System.out.println((i + 1) + ". " + statuses.get(i));
-        }
-        UserStatus replacement = statuses.get(Integer.parseInt(kb.nextLine()) - 1);
-
-        // Update the users statuses
-        statusHelper.replace(toDelete.getUserStatusId(), replacement.getUserStatusId());
-
-        // Delete the user status from the table
-        statusHelper.deleteById(toDelete.getUserStatusId());
-    }
 
     /*
             This will protect against updating to nulls but not updating
