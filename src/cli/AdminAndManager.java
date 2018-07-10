@@ -25,50 +25,51 @@ import services.itemTypeServices;
 
 public class AdminAndManager {
 
-    static Connection con;
-    private User user;
-    private static String manager = "3";
-    private static String admin = "4";
 
-    public AdminAndManager(Connection con) {
-        AdminAndManager.con = con;
-        user = null;
-    }
-
-    public void adminScreen() {
-        // Wait for login
-        Scanner sc = new Scanner(System.in);
-        UserService userHelper = new UserService(con);
-        while (user == null) {
-            // Get email
-            String email = "";
-            do {
-                System.out.println("Enter your email:");
-                email = sc.nextLine();
-            } while (email.length() == 0);
-
-            // Get password
-            String password = "";
-            do {
-                System.out.println("Enter your password");
-                password = sc.nextLine();
-            } while (password.length() == 0);
-
-            // Check credentials
-            boolean emailExists = (userHelper.getByEmail(email) != null);
-            boolean passwordMatch = emailExists
-                    && (userHelper.getByEmail(email).getPassword().equals(password));
-            boolean isAdmin = passwordMatch
-                    && (userHelper.getByEmail(email).getUserStatusId().equals(manager)
-                    || userHelper.getByEmail(email).getUserStatusId().endsWith(admin));
-
-            // Notify user of reason for failed login
-            if (!emailExists || !passwordMatch) {
-                System.out.println("Incorrect credentials. Please try again.");
-            } else if (!isAdmin) {
-                System.out.println("You are not an admin.");
-                firstScreen();
-            }
+	static Connection con;
+        private User user;
+        private static final String MANAGER = "5";
+        private static final String ADMIN = "3";
+	
+	public AdminAndManager(Connection con){
+		AdminAndManager.con = con;
+                user = null;
+	}
+	
+	public void adminScreen(){
+            // Wait for login
+            Scanner sc = new Scanner(System.in);
+            UserService userHelper = new UserService(con);
+            while(user == null){
+                // Get email
+                String email = "";
+                do{
+                    System.out.println("Enter your email:");
+                    email = sc.nextLine();
+                } while(email.length() == 0);
+                
+                // Get password
+                String password = "";
+                do{
+                    System.out.println("Enter your password");
+                    password = sc.nextLine();
+                } while(password.length() == 0);
+                
+                // Check credentials
+                boolean emailExists = (userHelper.getByEmail(email) != null);
+                boolean passwordMatch = emailExists && 
+                                        (userHelper.getByEmail(email).getPassword().equals(password));
+                boolean isAdmin = passwordMatch &&
+                        (userHelper.getByEmail(email).getUserStatusId().equals(MANAGER) ||
+                         userHelper.getByEmail(email).getUserStatusId().endsWith(ADMIN));
+                
+                // Notify user of reason for failed login
+                if(!emailExists || !passwordMatch){
+                    System.out.println("Incorrect credentials. Please try again.");
+                } else if(!isAdmin){
+                    System.out.println("You are not an admin.");
+                    firstScreen();
+}
 
             // Allow login
             if (isAdmin) {
@@ -102,8 +103,7 @@ public class AdminAndManager {
                     case 3:
                         deleteCardScreen();
                     case 4:
-                        adminScreen();
-                }
+                        adminScreen();                }
                 break;
             }
             case 3:

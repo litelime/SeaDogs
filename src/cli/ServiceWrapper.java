@@ -1,5 +1,7 @@
 package cli;
 
+import static cli.Tiger.con;
+import static cli.Tiger.currentOrder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 
 
 import domain.*;
+import java.util.Comparator;
 
 
 import services.MenuServices;
@@ -66,11 +69,36 @@ public class ServiceWrapper {
 		System.out.println(++count + ". Go Back");
 	}
         public static void printSpecialMenuItems(ArrayList<SpecialMenu> menus){
+                MenuServices ms = new MenuServices(Tiger.con);
 		int count = 0;
 		for(SpecialMenu menu: menus){
 			count++;
 			System.out.println(count + ". $" + menu.getPrice() + " " + menu.getName());
-		}
+                        
+                        ArrayList<String> idList = menu.getItemIds();
+                        Comparator<String> c = Comparator.comparing(String::toString);
+                        idList.sort(c);
+                        if (!idList.isEmpty()) {
+                            String curId = idList.get(0);
+                            //Tab so output can be read easier
+                            System.out.print("\t -");
+                            int amount = 0;
+                            for (int i = 0; i <= idList.size() - 1; i++) {
+                                if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
+                                    System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
+                                    amount = 0;
+                                if (i != idList.size() - 1) {
+                                    System.out.print(", ");
+                                    curId = idList.get(i + 1);
+                                } else {
+                                    System.out.print("\n");
+                                }
+                        } else {
+                            amount += 1;
+                        }
+                    }
+                }
+            }
 		System.out.println(++count + ". Go Back");
 	}
 	public static void printOrders(ArrayList<Order> orders){

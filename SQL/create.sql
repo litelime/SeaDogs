@@ -24,7 +24,14 @@ create table items(
 );
 create table specials(
 	item_id varchar(4000) references items(item_id) ON DELETE CASCADE,
-	discount_percentage int
+	discount_percentage int,
+	special_id varchar(4000),
+	special_name varchar(4000),
+	special_description varchar(4000),
+	amount int, 
+	photo varchar(4000),
+	veg varchar(5),
+	time_slot varchar(4000)
 );
 
 create table delivery_statuses(
