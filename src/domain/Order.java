@@ -47,6 +47,7 @@ public class Order {
 		this.placed_timestamp = LocalTime.now();
 		this.delivery_timestamp = LocalTime.now();
 		this.instuctions = "";
+                this.card_id = "-1";
 		this.delivery_method_id = "0";
 		this.store_id = "0";
 		this.delivery_status_id = "0";
@@ -74,6 +75,9 @@ public class Order {
 	public void addItem_id(String item_id){
 		this.item_ids.add(item_id);
 	}
+        public void removeItem_id(String item_id){
+           item_ids.remove(item_id);
+        }
 	public String getOrder_id() {
 		return order_id;
 	}
