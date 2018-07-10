@@ -211,7 +211,7 @@ public class MenuServices implements Service<Menu> {
         try {
             String query = "SELECT * FROM specials s, items i "
                     + "WHERE s.item_id = i.item_id "
-                    + "GROUP BY special_id";
+                    + "ORDER BY special_id";
             ResultSet rs = con.createStatement().executeQuery(query);
             String curSpecialId = "";
             SpecialMenu sm = new SpecialMenu();
