@@ -24,54 +24,19 @@ import services.UserStatusService;
 public class AdminAndManager {
 
 	static Connection con;
-        private User user;
-        private static String manager = "3";
-        private static String admin = "4";
+        private static User user;
+        private static final String manager = "5";
+        private static final String admin = "3";
 	
 	public AdminAndManager(Connection con){
 		AdminAndManager.con = con;
                 user = null;
 	}
 	
-	public void adminScreen(){
+	public static void adminScreen(){
             // Wait for login
-            Scanner sc = new Scanner(System.in);
-            UserService userHelper = new UserService(con);
-            while(user == null){
-                // Get email
-                String email = "";
-                do{
-                    System.out.println("Enter your email:");
-                    email = sc.nextLine();
-                } while(email.length() == 0);
-                
-                // Get password
-                String password = "";
-                do{
-                    System.out.println("Enter your password");
-                    password = sc.nextLine();
-                } while(password.length() == 0);
-                
-                // Check credentials
-                boolean emailExists = (userHelper.getByEmail(email) != null);
-                boolean passwordMatch = emailExists && 
-                                        (userHelper.getByEmail(email).getPassword().equals(password));
-                boolean isAdmin = passwordMatch &&
-                        (userHelper.getByEmail(email).getUserStatusId().equals(manager) ||
-                         userHelper.getByEmail(email).getUserStatusId().endsWith(admin));
-                
-                // Notify user of reason for failed login
-                if(!emailExists || !passwordMatch){
-                    System.out.println("Incorrect credentials. Please try again.");
-                } else if(!isAdmin){
-                    System.out.println("You are not an admin.");
-                    firstScreen();
-                }
-                
-                // Allow login
-                if(isAdmin){
-                    user = userHelper.getByEmail(email);
-                }
+            if(user == null){
+                adminLogin();
             }
             
 		ArrayList<String> options = new ArrayList<String>();
@@ -87,6 +52,7 @@ public class AdminAndManager {
 		options.add("Alter Users");
 		options.add("Alter User Statuses");
 		ServiceWrapper.printOptions(options);
+                Scanner sc = new Scanner(System.in);
 	    int input = sc.nextInt();
 	    int option = 0;
 	    switch(input){
@@ -195,12 +161,12 @@ public class AdminAndManager {
                     adminScreen();
 	    }
 	    
-	    adminScreen();
+	    //adminScreen();
 	    
 	}
 
 	
-        public static int optionsScreen(String thing){
+        private static int optionsScreen(String thing){
 		System.out.println("How would you like to alter " + thing);
 		ArrayList<String> options = new ArrayList<String>();
 		options.add("Alter");
@@ -218,7 +184,7 @@ public class AdminAndManager {
         **************************
         */
         
-        public void editDeliveryMethod(){
+        private static void editDeliveryMethod(){
             // Ask for a delivery method to delete
             Scanner kb = new Scanner(System.in);
             DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
@@ -238,7 +204,7 @@ public class AdminAndManager {
             System.out.println("Alteration successful.");
         }
         
-        public void deleteDeliveryMethod(){
+        private static void deleteDeliveryMethod(){
             // Ask for a delivery method to delete
             Scanner kb = new Scanner(System.in);
             DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
@@ -254,7 +220,7 @@ public class AdminAndManager {
             System.out.println(choice.getDelivery_method() + " deleted");
         }
         
-        public void addDeliveryMethod(){
+        private static void addDeliveryMethod(){
             // Get the delivery method
             Scanner kb = new Scanner(System.in);
             DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
@@ -274,7 +240,7 @@ public class AdminAndManager {
         ***************
         */
         
-        public void alterStatus(){
+        private static void alterStatus(){
             // Ask for which status to alter
             UserStatusService statusHelper = new UserStatusService(con);
             ArrayList<UserStatus> statuses = statusHelper.getAll();
@@ -293,7 +259,7 @@ public class AdminAndManager {
             System.out.println("Status altered");
         }
         
-        public void addStatus(){
+        private static void addStatus(){
             // Ask for a new status
             UserStatusService statusHelper = new UserStatusService(con);
             Scanner kb = new Scanner(System.in);
@@ -308,11 +274,22 @@ public class AdminAndManager {
             adminScreen();
         }
         
-        public void deleteStatus(){
+        private static void deleteStatus(){
             // Ask for the user status to delete
             UserStatusService statusHelper = new UserStatusService(con);
             Scanner kb = new Scanner(System.in);
             ArrayList<UserStatus> statuses = statusHelper.getAll();
+            
+            /*
+            // Don't allow deletion of admin or manager
+            for(UserStatus status: statuses){
+                if(status.getUserStatusId().equals(manager) ||
+                    status.getUserStatusId().equals(admin)){
+                    statuses.remove(status);
+                }
+            }
+            */
+            
             System.out.println("Select a user status to delete");
             for (int i = 0; i < statuses.size(); i++) {
                 System.out.println((i + 1) + ". " + statuses.get(i));
@@ -340,7 +317,7 @@ public class AdminAndManager {
             to values that are not valid. I.e. someone can change a user
             status to 999999 which is not a status
      */
-    public void alterUserScreen() {
+    private static void alterUserScreen() {
         // Display the users
         UserService userHelper = new UserService(con);
 //            for(User user: userHelper.getAll()){
@@ -434,7 +411,7 @@ public class AdminAndManager {
         return;
     }
 
-    public static void addCardScreen() {
+    private static void addCardScreen() {
         CardService cs = new CardService(con);
         UserService us = new UserService(con);
 
@@ -463,11 +440,10 @@ public class AdminAndManager {
         Card c = new Card(cs.getNextCardId(), userId, cardNumber, expiryDate, securityCode);
 
         cs.add(c);
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        adminScreen();
     }
 
-    public static void deleteCardScreen() {
+    private static void deleteCardScreen() {
         System.out.println("List of cards");
         CardService cs = new CardService(con);
         ArrayList<Card> cl = cs.getAll();
@@ -484,7 +460,7 @@ public class AdminAndManager {
 
     }
 
-    public static void alterCardScreen() {
+    private static void alterCardScreen() {
         System.out.println("List of cards");
         CardService cs = new CardService(con);
         ArrayList<Card> cl = cs.getAll();
@@ -522,11 +498,10 @@ public class AdminAndManager {
         Card c = new Card(cardId, userId, cardNumber, expiryDate, securityCode);
 
         cs.update(c);
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        adminScreen();
     }
 
-    public static void addItemScreen() {
+    private static void addItemScreen() {
         System.out.println("Add an item");
         Scanner sc = new Scanner(System.in);
         MenuServices menServ = new MenuServices(con);
@@ -551,12 +526,10 @@ public class AdminAndManager {
         Menu men = new Menu(""+menServ.getNextItemId(), name, vegetarian, type, description, slot_ID, photo, price);
         menServ.add(men);
         System.out.println("\n" + name + " added to database\n");
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
-
+        adminScreen();
     }
 
-    public static void deleteItemScreen() {
+    private static void deleteItemScreen() {
         System.out.println("Choose an item to delete");
         MenuServices ms = new MenuServices(con);
         ArrayList<Menu> menus = ms.getAll();
@@ -575,7 +548,7 @@ public class AdminAndManager {
         System.out.println("Deleted " + menus.get(input - 1).getName());
     }
 
-    public static void alterItemScreen() {
+    private static void alterItemScreen() {
         System.out.println("Choose an item to alter");
         MenuServices ms = new MenuServices(con);
         ArrayList<Menu> menus = ms.getAll();
@@ -610,7 +583,7 @@ public class AdminAndManager {
         System.out.println("Updated " + name);
     }
 
-    public static void addUserScreen() {
+    private static void addUserScreen() {
         // Get info for new user
         UserService helper = new UserService(con);
         System.out.println("Add a User");
@@ -649,12 +622,11 @@ public class AdminAndManager {
         User u = new User(userID, firstName, lastName, phone, email, password, userStatusId);
         helper.add(u);
 
-        // Not sure why this is here
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        // Go back to the admin screen
+        adminScreen();
     }
 
-    public static void deleteUserScreen() {
+    private static void deleteUserScreen() {
         // List existing users
         System.out.println("List of users");
         UserService us = new UserService(con);
@@ -749,5 +721,45 @@ public class AdminAndManager {
         adminScreen();
     }
 
+    private static void adminLogin() {
+            Scanner sc = new Scanner(System.in);
+            UserService userHelper = new UserService(con);
+            while(user == null){
+                // Get email
+                String email = "";
+                do{
+                    System.out.println("Enter your email:");
+                    email = sc.nextLine();
+                } while(email.length() == 0);
+                
+                // Get password
+                String password = "";
+                do{
+                    System.out.println("Enter your password");
+                    password = sc.nextLine();
+                } while(password.length() == 0);
+                
+                // Check credentials
+                boolean emailExists = (userHelper.getByEmail(email) != null);
+                boolean passwordMatch = emailExists && 
+                                        (userHelper.getByEmail(email).getPassword().equals(password));
+                boolean isAdmin = passwordMatch &&
+                        (userHelper.getByEmail(email).getUserStatusId().equals(manager) ||
+                         userHelper.getByEmail(email).getUserStatusId().endsWith(admin));
+                
+                // Notify user of reason for failed login
+                if(!emailExists || !passwordMatch){
+                    System.out.println("Incorrect credentials. Please try again.");
+                } else if(!isAdmin){
+                    System.out.println("You are not an admin.");
+                    firstScreen();
+                }
+                
+                // Allow login
+                if(isAdmin){
+                    user = userHelper.getByEmail(email);
+                }
+            }
+    }
 }
 
