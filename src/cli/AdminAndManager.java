@@ -1,14 +1,11 @@
 package cli;
 
 import static cli.Tiger.firstScreen;
-<<<<<<< HEAD
-import com.sun.org.apache.xml.internal.security.utils.HelperNodeList;
-=======
+
 import domain.Card;
 import domain.Menu;
 import domain.Special;
 import domain.User;
->>>>>>> 6e547c4227e0ecb90da55ca3f459815d97ed9b86
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -16,12 +13,9 @@ import java.util.Scanner;
 import domain.UserStatus;
 import java.sql.Date;
 import services.CardService;
-<<<<<<< HEAD
 import services.DeliveryMethod;
 import services.DeliveryMethodService;
 import services.LocationService;
-=======
->>>>>>> 6e547c4227e0ecb90da55ca3f459815d97ed9b86
 import services.MenuServices;
 import services.SpecialServices;
 import services.UserService;
@@ -95,7 +89,6 @@ public class AdminAndManager {
 		ServiceWrapper.printOptions(options);
 	    int input = sc.nextInt();
 	    int option = 0;
-<<<<<<< HEAD
 	    switch(input){
 	    	case 1:
 	    		{
@@ -205,108 +198,7 @@ public class AdminAndManager {
 	    adminScreen();
 	    
 	}
-=======
-        switch (input) {
-            case 1: {
-                option = optionsScreen("Card");
-                switch (option) {
-                    case 1:
-                        alterCardScreen();
-                    case 2:
-                        addCardScreen();
-                    case 3:
-                        deleteCardScreen();
-                    case 4:
-                        adminScreen();
-                }
-                break;
-            }
-            case 2: {
-                option = optionsScreen("Combos");
-                switch (option) {
-                    case 1:
-                        alterComboScreen();
-                    case 2:
-                        addComboScreen();
-                    case 3:
-                        deleteComboScreen();
-                    case 4:
-                        adminScreen();break;
-                }
-            }
-            case 3:
-                optionsScreen("Delivery Method");
-            case 4:
-                optionsScreen("Delivery Statuses");
-            case 5: {
-                option = optionsScreen("Item");
-                switch (option) {
-                    case 1:
-                        alterItemScreen();
-                        break;
-                    case 2:
-                        addItemScreen();
-                        break;
-                    case 3:
-                        deleteItemScreen();
-                        break;
-                    case 4:
-                        adminScreen();
-                        break;
-                    case 5:
-                        System.exit(0);
-                }
-                break;
-            }
-            case 6:
-                optionsScreen("Item Type");
-            case 7:
-                optionsScreen("Location");
-            case 8:
-                optionsScreen("Order");
-            case 9: {
-                option = optionsScreen("User");
-                switch (option) {
-                    case 1:
-                        alterUserScreen();
-                        break;
-                    case 2:
-                        addUserScreen();
-                        break;
-                    case 3:
-                        deleteUserScreen();
-                        break;
-                    case 4:
-                        adminScreen();
-                        break;
-                }
 
-            }
-            case 10:
-                option = optionsScreen("User Statuses");
-                switch (option) {
-                    case 1:
-                        alterStatus();
-                        break;
-                    case 2:
-                        addStatus();
-                        break;
-                    case 3:
-                        System.out.println("Deleting not supported");
-                        deleteStatus();
-                        break;
-                }
-            case 11:
-                firstScreen();
-            case 12:
-                System.exit(0);
-        }
-
-        adminScreen();
-
-    }
-
->>>>>>> 6e547c4227e0ecb90da55ca3f459815d97ed9b86
 	
         public static int optionsScreen(String thing){
 		System.out.println("How would you like to alter " + thing);
@@ -416,7 +308,6 @@ public class AdminAndManager {
             adminScreen();
         }
         
-<<<<<<< HEAD
         public void deleteStatus(){
             // Ask for the user status to delete
             UserStatusService statusHelper = new UserStatusService(con);
@@ -442,35 +333,7 @@ public class AdminAndManager {
             
             // Delete the user status from the table
             statusHelper.deleteById(toDelete.getUserStatusId());
-=======
-
-    void deleteStatus() {
-        // Ask for the user status to delete
-        UserStatusService statusHelper = new UserStatusService(con);
-        Scanner kb = new Scanner(System.in);
-        ArrayList<UserStatus> statuses = statusHelper.getAll();
-        System.out.println("Select a user status to delete");
-        for (int i = 0; i < statuses.size(); i++) {
-            System.out.println((i + 1) + ". " + statuses.get(i));
->>>>>>> 6e547c4227e0ecb90da55ca3f459815d97ed9b86
         }
-        int choiceIndex = Integer.parseInt(kb.nextLine()) - 1;
-        UserStatus toDelete = statuses.get(choiceIndex);
-
-        // Ask for the replacement status
-        System.out.println("Users with status " + toDelete.toString() + " should take on which status?");
-        statuses.remove(choiceIndex);
-        for (int i = 0; i < statuses.size(); i++) {
-            System.out.println((i + 1) + ". " + statuses.get(i));
-        }
-        UserStatus replacement = statuses.get(Integer.parseInt(kb.nextLine()) - 1);
-
-        // Update the users statuses
-        statusHelper.replace(toDelete.getUserStatusId(), replacement.getUserStatusId());
-
-        // Delete the user status from the table
-        statusHelper.deleteById(toDelete.getUserStatusId());
-    }
 
     /*
             This will protect against updating to nulls but not updating
