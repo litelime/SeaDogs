@@ -79,8 +79,8 @@ public class MenuServices implements Service<Menu> {
 		
 	}
 	
-	public ArrayList<Menu> getAllSpecials(){
-		ArrayList<Menu> menArr = new ArrayList<Menu>();
+	public ArrayList<SpecialMenu> getAllSpecials(){
+		ArrayList<SpecialMenu> menArr = new ArrayList<SpecialMenu>();
 		ArrayList<TimeSlots> times = timServ.getAll();
 		try {
                         String query = "SELECT * FROM specials s, items i"
@@ -111,10 +111,10 @@ public class MenuServices implements Service<Menu> {
                                     }
                                 }
                                 sm.addItemId(rs.getString("item_id"));
-                            String tid = rs.getString("time_slot_id");
-                            String tName = getTimeName(times, tid);
-                            sm.setPhoto(rs.getString("photo"));
-                            sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                                String tid = rs.getString("time_slot_id");
+                                String tName = getTimeName(times, tid);
+                                sm.setPhoto(rs.getString("photo"));
+                                sm.setVegetarian(rs.getString("vegetarian").charAt(0));
                             }
                             
                             //menArr.add(sm);
