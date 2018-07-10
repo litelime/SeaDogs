@@ -30,6 +30,8 @@ public class UserService implements Service<User>{
 			String email = user.getEmail();
 			String password = user.getPassword();
 			String userStatusId = user.getUserStatusId();
+                        //int Id= Integer.parseInt(userId);
+                        //userId=Integer.toString(Id);
 			
 			CallableStatement oCSF = connection.prepareCall("{call sp_insert_user(?,?,?,?,?,?,?)}");
 			oCSF.setString(1, userId);
