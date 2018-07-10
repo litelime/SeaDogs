@@ -116,7 +116,7 @@ public class AdminAndManager {
             case 3:
                 optionsScreen("Delivery Method");
             case 4:
-                optionsScreen("Delivery Statuse");
+                optionsScreen("Delivery Statuses");
             case 5: {
                 option = optionsScreen("Item");
                 switch (option) {
@@ -453,10 +453,9 @@ public class AdminAndManager {
     public static void addItemScreen() {
         System.out.println("Add an item");
         Scanner sc = new Scanner(System.in);
-        System.out.println("\nEnter item id: ");
-        String id = sc.next();
+        MenuServices menServ = new MenuServices(con);
+
         System.out.println("\nEnter item name: ");
-        sc.nextLine();
         String name = sc.nextLine();
         System.out.println("\nEnter vegeterian (y or n): ");
         String vege = sc.next();
@@ -472,9 +471,8 @@ public class AdminAndManager {
         String photo = sc.next();
         System.out.println("\nEnter a price: ");
         float price = sc.nextFloat();
-
-        Menu men = new Menu(id, name, vegetarian, type, description, slot_ID, photo, price);
-        MenuServices menServ = new MenuServices(con);
+        
+        Menu men = new Menu(""+menServ.getNextItemId(), name, vegetarian, type, description, slot_ID, photo, price);
         menServ.add(men);
         System.out.println("\n" + name + " added to database\n");
         AdminAndManager aam = new AdminAndManager(con);
@@ -508,6 +506,9 @@ public class AdminAndManager {
         ServiceWrapper.printMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
+        if(input == (menus.size())+1){
+            alterItemScreen();
+        }
         Menu men = menus.get(input - 1);
         MenuServices menServ = new MenuServices(con);
         System.out.println("Enter item name: ");
