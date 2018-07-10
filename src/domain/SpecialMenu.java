@@ -22,6 +22,14 @@ public class SpecialMenu {
         float discount;
 	ArrayList<String> itemIds;
         public SpecialMenu() {
+            this.id = "";
+            this.name = "";
+            this.vegetarian = 'n';
+            this.description = "";
+            this.slot_ID = "";
+            this.photo = "";
+            this.price = 0.0f;
+            this.discount = 0.0f;
             itemIds = new ArrayList<>();
         }
 	public SpecialMenu(String id, String name, char vegetarian, String type, String description, String slot_ID, String photo, float price, float discount, ArrayList<String> itemIds) {
