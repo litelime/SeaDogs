@@ -6,3 +6,7 @@ ALTER TABLE specials
   photo varchar(4000),
   veg varchar(1));
   /
+  UPDATE specials SET special_id = 0 WHERE special_id IS NULL;
+  /
+  UPDATE specials SET special_name = 'good meal' WHERE special_id = 0;
+  /
