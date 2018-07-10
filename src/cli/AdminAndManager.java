@@ -764,8 +764,7 @@ public class AdminAndManager {
         itemTypeServices it1 = new itemTypeServices(con);
         it1.add(it);
         System.out.println("Item Type ID " + TypeId + " added to database\n");
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        adminScreen();
 
     }
 
@@ -776,8 +775,7 @@ public class AdminAndManager {
         itemTypeServices it1 = new itemTypeServices(con);
         it1.deleteById(id);
         System.out.println(id + " Item Type ID has been successfully deleted");
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        adminScreen();
 
     }
 }
