@@ -282,6 +282,21 @@ public class Tiger {
         }
     }
     //TODO finish this
+    
+    public static void menuSpecialScreen(SpecialMenu menu) {
+        System.out.println("\n*" + menu.getName() + "*");
+        System.out.println(menu.getDescription());
+        System.out.println("$" + menu.getPrice());
+        System.out.println("1. Enter Quantity");
+        System.out.println("2. Go Back");
+        int input = getAnInt();
+        if (input == 1) {
+            specialQuantityScreen(menu);
+
+        } else if (input == 2) {
+            menuScreen();
+        }
+    }
 
     public static void itemQuantityScreen(Menu menu) {
         System.out.println("Enter Quantity");
@@ -295,7 +310,18 @@ public class Tiger {
             menuScreen();
         }
     }
-
+    public static void specialQuantityScreen(SpecialMenu menu) {
+        System.out.println("Enter Quantity");
+        int input = getAnInt();
+        currentOrder.removeItem_id(menu.getId());
+        if (input != 0) {
+            for (int i = 0; i < input; i++) {
+                currentOrder.addItem_id(menu.getId());
+            }
+            System.out.println("Special combo(s) added");
+            menuScreen();
+        }
+    }
     public static void currentOrderScreen() {
         DeliveryMethodService method = new DeliveryMethodService(con);
         System.out.println("\n*Current Order*");
