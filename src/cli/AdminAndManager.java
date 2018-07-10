@@ -149,8 +149,13 @@ public class AdminAndManager {
             case 6:
                 option = optionsScreen("Item Type");
                 switch (option) {
+                    
                     case 2:
                         addItemTypeScreen();
+                        break;
+                    
+                    case 3:
+                        deleteItemType();
                         break;
                 }
             case 7:
@@ -763,6 +768,18 @@ public class AdminAndManager {
         AdminAndManager aam = new AdminAndManager(con);
         aam.adminScreen();
 
+    }
+    
+    public static void deleteItemType(){
+        Scanner sc= new Scanner(System.in);
+        System.out.println("Please enter the item type ID to be deleted");
+        String id=sc.next();
+        itemTypeServices it1=new itemTypeServices(con);
+        it1.deleteById(id);
+        System.out.println(id+" Item Type ID has been successfully deleted");
+        AdminAndManager aam = new AdminAndManager(con);
+        aam.adminScreen();
+        
     }
 
 }

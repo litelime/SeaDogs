@@ -21,15 +21,35 @@ public class itemTypeServices {
 //implements Service<itemType> {
     
     Connection connection;
+    CallableStatement orclCallableStatement;
 
     public itemTypeServices(Connection connection) {
         this.connection = connection;
     }
     
-    //public void deleteById(String id);
+    public void deleteById(String id){
+       Connection conn;
+       try{
+           //call driver
+           Class.forName("oracle.jdbc.OracleDriver");
+           //Database connection
+           conn=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","db_uspring","pass");
+           //call SP for deleting item types
+           orclCallableStatement=conn.prepareCall("{Call SP_DEL_ITEM_TYPES(?)}");
+           orclCallableStatement.setString(1, id);
+           orclCallableStatement.execute();
+           
+           orclCallableStatement.close();
+           conn.close();
+           
+       }catch(Exception e){
+           System.out.println(e.getMessage());
+       }
+        
+    }
     public boolean add(itemType it){
         Connection conn;
-        CallableStatement orclCallableStatement;
+        
         try{
             //get the driver
             Class.forName("oracle.jdbc.OracleDriver");
