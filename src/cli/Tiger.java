@@ -13,6 +13,7 @@ import domain.Store;
 import domain.User;
 import domain.Card;
 import domain.Location;
+import domain.SpecialMenu;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -256,13 +257,13 @@ public class Tiger {
     public static void specialScreen() {
         System.out.println("\n*Specials*");
         MenuServices ms = new MenuServices(con);
-        ArrayList<Menu> menus = ms.getAll();
-        ServiceWrapper.printMenuItems(menus);
+        ArrayList<SpecialMenu> menus = ms.getAllSpecials();
+        ServiceWrapper.printSpecialMenuItems(menus);
         int input = getAnInt();
         if (input == menus.size() + 1) {
             menuScreen();
         } else {
-            menuItemScreen(menus.get(input - 1));
+            //menuItemScreen(menus.get(input - 1));
         }
     }
 

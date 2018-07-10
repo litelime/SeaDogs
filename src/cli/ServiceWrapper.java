@@ -65,7 +65,14 @@ public class ServiceWrapper {
 		}
 		System.out.println(++count + ". Go Back");
 	}
-
+        public static void printSpecialMenuItems(ArrayList<SpecialMenu> menus){
+		int count = 0;
+		for(SpecialMenu menu: menus){
+			count++;
+			System.out.println(count + ". $" + menu.getPrice() + " " + menu.getName());
+		}
+		System.out.println(++count + ". Go Back");
+	}
 	public static void printOrders(ArrayList<Order> orders){
 		int count = 0;
 		for(Order order: orders){
