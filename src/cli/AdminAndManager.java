@@ -149,7 +149,7 @@ public class AdminAndManager {
             case 6:
                 option = optionsScreen("Item Type");
                 switch (option) {
-                    case 1:
+                    case 2:
                         addItemTypeScreen();
                         break;
                 }
@@ -759,7 +759,7 @@ public class AdminAndManager {
         itemType it = new itemType(TypeId, itmTyp);
         itemTypeServices it1 = new itemTypeServices(con);
         it1.add(it);
-        System.out.println("\n" + TypeId + " added to database\n");
+        System.out.println("Item Type ID " + TypeId + " added to database\n");
         AdminAndManager aam = new AdminAndManager(con);
         aam.adminScreen();
 
