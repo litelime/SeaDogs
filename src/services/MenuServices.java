@@ -209,8 +209,8 @@ public class MenuServices implements Service<Menu> {
         ArrayList<SpecialMenu> menArr = new ArrayList<SpecialMenu>();
         ArrayList<TimeSlots> times = timServ.getAll();
         try {
-            String query = "SELECT * FROM specials s, items i"
-                    + "WHERE s.item_id = i.item_id"
+            String query = "SELECT * FROM specials s, items i "
+                    + "WHERE s.item_id = i.item_id "
                     + "GROUP BY special_id";
             ResultSet rs = con.createStatement().executeQuery(query);
             String curSpecialId = "";
