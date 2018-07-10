@@ -225,20 +225,10 @@ public class MenuServices implements Service<Menu> {
                         if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
                             sm.setDescription(rs.getString("special_description"));
                         }
-                        if (rs.getFloat("new_price") == 0.0) {
-                            if (rs.getFloat("discount_percentage") == 0.0) {
-                                sm.setPrice(sm.getPrice() + rs.getFloat("price"));
-                            } else {
-                                sm.setPrice(sm.getPrice() + rs.getFloat("price") * rs.getFloat("discount_percentage"));
-                            }
-                        } else {
-                            if (rs.getFloat("discount_percentage") == 0.0) {
-                                sm.setPrice(sm.getPrice() + rs.getFloat("new_price"));
-                            } else {
-                                sm.setPrice(sm.getPrice() + rs.getFloat("new_price") * rs.getFloat("discount_percentage"));
-                            }
+                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * rs.getFloat("discount_percentage"));
+                        for(int i = 0; i < rs.getInt("amount"); i++) {
+                            sm.addItemId(rs.getString("item_id"));
                         }
-                        sm.addItemId(rs.getString("item_id"));
                         String tid = rs.getString("time_slot_id");
                         String tName = getTimeName(times, tid);
                         sm.setPhoto(rs.getString("photo"));
