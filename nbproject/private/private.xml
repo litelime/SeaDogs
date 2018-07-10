@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+<<<<<<< HEAD
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
         <file>
             <url>src/cli/AdminAndManager.java</url>
@@ -17,6 +18,15 @@
             <file>file:/C:/Users/syntel/Desktop/Examples/CoreJava/Java/src/services/SpecialServices.java</file>
             <file>file:/C:/Users/syntel/Desktop/Examples/CoreJava/Java/src/services/OrderService.java</file>
             <file>file:/C:/Users/syntel/Desktop/Examples/CoreJava/Java/src/cli/AdminAndManager.java</file>
+=======
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/services/UserService.java</file>
+            <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/services/LocationService.java</file>
+            <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/AdminAndManager.java</file>
+            <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/Tiger.java</file>
+>>>>>>> e6db8f94af49bf5e8874a8e0018463a5c9ab71ee
         </group>
     </open-files>
 </project-private>

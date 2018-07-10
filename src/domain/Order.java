@@ -74,6 +74,9 @@ public class Order {
 	public void addItem_id(String item_id){
 		this.item_ids.add(item_id);
 	}
+        public void removeItem_id(String item_id){
+           item_ids.remove(item_id);
+        }
 	public String getOrder_id() {
 		return order_id;
 	}

@@ -1,16 +1,16 @@
 package cli;
 
 import static cli.Tiger.firstScreen;
-import java.sql.Connection;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Scanner;
-
 import domain.Card;
 import domain.Menu;
 import domain.Special;
 import domain.User;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import domain.UserStatus;
+import java.sql.Date;
 import services.CardService;
 import services.MenuServices;
 import services.SpecialServices;
@@ -19,29 +19,72 @@ import services.UserStatusService;
 
 public class AdminAndManager {
 
-    static Connection con;
-
-    public AdminAndManager(Connection con) {
-        AdminAndManager.con = con;
-    }
-
-    public void adminScreen() {
-        ArrayList<String> options = new ArrayList<String>();
-        System.out.println("Admin View");
-        options.add("Alter Cards");
-        options.add("Alter Combos");
-        options.add("Alter Delivery Methods");
-        options.add("Alter Delivery Statuses");
-        options.add("Alter Items");
-        options.add("Alter Item Types");
-        options.add("Alter Locations");
-        options.add("Alter Orders");
-        options.add("Alter Users");
-        options.add("Alter User Statuses");
-        ServiceWrapper.printOptions(options);
-        Scanner sc = new Scanner(System.in);
-        int input = sc.nextInt();
-        int option = 0;
+	static Connection con;
+        private User user;
+        private static String manager = "3";
+        private static String admin = "4";
+	
+	public AdminAndManager(Connection con){
+		AdminAndManager.con = con;
+                user = null;
+	}
+	
+	public void adminScreen(){
+            // Wait for login
+            Scanner sc = new Scanner(System.in);
+            UserService userHelper = new UserService(con);
+            while(user == null){
+                // Get email
+                String email = "";
+                do{
+                    System.out.println("Enter your email:");
+                    email = sc.nextLine();
+                } while(email.length() == 0);
+                
+                // Get password
+                String password = "";
+                do{
+                    System.out.println("Enter your password");
+                    password = sc.nextLine();
+                } while(password.length() == 0);
+                
+                // Check credentials
+                boolean emailExists = (userHelper.getByEmail(email) != null);
+                boolean passwordMatch = emailExists && 
+                                        (userHelper.getByEmail(email).getPassword().equals(password));
+                boolean isAdmin = passwordMatch &&
+                        (userHelper.getByEmail(email).getUserStatusId().equals(manager) ||
+                         userHelper.getByEmail(email).getUserStatusId().endsWith(admin));
+                
+                // Notify user of reason for failed login
+                if(!emailExists || !passwordMatch){
+                    System.out.println("Incorrect credentials. Please try again.");
+                } else if(!isAdmin){
+                    System.out.println("You are not an admin.");
+                    firstScreen();
+                }
+                
+                // Allow login
+                if(isAdmin){
+                    user = userHelper.getByEmail(email);
+                }
+            }
+            
+		ArrayList<String> options = new ArrayList<String>();
+		System.out.println("Admin View");
+		options.add("Alter Cards");
+		options.add("Alter Combos");
+		options.add("Alter Delivery Methods");
+		options.add("Alter Delivery Statuses");
+		options.add("Alter Items");
+		options.add("Alter Item Types");
+		options.add("Alter Locations");
+		options.add("Alter Orders");
+		options.add("Alter Users");
+		options.add("Alter User Statuses");
+		ServiceWrapper.printOptions(options);
+	    int input = sc.nextInt();
+	    int option = 0;
         switch (input) {
             case 1: {
                 option = optionsScreen("Card");
@@ -67,9 +110,8 @@ public class AdminAndManager {
                     case 3:
                         deleteComboScreen();
                     case 4:
-                        adminScreen();
+                        adminScreen();break;
                 }
-                break;
             }
             case 3:
                 optionsScreen("Delivery Method");
@@ -143,51 +185,52 @@ public class AdminAndManager {
 
     }
 
-    public static int optionsScreen(String thing) {
-        System.out.println("How would you like to alter " + thing);
-        ArrayList<String> options = new ArrayList<String>();
-        options.add("Alter");
-        options.add("Add");
-        options.add("Delete");
-        ServiceWrapper.printOptions(options);
-        Scanner sc = new Scanner(System.in);
-        int input = sc.nextInt();
-        return input;
-    }
-
-    void alterStatus() {
-        // Ask for which status to alter
-        UserStatusService statusHelper = new UserStatusService(con);
-        ArrayList<UserStatus> statuses = statusHelper.getAll();
-        System.out.println("Select a user status to alter:" + statuses.size());
-        for (int i = 0; i < statuses.size(); i++) {
-            System.out.println((i + 1) + ". " + statuses.get(i));
+	
+        public static int optionsScreen(String thing){
+		System.out.println("How would you like to alter " + thing);
+		ArrayList<String> options = new ArrayList<String>();
+		options.add("Alter");
+		options.add("Add");
+		options.add("Delete");
+		ServiceWrapper.printOptions(options);
+		Scanner sc = new Scanner(System.in);
+	    int input = sc.nextInt();
+		return input;
+	}
+        
+        void alterStatus(){
+            // Ask for which status to alter
+            UserStatusService statusHelper = new UserStatusService(con);
+            ArrayList<UserStatus> statuses = statusHelper.getAll();
+            System.out.println("Select a user status to alter:" + statuses.size());
+            for(int i = 0; i < statuses.size(); i++){
+                System.out.println((i + 1) + ". " + statuses.get(i));
+            }
+            Scanner kb = new Scanner(System.in);
+            UserStatus toAlter = statuses.get(Integer.parseInt(kb.nextLine()));
+            
+            // Alter it
+            System.out.println("What would you like to change the status to?");
+            String newStatus = kb.nextLine();
+            toAlter.setUserStatus(newStatus);
+            statusHelper.update(toAlter);
+            System.out.println("Status altered");
         }
-        Scanner kb = new Scanner(System.in);
-        UserStatus toAlter = statuses.get(Integer.parseInt(kb.nextLine()));
-
-        // Alter it
-        System.out.println("What would you like to change the status to?");
-        String newStatus = kb.nextLine();
-        toAlter.setUserStatus(newStatus);
-        statusHelper.update(toAlter);
-        System.out.println("Status altered");
-    }
-
-    void addStatus() {
-        // Ask for a new status
-        UserStatusService statusHelper = new UserStatusService(con);
-        Scanner kb = new Scanner(System.in);
-        System.out.println("What status would you like to add?");
-        String newID = statusHelper.newStatusID() + "";
-        String newStatus = kb.nextLine();
-
-        // Make the status
-        UserStatus toInsert = new UserStatus(newID, newStatus);
-        statusHelper.add(toInsert);
-        System.out.println(newStatus + " added");
-        adminScreen();
-    }
+        void addStatus(){
+            // Ask for a new status
+            UserStatusService statusHelper = new UserStatusService(con);
+            Scanner kb = new Scanner(System.in);
+            System.out.println("What status would you like to add?");
+            String newID = (statusHelper.newStatusID() + "").toLowerCase();
+            String newStatus = kb.nextLine();
+            
+            // Make the status
+            UserStatus toInsert = new UserStatus(newID, newStatus);
+            statusHelper.add(toInsert);
+            System.out.println(newStatus + " added");
+            adminScreen();
+        }
+        
 
     void deleteStatus() {
         // Ask for the user status to delete
@@ -577,7 +620,8 @@ public class AdminAndManager {
             return "null";
         } else {
             return field;
-        }
+        }   
+        
     }
 
     private void alterComboScreen() {
@@ -629,3 +673,4 @@ public class AdminAndManager {
     }
 
 }
+
