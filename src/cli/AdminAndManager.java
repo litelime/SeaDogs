@@ -1,6 +1,7 @@
 package cli;
 
 import static cli.Tiger.firstScreen;
+import com.sun.org.apache.xml.internal.security.utils.HelperNodeList;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -16,6 +17,8 @@ import domain.Store;
 import domain.User;
 import domain.UserStatus;
 import services.CardService;
+import services.DeliveryMethod;
+import services.DeliveryMethodService;
 import services.LocationService;
 import services.MenuServices;
 import services.OrderService;
@@ -109,7 +112,24 @@ public class AdminAndManager {
 	    			break;
 	    		}
 	    	case 3:
-	    		optionsScreen("Delivery Method");
+	    		option = optionsScreen("Delivery Method");
+                        // Goes to item menu. Fix that later
+                        switch(option){
+                            case 1:
+                                editDeliveryMethod();
+                                break;
+                            case 2:
+                                addDeliveryMethod();
+                                break;
+                            case 3:
+                                deleteDeliveryMethod();
+                                break;
+                            case 5:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
 	    	case 4:
 	    		optionsScreen("Delivery Statuse");
 	    	case 5:
@@ -131,7 +151,6 @@ public class AdminAndManager {
     				case 5:
     					System.exit(0);
     			}
-    			break;
 	    	}
 	    	case 6:
 	    		optionsScreen("Item Type");
@@ -178,6 +197,8 @@ public class AdminAndManager {
 	    		firstScreen();
 	    	case 13:
 	    		System.exit(0);
+                default:
+                    adminScreen();
 	    }
 	    
 	    adminScreen();
@@ -196,7 +217,69 @@ public class AdminAndManager {
 		return input;
 	}
         
-        void alterStatus(){
+        /*
+        **************************
+        * Delivery Method Status *
+        **************************
+        */
+        
+        public void editDeliveryMethod(){
+            // Ask for a delivery method to delete
+            Scanner kb = new Scanner(System.in);
+            DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
+            ArrayList<DeliveryMethod> methods = deliveryHelper.getAll();
+            for(int i = 0; i < methods.size(); i++){
+                System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
+            }
+            System.out.println("Chose a delivery method to edit:");
+            DeliveryMethod choice = methods.get(Integer.parseInt(kb.nextLine()) - 1);
+            
+            // Ask for the new value
+            System.out.println("What would you like to change it to?");
+            choice.setDelivery_method(kb.nextLine());
+            
+            // Edit the method
+            deliveryHelper.update(choice);
+            System.out.println("Alteration successful.");
+        }
+        
+        public void deleteDeliveryMethod(){
+            // Ask for a delivery method to delete
+            Scanner kb = new Scanner(System.in);
+            DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
+            ArrayList<DeliveryMethod> methods = deliveryHelper.getAll();
+            for(int i = 0; i < methods.size(); i++){
+                System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
+            }
+            System.out.println("Chose a delivery method to delete:");
+            DeliveryMethod choice = methods.get(Integer.parseInt(kb.nextLine()) - 1);
+            
+            // Delete the method
+            deliveryHelper.deleteById(choice.getDelivery_method_id());
+            System.out.println(choice.getDelivery_method() + " deleted");
+        }
+        
+        public void addDeliveryMethod(){
+            // Get the delivery method
+            Scanner kb = new Scanner(System.in);
+            DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
+            System.out.println("Enter a delivery method:");
+            String newMethod = kb.nextLine();
+            String newID = deliveryHelper.nextID() + "";
+            
+            // Build the delivery method and add it
+            DeliveryMethod method = new DeliveryMethod(newID, newMethod);
+            deliveryHelper.add(method);
+            System.out.println(newMethod + " added.");
+        }
+        
+        /*
+        ***************
+        * User Status *
+        ***************
+        */
+        
+        public void alterStatus(){
             // Ask for which status to alter
             UserStatusService statusHelper = new UserStatusService(con);
             ArrayList<UserStatus> statuses = statusHelper.getAll();
@@ -214,7 +297,8 @@ public class AdminAndManager {
             statusHelper.update(toAlter);
             System.out.println("Status altered");
         }
-        void addStatus(){
+        
+        public void addStatus(){
             // Ask for a new status
             UserStatusService statusHelper = new UserStatusService(con);
             Scanner kb = new Scanner(System.in);
@@ -229,7 +313,7 @@ public class AdminAndManager {
             adminScreen();
         }
         
-        void deleteStatus(){
+        public void deleteStatus(){
             // Ask for the user status to delete
             UserStatusService statusHelper = new UserStatusService(con);
             Scanner kb = new Scanner(System.in);

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DeliveryMethodService implements Service<DeliveryMethod>{
 	
@@ -24,7 +25,7 @@ public class DeliveryMethodService implements Service<DeliveryMethod>{
 	@Override
 	public boolean add(DeliveryMethod deliveryMethod){
 		try{
-			CallableStatement statement = connection.prepareCall("{call AddDeliveryMethod(?, ?)}");
+			CallableStatement statement = connection.prepareCall("{call SP_INSERT_DELIVERY_METHOD(?, ?)}");
 			statement.setString(1, deliveryMethod.getDelivery_method_id());
 			statement.setString(2, deliveryMethod.getDelivery_method());
 			statement.execute();
@@ -37,17 +38,13 @@ public class DeliveryMethodService implements Service<DeliveryMethod>{
 	}
 	
 	@Override
-	public void update(DeliveryMethod deliveryMethod){
-		String statement = "UPDATE DELIVERY_METHODS SET DELIVERY_METHOD = ?"
-				+ "WHERE DELIVERY_METHOD_ID = ?";
-		
+	public void update(DeliveryMethod deliveryMethod){		
 		try{
-			PreparedStatement preparedStatement = connection.prepareStatement(statement);
-			
-			preparedStatement.setString(1, deliveryMethod.getDelivery_method());
-			preparedStatement.setString(2, deliveryMethod.getDelivery_method_id());
-			preparedStatement.executeUpdate();
-		
+                    CallableStatement stmnt = connection.prepareCall("{call SP_UPDATE_DELIVERY_METHOD(?,?)}");
+                    stmnt.setString(1, deliveryMethod.getDelivery_method_id());
+                    stmnt.setString(2, deliveryMethod.getDelivery_method());
+                    stmnt.execute();
+                    stmnt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
@@ -96,7 +93,7 @@ public class DeliveryMethodService implements Service<DeliveryMethod>{
 	public void deleteById(String id) {
 		try{
 			
-			CallableStatement statement = connection.prepareCall("{call DeleteDeliveryMethod(?)}");
+			CallableStatement statement = connection.prepareCall("{call SP_DELETE_DELIVERY_METHOD(?)}");
 			statement.setString(1, id);
 			statement.execute();
 			statement.close();
@@ -107,4 +104,26 @@ public class DeliveryMethodService implements Service<DeliveryMethod>{
 		
 	}
 	
+        public int nextID(){
+            try {
+                // Get all the ids
+                String query = "select delivery_method_id from delivery_methods";
+                Statement stmnt = connection.createStatement();
+                stmnt.execute(query);
+                
+                // Collect the ids
+                ArrayList<Integer> ids = new ArrayList<>();
+                ResultSet result = stmnt.getResultSet();
+                while(result.next()){
+                    ids.add(Integer.parseInt(result.getString(1)));
+                }
+                
+                // Return the next id
+                return Collections.max(ids) + 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+                return -1;
+            }
+        }
 }
