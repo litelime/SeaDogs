@@ -25,8 +25,8 @@ public class AdminAndManager {
 
 	static Connection con;
         private User user;
-        private static String manager = "3";
-        private static String admin = "4";
+        private static final String MANAGER = "5";
+        private static final String ADMIN = "3";
 	
 	public AdminAndManager(Connection con){
 		AdminAndManager.con = con;
@@ -57,8 +57,8 @@ public class AdminAndManager {
                 boolean passwordMatch = emailExists && 
                                         (userHelper.getByEmail(email).getPassword().equals(password));
                 boolean isAdmin = passwordMatch &&
-                        (userHelper.getByEmail(email).getUserStatusId().equals(manager) ||
-                         userHelper.getByEmail(email).getUserStatusId().endsWith(admin));
+                        (userHelper.getByEmail(email).getUserStatusId().equals(MANAGER) ||
+                         userHelper.getByEmail(email).getUserStatusId().endsWith(ADMIN));
                 
                 // Notify user of reason for failed login
                 if(!emailExists || !passwordMatch){
