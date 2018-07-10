@@ -114,8 +114,12 @@ public class UserService implements Service<User>{
 		User user = null;
 		
 		try{
+			// If the email isn't associated with anyone
+                        if(!emailExists(email)){
+                            return null;
+                        }
 			
-			PreparedStatement pstmt = connection.prepareStatement("select * from users "
+                        PreparedStatement pstmt = connection.prepareStatement("select * from users "
 					+ "where email = ?"); 
 			pstmt.setString(1,email);
 						
@@ -132,7 +136,8 @@ public class UserService implements Service<User>{
 					usersRs.getString(7)
 					); 
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+                    e.printStackTrace();
+                    System.out.println(e.getMessage() + "????");
 		}	
 		
 		return user;
@@ -202,9 +207,11 @@ public class UserService implements Service<User>{
                 }
                 
                 // Generate a new id
+                if(ids.isEmpty())
+                    return 0;
                 return Collections.max(ids) + 1;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (NumberFormatException | SQLException e) {
+                System.out.println(e.getMessage());
                 System.exit(1);
                 return -1;
             }

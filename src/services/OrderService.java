@@ -227,10 +227,12 @@ public class OrderService implements Service<Order>{
                 while(orderRs.next()){
                     ints.add(orderRs.getInt("order_id"));
                 }
+                System.out.println(ints.get(0));
                 //orderId = greatest value. 
                 for(int x: ints){
-                    if(x>orderId)
+                    if(x>orderId){
                         orderId = x;
+                    }
                 }
             }catch(SQLException e){
                 System.out.println("ERROR: getNextOrderID");
