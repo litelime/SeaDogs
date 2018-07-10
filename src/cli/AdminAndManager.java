@@ -15,6 +15,7 @@ import domain.Order;
 import domain.Store;
 import domain.User;
 import domain.UserStatus;
+import domain.itemType;
 import services.CardService;
 import services.LocationService;
 import services.MenuServices;
@@ -22,6 +23,7 @@ import services.OrderService;
 import services.StoreService;
 import services.UserService;
 import services.UserStatusService;
+import services.itemTypeServices;
 
 public class AdminAndManager {
 	
@@ -91,7 +93,12 @@ public class AdminAndManager {
     			break;
 	    	}
 	    	case 6:
-	    		optionsScreen("Item Type");
+	    		option=optionsScreen("Item Type");
+                        switch(option){
+                            case 1:
+                                addItemTypeScreen();
+                                break;
+                        }
 	    	case 7:
 	    		optionsScreen("Location");
 	    	case 8:
@@ -576,5 +583,22 @@ public class AdminAndManager {
             } else {
                 return field;
             }
+        }
+        
+        public static void addItemTypeScreen(){
+            Scanner sc=new Scanner(System.in);
+            System.out.println("Please enter the item type ID to be inserted");
+            String TypeId=sc.next();
+            System.out.println("Please enter the item type");
+            String itmTyp=sc.next();
+            itemType it=new itemType(TypeId, itmTyp);
+            itemTypeServices it1 = new itemTypeServices(con);
+            it1.add(it);
+            System.out.println("\n" + TypeId + " added to database\n");
+            AdminAndManager aam = new AdminAndManager(con);
+            aam.adminScreen();
+            
+            
+            
         }
 }

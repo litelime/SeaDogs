@@ -156,7 +156,6 @@ public class Tiger{
 	    String last = sc.next();
 		System.out.println("Enter phone:");
 	    String phone = sc.next();
-            System.out.println(phone.matches("^[0-9]+$"));
             while(!phone.matches("^[0-9]+$")){
                 System.out.println("Please enter a valid phone. Phone can only be numeric");
                 phone = sc.next();

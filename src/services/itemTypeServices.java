@@ -1,0 +1,59 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package services;
+
+import domain.Menu;
+import domain.itemType;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author syntel
+ */
+public class itemTypeServices {
+//implements Service<itemType> {
+    
+    Connection connection;
+
+    public itemTypeServices(Connection connection) {
+        this.connection = connection;
+    }
+    
+    //public void deleteById(String id);
+    public boolean add(itemType it){
+        Connection conn;
+        CallableStatement orclCallableStatement;
+        try{
+            //get the driver
+            Class.forName("oracle.jdbc.OracleDriver");
+            //connecting to database
+            conn=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","db_uspring","pass");
+            System.out.println("Connection is successful");
+            
+            orclCallableStatement=conn.prepareCall("{call SP_ADD_ITEM_TYPES(?,?)}");
+            orclCallableStatement.setString(1, it.getItemTypeId());
+            orclCallableStatement.setString(2, it.getItemType());
+            
+            orclCallableStatement.execute();
+            //close all resources
+            orclCallableStatement.close();
+            conn.close();
+            return true;           
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
+    //public void update(E obj);
+    //public E getById(String id);
+    //public ArrayList<E> getAll();
+    //public void add(itemType it){
+        
+    
+}
