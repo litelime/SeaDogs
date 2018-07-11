@@ -16,6 +16,8 @@ import java.sql.Date;
 import services.CardService;
 import services.DeliveryMethod;
 import services.DeliveryMethodService;
+import services.DeliveryStatus;
+import services.DeliveryStatusService;
 import services.MenuServices;
 import services.SpecialServices;
 import services.UserService;
@@ -160,12 +162,15 @@ public class AdminAndManager {
             default:
                 adminScreen();
         }
+
+        adminScreen();
+
     }
 
-    private static int optionsScreen(String thing) {
+    public static int optionsScreen(String thing) {
         System.out.println("How would you like to alter " + thing);
         ArrayList<String> options = new ArrayList<String>();
-        options.add("Alter"); 
+        options.add("Alter");
         options.add("Add");
         options.add("Delete");
         ServiceWrapper.printOptions(options);
@@ -173,6 +178,7 @@ public class AdminAndManager {
         int input = sc.nextInt();
         return input;
     }
+
 
     /*
         **************************
@@ -284,7 +290,7 @@ public class AdminAndManager {
                 filtered.add(status);
             }
         }
-        
+
         System.out.println("Select a user status to delete");
         for (int i = 0; i < filtered.size(); i++) {
             System.out.println((i + 1) + ". " + filtered.get(i));
@@ -709,6 +715,80 @@ public class AdminAndManager {
         String specialId = specials.get(specialChoice).getItem_ID();
         SS.deleteById(specialId);
         adminScreen();
+    }
+
+    private static void alterDeliveryStatus() {
+        System.out.println("Choose a delivery status to alter");
+
+        DeliveryStatusService DSS = new DeliveryStatusService(con);
+        ArrayList<DeliveryStatus> stats = DSS.getAll();
+        int count = 0;
+        for (DeliveryStatus x : stats) {
+            count++;
+            System.out.println(count + ". " + x.getDelivery_status());
+        }
+        Scanner sc = new Scanner(System.in);
+
+        int input = Tiger.getAnInt();
+
+        if (input == stats.size() + 1) {
+            return;
+        }
+        if (input == stats.size() + 2) {
+            System.exit(0);
+        }
+
+        System.out.println("Enter the new Delivery Status");
+
+        String deliveryStatus = sc.next();
+
+        DSS.update(new DeliveryStatus(stats.get(input - 1).getDelivery_status_id(), deliveryStatus));
+
+        System.out.println("Delivery status deleted");
+
+    }
+
+    private static void deleteDeliveryStatus() {
+
+        System.out.println("Choose a delivery status to delete");
+
+        DeliveryStatusService DSS = new DeliveryStatusService(con);
+        ArrayList<DeliveryStatus> stats = DSS.getAll();
+        int count = 0;
+        for (DeliveryStatus x : stats) {
+            count++;
+            System.out.println(count + ". " + x.getDelivery_status());
+        }
+        Scanner sc = new Scanner(System.in);
+
+        int input = Tiger.getAnInt();
+
+        if (input == stats.size() + 1) {
+            return;
+        }
+        if (input == stats.size() + 2) {
+            System.exit(0);
+        }
+
+        DSS.deleteByID(stats.get(input - 1).getDelivery_status_id());
+
+        System.out.println("Delivery status deleted");
+    }
+
+    private static void addDeliveryStatus() {
+
+        Scanner sc = new Scanner(System.in);
+
+        DeliveryStatusService DSS = new DeliveryStatusService(con);
+
+        System.out.println("Enter the new Delivery Status");
+
+        String newService = sc.next();
+
+        DSS.add(new DeliveryStatus("" + DSS.newDeliveryStatusId(), newService));
+
+        System.out.println("New Delivery Status " + newService + " created.");
+
     }
 
     private static void adminLogin() {

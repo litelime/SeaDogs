@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DeliveryStatusService {
 	
@@ -33,21 +34,44 @@ public class DeliveryStatusService {
 	}
 	
 	public void update(DeliveryStatus deliveryStatus){
-		String statement = "UPDATE DELIVERY_STATUSES SET DELIVERY_STATUS = ?"
-				+ "WHERE DELIVERY_STATUS_ID = ?";
-		
 		try{
-			PreparedStatement preparedStatement = connection.prepareStatement(statement);
+			CallableStatement statement = connection.prepareCall("{call sp_update_delivery_status(?, ?)}");
+			statement.setString(1, deliveryStatus.getDelivery_status_id());
+			statement.setString(2, deliveryStatus.getDelivery_status());
+			statement.execute();
+			statement.close();
 			
-			preparedStatement.setString(1, deliveryStatus.getDelivery_status());
-			preparedStatement.setString(2, deliveryStatus.getDelivery_status_id());
-			preparedStatement.executeUpdate();
-		
-		} catch (SQLException e) {
+		}catch(SQLException e){
 			System.out.println(e.getMessage());
-		}
+		}	
 	}
 	
+        // Generate a new user id
+        public int newDeliveryStatusId(){
+            try {
+                // Ask for all the ids
+                String query = "select delivery_status_id from delivery_statuses";
+                Statement stmnt = connection.createStatement();
+                stmnt.execute(query);
+                
+                // Collect the ids
+                ArrayList<Integer> ids = new ArrayList<Integer>();
+                ResultSet results = stmnt.getResultSet();
+                while(results.next()){
+                    ids.add(Integer.parseInt(results.getString(1)));
+                }
+                
+                // Generate a new id
+                if(ids.isEmpty())
+                    return 0;
+                return Collections.max(ids) + 1;
+            } catch (NumberFormatException | SQLException e) {
+                System.out.println(e.getMessage());
+                System.exit(1);
+                return -1;
+            }
+        }
+        
 	public void deleteByID(String id){
 		try{
 			
