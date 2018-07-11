@@ -5,6 +5,7 @@ import static cli.Tiger.firstScreen;
 import domain.Card;
 import domain.Menu;
 import domain.Special;
+import domain.SpecialMenu;
 import domain.User;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -76,7 +77,23 @@ public class AdminAndManager {
                 break;
             }
             case 2:
-                System.out.println("Not yet supported.");
+                option = optionsScreen("Item");
+                switch (option) {
+                    case 1:
+                        alterSpecialScreen();
+                        break;
+                    case 2:
+                        addSpecialScreen();
+                        break;
+                    case 3:
+                        deleteSpecialScreen();
+                        break;
+                    case 4:
+                        adminScreen();
+                        break;
+                    case 5:
+                        System.exit(0);
+                }
             case 3:
                 option = optionsScreen("Delivery Method");
                 // Goes to item menu. Fix that later
@@ -493,7 +510,90 @@ public class AdminAndManager {
         cs.update(c);
         adminScreen();
     }
+private static void addSpecialScreen() {
+        System.out.println("Add a special");
+        Scanner sc = new Scanner(System.in);
+        MenuServices menServ = new MenuServices(con);
 
+        System.out.println("\nEnter special name: ");
+        String name = sc.nextLine();
+        System.out.println("\nEnter vegeterian (y or n): ");
+        String vege = sc.next();
+        char vegetarian = vege.charAt(0);
+        System.out.println("\nEnter a description: ");
+        sc.nextLine();
+        String description = sc.nextLine();
+        System.out.println("\nEnter meal time: ");
+        String slot_ID = sc.next();
+        System.out.println("\nEnter photo link: ");
+        String photo = sc.next();
+        System.out.println("\nEnter a price: ");
+        float price = sc.nextFloat();
+        SpecialMenu sm = new SpecialMenu();
+        sm.setId("" + menServ.getNextSpecialId());
+        sm.setName(name);
+        
+        //Menu men = new Menu("" + menServ.getNextItemId(), name, vegetarian, 0, description, slot_ID, photo, price);
+        //menServ.add(men);
+        System.out.println("\n" + name + " added to database\n");
+        adminScreen();
+    }
+
+    private static void deleteSpecialScreen() {
+        System.out.println("Choose an item to delete");
+        MenuServices ms = new MenuServices(con);
+        ArrayList<Menu> menus = ms.getAll();
+        ServiceWrapper.printMenuItems(menus);
+        Scanner sc = new Scanner(System.in);
+        int input = sc.nextInt();
+        if (input == menus.size() + 1) {
+            return;
+        }
+        if (input == menus.size() + 2) {
+            System.exit(0);
+        }
+        MenuServices menServ = new MenuServices(con);
+
+        menServ.deleteById(menus.get(input - 1).getId());
+        System.out.println("Deleted " + menus.get(input - 1).getName());
+        adminScreen();
+    }
+
+    private static void alterSpecialScreen() {
+        System.out.println("Choose an item to alter");
+        MenuServices ms = new MenuServices(con);
+        ArrayList<Menu> menus = ms.getAll();
+        ServiceWrapper.printMenuItems(menus);
+        Scanner sc = new Scanner(System.in);
+        int input = sc.nextInt();
+        if (input == (menus.size()) + 1) {
+            alterItemScreen();
+        }
+        Menu men = menus.get(input - 1);
+        MenuServices menServ = new MenuServices(con);
+        System.out.println("Enter item name: ");
+        sc.nextLine();
+        String name = sc.nextLine();
+        System.out.println("Enter vegeterian (y or n): ");
+        String vege = sc.next();
+        char vegetarian = vege.charAt(0);
+        System.out.println("Enter a description: ");
+        sc.nextLine();
+        String description = sc.nextLine();
+        System.out.println("Enter type number id: ");
+        String type = sc.next();
+        System.out.println("Enter meal time: ");
+        String slot_ID = sc.next();
+        System.out.println("Enter photo link: ");
+        String photo = sc.next();
+        System.out.println("Enter a price: ");
+        float price = sc.nextFloat();
+        String id = men.getId();
+        Menu menUp = new Menu(id, name, vegetarian, type, description, slot_ID, photo, price);
+        menServ.update(menUp);
+        System.out.println("Updated " + name);
+        adminScreen();
+    }
     private static void addItemScreen() {
         System.out.println("Add an item");
         Scanner sc = new Scanner(System.in);

@@ -184,6 +184,32 @@ public class MenuServices implements Service<Menu> {
             return -1;
         }
     }
+    
+    public int getNextSpecialId() {
+        try {
+            // Ask for all the ids
+            String query = "select special_id from specials";
+            Statement stmnt = con.createStatement();
+            stmnt.execute(query);
+
+            // Collect the ids
+            ArrayList<Integer> ids = new ArrayList<Integer>();
+            ResultSet results = stmnt.getResultSet();
+            while (results.next()) {
+                ids.add(Integer.parseInt(results.getString(1)));
+            }
+
+            // Generate a new id
+            if (ids.isEmpty()) {
+                return 0;
+            }
+            return Collections.max(ids) + 1;
+        } catch (NumberFormatException | SQLException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+            return -1;
+        }
+    }
 
     private String getTimeName(ArrayList<TimeSlots> timeArr, String id) {
         String tName = "";
