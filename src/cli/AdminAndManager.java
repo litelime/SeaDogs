@@ -1,5 +1,6 @@
 package cli;
 
+import static cli.Tiger.con;
 import static cli.Tiger.editString;
 import static cli.Tiger.firstScreen;
 import static cli.Tiger.getAnInt;
@@ -597,10 +598,10 @@ private static void addSpecialScreen() {
     }
 
     private static void alterSpecialScreen() {
-        System.out.println("Choose an item to alter");
+        System.out.println("Choose a Special Combo to alter");
         MenuServices ms = new MenuServices(con);
-        ArrayList<Menu> menus = ms.getAll();
-        ServiceWrapper.printMenuItems(menus);
+        ArrayList<SpecialMenu> menus = ms.getAllSpecials();
+        ServiceWrapper.printSpecialMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
         if (input == (menus.size()) + 1) {
