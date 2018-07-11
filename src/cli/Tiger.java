@@ -102,6 +102,7 @@ public class Tiger {
 
     }
 
+
     public static void loginScreen() {
         System.out.println("\n*Login*");
         System.out.println("Enter email:");
@@ -264,7 +265,7 @@ public class Tiger {
         if (input == menus.size() + 1) {
             menuScreen();
         } else {
-            //menuItemScreen(menus.get(input - 1));
+            menuItemScreen(menus.get(input - 1));
         }
     }
 
@@ -302,7 +303,7 @@ public class Tiger {
     public static void itemQuantityScreen(Menu menu) {
         System.out.println("Enter Quantity");
         int input = getAnInt();
-        currentOrder.removeItem_id(menu.getId());
+        //currentOrder.removeItem_id(menu.getId());
         if (input != 0) {
             for (int i = 0; i < input; i++) {
                 currentOrder.addItem_id(menu.getId());
@@ -315,12 +316,12 @@ public class Tiger {
     public static void specialQuantityScreen(SpecialMenu menu) {
         System.out.println("Enter Quantity");
         int input = getAnInt();
-        currentOrder.removeItem_id(menu.getId());
+        //currentOrder.removeItem_id(menu.getId());
         if (input != 0) {
             for (int i = 0; i < input; i++) {
                 currentOrder.addItem_id(menu.getId());
             }
-            System.out.println("Special combo(s) added");
+            System.out.println("Item(s) added");
             menuScreen();
         }
     }
@@ -343,6 +344,7 @@ public class Tiger {
             int amount = 0;
             for (int i = 0; i <= idList.size() - 1; i++) {
                 if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
+                    amount += 1;
                     System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
                     amount = 0;
                     if (i != idList.size() - 1) {

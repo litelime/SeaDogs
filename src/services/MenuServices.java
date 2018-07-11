@@ -216,27 +216,21 @@ public class MenuServices implements Service<Menu> {
             SpecialMenu sm = new SpecialMenu();
             sm.setPrice(0);
             while (rs.next()) {
-                if (!sm.getId().equals("")) {
-                    sm.setId(rs.getString("special_id"));
-                }
-                if (sm.getId().equals(rs.getString("special_id"))) {
-                    if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
-                        sm.setName(rs.getString("special_name"));
-                        if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
-                            sm.setDescription(rs.getString("special_description"));
-                        }
-                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * rs.getFloat("discount_percentage"));
-                        for(int i = 0; i < rs.getInt("amount"); i++) {
-                            sm.addItemId(rs.getString("item_id"));
-                        }
-                        String tid = rs.getString("time_slot_id");
-                        String tName = getTimeName(times, tid);
-                        sm.setPhoto(rs.getString("photo"));
-                        sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                sm.setId(rs.getString("special_id"));
+                if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
+                    sm.setName(rs.getString("special_name"));
+                    if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
+                        sm.setDescription(rs.getString("special_description"));
                     }
+                    sm.setPrice(sm.getPrice() + rs.getInt("amount") * rs.getFloat("discount_percentage"));
+                    for(int i = 0; i < rs.getInt("amount"); i++) {
+                        sm.addItemId(rs.getString("item_id"));
+                    }
+                    String tid = rs.getString("time_slot_id");
+                    String tName = getTimeName(times, tid);
+                    sm.setPhoto(rs.getString("photo"));
+                    sm.setVegetarian(rs.getString("vegetarian").charAt(0));
                 }
-                
-
                 menArr.add(sm);
             }
             return menArr;
