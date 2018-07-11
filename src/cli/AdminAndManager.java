@@ -1,8 +1,11 @@
 package cli;
 
+import static cli.Tiger.editString;
 import static cli.Tiger.firstScreen;
+import static cli.Tiger.getAnInt;
 
 import domain.Card;
+import domain.Location;
 import domain.Menu;
 import domain.Special;
 import domain.SpecialMenu;
@@ -138,8 +141,24 @@ public class AdminAndManager {
                 System.out.println("Not yet supported");
                 //optionsScreen("Item Type");
             case 7:
-                System.out.println("Not yet supported");
-                //optionsScreen("Location");
+                option = optionsScreen("Locations");
+                        switch(option){
+                            case 1:
+                                editLocations();
+                                break;
+                            case 2:
+                                addLocation();
+                                break;
+                            case 3:
+                                deleteLocation();
+                                break;
+                            case 4:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
+                        break;
             case 8:
                 System.out.println("Not yet supported");
                 //optionsScreen("Order");
@@ -370,7 +389,7 @@ public class AdminAndManager {
         }
         changeField = options.get(Integer.parseInt(kb.nextLine()) - 1);
 
-        // Go back 
+        // Go back
         if (changeField.equals("Go back")) {
             adminScreen();
             return;
@@ -380,7 +399,7 @@ public class AdminAndManager {
         System.out.println("What would you like to change " + changeField + " to?");
         String changeValue = kb.nextLine();
 
-        // Check the user input 
+        // Check the user input
         // No value given
         
         /*Instead repeatedly ask for input*/
@@ -751,7 +770,7 @@ private static void addSpecialScreen() {
 
         /*
                 Tables who have records that reference this user will also be
-                deleted. For example, all of the 
+                deleted. For example, all of the
          */
         // Delete the user
         System.out.println("Deleting user...");
@@ -815,6 +834,129 @@ private static void addSpecialScreen() {
         String specialId = specials.get(specialChoice).getItem_ID();
         SS.deleteById(specialId);
         adminScreen();
+    }
+
+
+    private void editLocations() {
+        Scanner sc = new Scanner(System.in);
+        LocationService ls = new LocationService(con);
+        ArrayList<Location> locs = ls.getAll();
+        for(int i = 0; i < locs.size(); i++){
+            System.out.println((i + 1) + ". " + locs.get(i).getAddress());
+        }
+        int input = Integer.parseInt(sc.nextLine());
+        if(input <= locs.size() && input > 0){
+            editALoc(locs.get(input -1));
+            System.out.println("Location updated");
+        }
+    }
+    
+    private static void editALoc(Location l) {
+        System.out.printf("\n*** Edit Location: ***\n");
+        System.out.println("1. Edit Street: " + l.getStreet());
+        System.out.println("2. Edit City:  " + l.getCity());
+        System.out.println("3. Edit State: " + l.getState());
+        System.out.println("4. Edit Country: " + l.getCountry());
+        System.out.println("5. Edit Zip: " + l.getZip());
+        System.out.println("6. Back");
+
+        int input = getAnInt();
+
+        switch (input) {
+            case 1:
+                String street = editString();
+                l.setStreet(street);
+                System.out.println("Street changed to " + street);
+                editALoc(l);
+                break;
+            case 2:
+                String city = editString();
+                l.setCity(city);
+                System.out.println("City changed to " + city);
+                editALoc(l);
+                break;
+            case 3:
+                String state = editString();
+                l.setState(state);
+                System.out.println("State changed to " + state);
+                editALoc(l);
+                break;
+            case 4:
+                String country = editString();
+                l.setCountry(country);
+                System.out.println("Country changed to " + country);
+                editALoc(l);
+                break;
+            case 5:
+                String zip = editString();
+                l.setZip(zip);
+                System.out.println("Zip changed to " + zip);
+                editALoc(l);
+                break;
+            default:
+                break;
+        }
+        LocationService ls = new LocationService(con);
+        ls.update(l);
+    }
+
+    private void addLocation() {
+        // Get the delivery method
+        Scanner sc = new Scanner(System.in);
+        LocationService locServe = new LocationService(con);
+        Location newLoc = locPrompt(sc);
+        String newID = locServe.getNextLocId();
+        newLoc.setLocationId(newID);
+        locServe.add(newLoc);
+        System.out.println("Location at " +newLoc.getCity() +", " + newLoc.getState() +" added.");
+    }
+    private Location locPrompt(Scanner sc){
+        System.out.println("Enter street");
+        String street = sc.nextLine();
+        System.out.println("Enter city");
+        String city = sc.nextLine();
+        System.out.println("Enter state");
+        String state = sc.nextLine();
+        System.out.println("Enter country");
+        String country = sc.nextLine();
+        System.out.println("Enter Zip");
+        String zip = sc.nextLine();
+        Location newLoc = new Location();
+        newLoc.setStreet(street);
+        newLoc.setCity(city);
+        newLoc.setState(state);
+        newLoc.setCountry(country);
+        newLoc.setZip(zip);
+        return newLoc;
+    }
+
+    private void deleteLocation() {
+        // Ask for a location to delete
+        Scanner sc = new Scanner(System.in);
+        LocationService ls = new LocationService(con);
+        ArrayList<Location> locs = ls.getAll();
+        int total = locs.size();
+        System.out.println("");
+        if(total < 10){
+            for(int i = 0; i < total; i++ ){
+                System.out.println(i+1 + ". " + locs.get(i).getStreet());
+            }
+                System.out.println(total+1 + ". Go Back");
+        }else{//Make a nicer format for a longer list. 4 To a line.
+            for(int i= 0; i < total; i++){
+                System.out.printf("%s. %-25s",(i+1), locs.get(i).getStreet());
+                if((i+1)%4 ==0 ){
+                    System.out.print("\n");
+                }
+            }
+            System.out.println("");
+        }
+        int input = sc.nextInt();
+        if(input <= total){
+            ls.deleteById(locs.get(input-1).getLocationId());
+            System.out.println("Location deleted");
+        }
+                adminScreen();     
     }
 
     private static void alterDeliveryStatus() {
