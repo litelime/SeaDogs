@@ -137,11 +137,28 @@ public class ServiceWrapper {
 		return items;
 	}
         
+        public ArrayList<SpecialMenu> getSpecialMenuItems(ArrayList<String> itemIds) {
+		
+		MenuServices ms = new MenuServices(con);
+		ArrayList<SpecialMenu> sms = new ArrayList<SpecialMenu>();
+		
+		
+		for (String itemId:itemIds){
+			sms.add(ms.getSpecialById(itemId));
+		}
+
+		return sms;
+	}
+        
 	public float calculateTotalPrice(Order currentOrders) {
                 ArrayList<String> item_ids = currentOrders.getItem_ids();
 		float total = 0;
 		ServiceWrapper sw = new ServiceWrapper(con);
 		ArrayList<Menu> items = sw.getMenuItems(item_ids);
+		for(Menu item: items){
+			total += item.getPrice();
+		}
+                ArrayList<SpecialMenu> specials = sw.getSpecialMenuItems(currentOrders.getItem_ids());
 		for(Menu item: items){
 			total += item.getPrice();
 		}

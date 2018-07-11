@@ -74,6 +74,25 @@ public class AdminAndManager {
                 }
                 break;
             }
+            case 2:
+                
+                option = optionsScreen("Combo");
+                switch (option) {
+                    case 1:
+                        alterItemScreen();
+                        break;
+                    case 2:
+                        addItemScreen();
+                        break;
+                    case 3:
+                        deleteItemScreen();
+                        break;
+                    case 4:
+                        adminScreen();
+                        break;
+                    case 5:
+                        System.exit(0);
+                }
             case 3:
                 option = optionsScreen("Delivery Method");
                 // Goes to item menu. Fix that later

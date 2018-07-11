@@ -318,7 +318,7 @@ public class Tiger {
         //currentOrder.removeItem_id(menu.getId());
         if (input != 0) {
             for (int i = 0; i < input; i++) {
-                currentOrder.addItem_id(menu.getId());
+                currentOrder.addSpecial_id(menu.getId());
             }
             System.out.println("Item(s) added");
             menuScreen();
@@ -345,6 +345,29 @@ public class Tiger {
                 if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
                     amount += 1;
                     System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
+                    amount = 0;
+                    if (i != idList.size() - 1) {
+                        System.out.print(", ");
+                        curId = idList.get(i + 1);
+                    } else {
+                        System.out.print("\n");
+                    }
+                } else {
+                    amount += 1;
+                }
+            }
+        }
+        idList = currentOrder.getSpecial_ids();
+        idList.sort(c);
+        if (!idList.isEmpty()) {
+            String curId = idList.get(0);
+            //Tab so output can be read easier
+            System.out.print("    ");
+            int amount = 0;
+            for (int i = 0; i <= idList.size() - 1; i++) {
+                if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
+                    amount += 1;
+                    System.out.print(ms.getSpecialById(idList.get(i)).getName() + " " + amount);
                     amount = 0;
                     if (i != idList.size() - 1) {
                         System.out.print(", ");
