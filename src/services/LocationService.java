@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import domain.Location;
+import java.util.Collections;
 import java.util.Random;
 
 public class LocationService implements Service<Location>{
@@ -157,21 +158,28 @@ public class LocationService implements Service<Location>{
 		return locations;
 	}
         public String getNextLocId(){
-            String id = "";
-            try{
-		Statement locSt = connection.createStatement();
-                boolean idNotFound = true;
-                Random val = new Random();
-                while(idNotFound){
-                    //To try and ensure uniqueness...
-                    id = Integer.toString(val.nextInt(999999));
-                    ResultSet locRs = locSt.executeQuery("Select location_id from Locations WHERE location_id =" + id);
-                    if(!locRs.next()) idNotFound = false;
+            try {
+                // Ask for all the ids
+                String query = "select location_id from locations";
+                Statement stmnt = connection.createStatement();
+                stmnt.execute(query);
+                
+                // Collect the ids
+                ArrayList<Integer> ids = new ArrayList<>();
+                ResultSet results = stmnt.getResultSet();
+                while(results.next()){
+                    ids.add(Integer.parseInt(results.getString(1)));
                 }
-            }catch(SQLException e){
-			System.out.println(e.getMessage());
-		}
-            return id;
+                
+                // Generate a new id
+                if(ids.isEmpty())
+                    return "0";
+                return Integer.toString(Collections.max(ids) + 1);
+            } catch (NumberFormatException | SQLException e) {
+                System.out.println(e.getMessage());
+                System.exit(1);
+                return "-1";
+            }
         }
 	
         /*

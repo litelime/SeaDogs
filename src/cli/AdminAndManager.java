@@ -1,8 +1,11 @@
 package cli;
 
+import static cli.Tiger.editString;
 import static cli.Tiger.firstScreen;
+import static cli.Tiger.getAnInt;
 
 import domain.Card;
+import domain.Location;
 import domain.Menu;
 import domain.Special;
 import domain.User;
@@ -27,12 +30,12 @@ public class AdminAndManager {
         private User user;
         private static String manager = "3";
         private static String admin = "4";
-	
+
 	public AdminAndManager(Connection con){
 		AdminAndManager.con = con;
                 user = null;
 	}
-	
+
 	public void adminScreen(){
             // Wait for login
             Scanner sc = new Scanner(System.in);
@@ -44,22 +47,22 @@ public class AdminAndManager {
                     System.out.println("Enter your email:");
                     email = sc.nextLine();
                 } while(email.length() == 0);
-                
+
                 // Get password
                 String password = "";
                 do{
                     System.out.println("Enter your password");
                     password = sc.nextLine();
                 } while(password.length() == 0);
-                
+
                 // Check credentials
                 boolean emailExists = (userHelper.getByEmail(email) != null);
-                boolean passwordMatch = emailExists && 
+                boolean passwordMatch = emailExists &&
                                         (userHelper.getByEmail(email).getPassword().equals(password));
                 boolean isAdmin = passwordMatch &&
                         (userHelper.getByEmail(email).getUserStatusId().equals(manager) ||
                          userHelper.getByEmail(email).getUserStatusId().endsWith(admin));
-                
+
                 // Notify user of reason for failed login
                 if(!emailExists || !passwordMatch){
                     System.out.println("Incorrect credentials. Please try again.");
@@ -67,13 +70,13 @@ public class AdminAndManager {
                     System.out.println("You are not an admin.");
                     firstScreen();
                 }
-                
+
                 // Allow login
                 if(isAdmin){
                     user = userHelper.getByEmail(email);
                 }
             }
-            
+
 		ArrayList<String> options = new ArrayList<String>();
 		System.out.println("Admin View");
 		options.add("Alter Cards");
@@ -96,12 +99,16 @@ public class AdminAndManager {
 	    			switch(option){
 	    				case 1:
 	    					alterCardScreen();
+                                                break;
 	    				case 2:
 	    					addCardScreen();
+                                                break;
 	    				case 3:
 	    					deleteCardScreen();
-	    				case 4: 
+                                                break;
+	    				case 4:
 	    					adminScreen();
+                                                break;
 	    			}
 	    			break;
 	    		}
@@ -124,8 +131,10 @@ public class AdminAndManager {
                             default:
                                 System.exit(1);
                         }
+                        break;
 	    	case 4:
 	    		optionsScreen("Delivery Statuse");
+                        break;
 	    	case 5:
 	    	{
 	    		option = optionsScreen("Item");
@@ -145,15 +154,36 @@ public class AdminAndManager {
     				case 5:
     					System.exit(0);
     			}
+                        break;
 	    	}
 	    	case 6:
 	    		optionsScreen("Item Type");
+                        break;
 	    	case 7:
-	    		optionsScreen("Location");
+                        option = optionsScreen("Locations");
+                        switch(option){
+                            case 1:
+                                editLocations();
+                                break;
+                            case 2:
+                                addLocation();
+                                break;
+                            case 3:
+                                deleteLocation();
+                                break;
+                            case 4:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
+                        break;
 	    	case 8:
 	    		optionsScreen("Order");
+                        break;
 	    	case 9:
 	    		optionsScreen("Order Item");
+                        break;
 	    	case 10:
 	    	{
 	    		option = optionsScreen("User");
@@ -171,7 +201,8 @@ public class AdminAndManager {
                                     adminScreen();
                                     break;
 	    		}
-	    			
+                        break;
+
 	    	}
 	    	case 11:
 	    		option = optionsScreen("User Statuses");
@@ -187,19 +218,21 @@ public class AdminAndManager {
                                 deleteStatus();
                                 break;
                         }
+                        break;
                 case 12:
 	    		firstScreen();
+                        break;
 	    	case 13:
 	    		System.exit(0);
                 default:
                     adminScreen();
 	    }
-	    
+
 	    adminScreen();
-	    
+
 	}
 
-	
+
         public static int optionsScreen(String thing){
 		System.out.println("How would you like to alter " + thing);
 		ArrayList<String> options = new ArrayList<String>();
@@ -211,13 +244,13 @@ public class AdminAndManager {
 	    int input = sc.nextInt();
 		return input;
 	}
-        
+
         /*
         **************************
         * Delivery Method Status *
         **************************
         */
-        
+
         public void editDeliveryMethod(){
             // Ask for a delivery method to delete
             Scanner kb = new Scanner(System.in);
@@ -228,16 +261,16 @@ public class AdminAndManager {
             }
             System.out.println("Chose a delivery method to edit:");
             DeliveryMethod choice = methods.get(Integer.parseInt(kb.nextLine()) - 1);
-            
+
             // Ask for the new value
             System.out.println("What would you like to change it to?");
             choice.setDelivery_method(kb.nextLine());
-            
+
             // Edit the method
             deliveryHelper.update(choice);
             System.out.println("Alteration successful.");
         }
-        
+
         public void deleteDeliveryMethod(){
             // Ask for a delivery method to delete
             Scanner kb = new Scanner(System.in);
@@ -248,12 +281,12 @@ public class AdminAndManager {
             }
             System.out.println("Chose a delivery method to delete:");
             DeliveryMethod choice = methods.get(Integer.parseInt(kb.nextLine()) - 1);
-            
+
             // Delete the method
             deliveryHelper.deleteById(choice.getDelivery_method_id());
             System.out.println(choice.getDelivery_method() + " deleted");
         }
-        
+
         public void addDeliveryMethod(){
             // Get the delivery method
             Scanner kb = new Scanner(System.in);
@@ -261,19 +294,19 @@ public class AdminAndManager {
             System.out.println("Enter a delivery method:");
             String newMethod = kb.nextLine();
             String newID = deliveryHelper.nextID() + "";
-            
+
             // Build the delivery method and add it
             DeliveryMethod method = new DeliveryMethod(newID, newMethod);
             deliveryHelper.add(method);
             System.out.println(newMethod + " added.");
         }
-        
+
         /*
         ***************
         * User Status *
         ***************
         */
-        
+
         public void alterStatus(){
             // Ask for which status to alter
             UserStatusService statusHelper = new UserStatusService(con);
@@ -284,7 +317,7 @@ public class AdminAndManager {
             }
             Scanner kb = new Scanner(System.in);
             UserStatus toAlter = statuses.get(Integer.parseInt(kb.nextLine()));
-            
+
             // Alter it
             System.out.println("What would you like to change the status to?");
             String newStatus = kb.nextLine();
@@ -292,7 +325,7 @@ public class AdminAndManager {
             statusHelper.update(toAlter);
             System.out.println("Status altered");
         }
-        
+
         public void addStatus(){
             // Ask for a new status
             UserStatusService statusHelper = new UserStatusService(con);
@@ -300,14 +333,14 @@ public class AdminAndManager {
             System.out.println("What status would you like to add?");
             String newID = (statusHelper.newStatusID() + "").toLowerCase();
             String newStatus = kb.nextLine();
-            
+
             // Make the status
             UserStatus toInsert = new UserStatus(newID, newStatus);
             statusHelper.add(toInsert);
             System.out.println(newStatus + " added");
             adminScreen();
         }
-        
+
         public void deleteStatus(){
             // Ask for the user status to delete
             UserStatusService statusHelper = new UserStatusService(con);
@@ -319,7 +352,7 @@ public class AdminAndManager {
             }
             int choiceIndex = Integer.parseInt(kb.nextLine()) - 1;
             UserStatus toDelete = statuses.get(choiceIndex);
-            
+
             // Ask for the replacement status
             System.out.println("Users with status " + toDelete.toString() + " should take on which status?");
             statuses.remove(choiceIndex);
@@ -327,10 +360,10 @@ public class AdminAndManager {
                 System.out.println((i + 1) + ". " + statuses.get(i));
             }
             UserStatus replacement = statuses.get(Integer.parseInt(kb.nextLine()) - 1);
-            
+
             // Update the users statuses
             statusHelper.replace(toDelete.getUserStatusId(), replacement.getUserStatusId());
-            
+
             // Delete the user status from the table
             statusHelper.deleteById(toDelete.getUserStatusId());
         }
@@ -384,7 +417,7 @@ public class AdminAndManager {
         }
         changeField = options.get(Integer.parseInt(kb.nextLine()));
 
-        // Go back 
+        // Go back
         if (changeField.equals("Go back")) {
             adminScreen();
             return;
@@ -394,7 +427,7 @@ public class AdminAndManager {
         System.out.println("What would you like to change " + changeField + " to?");
         String changeValue = kb.nextLine();
 
-        // Check the user input 
+        // Check the user input
         // No value given
         if (changeValue.isEmpty()) {
             if (cantBeNull.contains(changeField)) { // empty and shouldnt be
@@ -547,7 +580,7 @@ public class AdminAndManager {
         String photo = sc.next();
         System.out.println("\nEnter a price: ");
         float price = sc.nextFloat();
-        
+
         Menu men = new Menu(""+menServ.getNextItemId(), name, vegetarian, type, description, slot_ID, photo, price);
         menServ.add(men);
         System.out.println("\n" + name + " added to database\n");
@@ -684,7 +717,7 @@ public class AdminAndManager {
 
         /*
                 Tables who have records that reference this user will also be
-                deleted. For example, all of the 
+                deleted. For example, all of the
          */
         // Delete the user
         System.out.println("Deleting user...");
@@ -697,8 +730,8 @@ public class AdminAndManager {
             return "null";
         } else {
             return field;
-        }   
-        
+        }
+
     }
 
     private void alterComboScreen() {
@@ -748,6 +781,137 @@ public class AdminAndManager {
         SS.deleteById(specialId);
         adminScreen();
     }
+
+    private void editLocations() {
+        Scanner sc = new Scanner(System.in);
+        LocationService ls = new LocationService(con);
+        ArrayList<Location> locs = ls.getAll();
+        for(int i = 0; i < locs.size(); i++){
+            System.out.println((i + 1) + ". " + locs.get(i).getAddress());
+        }
+        int input = Integer.parseInt(sc.nextLine());
+        if(input <= locs.size() && input > 0){
+            editALoc(locs.get(input -1));
+            System.out.println("Location updated");
+        }
+    }
+    
+    private static void editALoc(Location l) {
+        System.out.printf("\n*** Edit Location: ***\n");
+        System.out.println("1. Edit Street: " + l.getStreet());
+        System.out.println("2. Edit City:  " + l.getCity());
+        System.out.println("3. Edit State: " + l.getState());
+        System.out.println("4. Edit Country: " + l.getCountry());
+        System.out.println("5. Edit Zip: " + l.getZip());
+        System.out.println("6. Back");
+
+        int input = getAnInt();
+
+        switch (input) {
+            case 1:
+                String street = editString();
+                l.setStreet(street);
+                System.out.println("Street changed to " + street);
+                editALoc(l);
+                break;
+            case 2:
+                String city = editString();
+                l.setCity(city);
+                System.out.println("City changed to " + city);
+                editALoc(l);
+                break;
+            case 3:
+                String state = editString();
+                l.setState(state);
+                System.out.println("State changed to " + state);
+                editALoc(l);
+                break;
+            case 4:
+                String country = editString();
+                l.setCountry(country);
+                System.out.println("Country changed to " + country);
+                editALoc(l);
+                break;
+            case 5:
+                String zip = editString();
+                l.setZip(zip);
+                System.out.println("Zip changed to " + zip);
+                editALoc(l);
+                break;
+            default:
+                break;
+        }
+        LocationService ls = new LocationService(con);
+        ls.update(l);
+    }
+
+    private void addLocation() {
+        // Get the delivery method
+        Scanner sc = new Scanner(System.in);
+        LocationService locServe = new LocationService(con);
+        Location newLoc = locPrompt(sc);
+        String newID = locServe.getNextLocId();
+        newLoc.setLocationId(newID);
+        locServe.add(newLoc);
+        System.out.println("Location at " +newLoc.getCity() +", " + newLoc.getState() +" added.");
+    }
+    private Location locPrompt(Scanner sc){
+        System.out.println("Enter street");
+        String street = sc.nextLine();
+        System.out.println("Enter city");
+        String city = sc.nextLine();
+        System.out.println("Enter state");
+        String state = sc.nextLine();
+        System.out.println("Enter country");
+        String country = sc.nextLine();
+        System.out.println("Enter Zip");
+        String zip = sc.nextLine();
+        Location newLoc = new Location();
+        newLoc.setStreet(street);
+        newLoc.setCity(city);
+        newLoc.setState(state);
+        newLoc.setCountry(country);
+        newLoc.setZip(zip);
+        return newLoc;
+    }
+
+    private void deleteLocation() {
+        // Ask for a location to delete
+        Scanner sc = new Scanner(System.in);
+        LocationService ls = new LocationService(con);
+        ArrayList<Location> locs = ls.getAll();
+        int total = locs.size();
+        System.out.println("");
+        if(total < 10){
+            for(int i = 0; i < total; i++ ){
+                System.out.println(i+1 + ". " + locs.get(i).getStreet());
+            }
+                System.out.println(total+1 + ". Go Back");
+        }else{//Make a nicer format for a longer list. 4 To a line.
+            for(int i= 0; i < total; i++){
+                System.out.printf("%s. %-25s",(i+1), locs.get(i).getStreet());
+                if((i+1)%4 ==0 ){
+                    System.out.print("\n");
+                }
+            }
+            System.out.println("");
+        }
+        int input = sc.nextInt();
+        if(input <= total){
+            ls.deleteById(locs.get(input-1).getLocationId());
+            System.out.println("Location deleted");
+        }
+                adminScreen();     
+    }
+//        for(int i = 0; i < methods.size(); i++){
+//            System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
+//        }
+//        System.out.println("Chose a delivery method to delete:");
+//        DeliveryMethod choice = methods.get(Integer.parseInt(kb.nextLine()) - 1);
+//
+//        // Delete the method
+//        deliveryHelper.deleteById(choice.getDelivery_method_id());
+//        System.out.println(choice.getDelivery_method() + " deleted");
 
 }
 
