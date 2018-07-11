@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import domain.UserStatus;
-import domain.itemType;
+import domain.ItemType;
 import java.sql.Date;
 import services.CardService;
 import services.DeliveryMethod;
@@ -27,7 +27,7 @@ import services.MenuServices;
 import services.SpecialServices;
 import services.UserService;
 import services.UserStatusService;
-import services.itemTypeServices;
+import services.ItemTypeServices;
 
 public class AdminAndManager {
 
@@ -50,7 +50,7 @@ public class AdminAndManager {
         ArrayList<String> options = new ArrayList<String>();
         System.out.println("Admin View");
         options.add("Alter Cards");
-        options.add("Alter Combos");
+        options.add("Alter Specials");
         options.add("Alter Delivery Methods");
         options.add("Alter Delivery Statuses");
         options.add("Alter Items");
@@ -81,7 +81,7 @@ public class AdminAndManager {
                 break;
             }
             case 2:
-                option = optionsScreen("Item");
+                option = optionsScreen("Specials");
                 switch (option) {
                     case 1:
                         alterSpecialScreen();
@@ -100,7 +100,6 @@ public class AdminAndManager {
                 }
             case 3:
                 option = optionsScreen("Delivery Method");
-                // Goes to item menu. Fix that later
                 switch (option) {
                     case 1:
                         alterDeliveryMethod();
@@ -117,8 +116,26 @@ public class AdminAndManager {
                     default:
                         System.exit(1);
                 }
-            case 4:
-                optionsScreen("Delivery Status");
+            case 4:{
+                option = optionsScreen("Delivery Status");
+                switch(option){
+                    case 1:
+                        alterDeliveryStatus();
+                        break;
+                    case 2:
+                        addDeliveryStatus();
+                        break;
+                    case 3:
+                        deleteDeliveryStatus();
+                        break;
+                    case 4:
+                        adminScreen();
+                        break;
+                    case 5:
+                        System.exit(0);
+                }
+            }
+            
             case 5: {
                 option = optionsScreen("Item");
                 switch (option) {
@@ -1081,8 +1098,8 @@ private static void addSpecialScreen() {
         String TypeId = sc.next();
         System.out.println("Please enter the item type");
         String itmTyp = sc.next();
-        itemType it = new itemType(TypeId, itmTyp);
-        itemTypeServices it1 = new itemTypeServices(con);
+        ItemType it = new ItemType(TypeId, itmTyp);
+        ItemTypeServices it1 = new ItemTypeServices(con);
         it1.add(it);
         System.out.println("Item Type ID " + TypeId + " added to database\n");
         adminScreen();
@@ -1093,7 +1110,7 @@ private static void addSpecialScreen() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter the item type ID to be deleted");
         String id = sc.next();
-        itemTypeServices it1 = new itemTypeServices(con);
+        ItemTypeServices it1 = new ItemTypeServices(con);
         it1.deleteById(id);
         System.out.println(id + " Item Type ID has been successfully deleted");
         adminScreen();

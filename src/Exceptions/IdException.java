@@ -1,4 +1,4 @@
-package domain;
+package Exceptions;
 
 public class IdException extends Exception{
     /**
