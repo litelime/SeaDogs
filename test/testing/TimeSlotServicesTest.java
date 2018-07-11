@@ -38,11 +38,10 @@ public class TimeSlotServicesTest extends DatabaseTestMethods{
 			System.out.println(timeSlots);
 			System.out.println(timeSlotsTest);
 			
-			assertEquals(timeSlots, timeSlotsTest);
+			assertEquals(timeSlots.toString(), timeSlotsTest.toString());
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
 	}
-
 
 }

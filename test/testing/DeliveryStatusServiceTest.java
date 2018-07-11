@@ -27,7 +27,7 @@ public class DeliveryStatusServiceTest extends DatabaseTestMethods{
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVER_STATUS_ID = '5'");
+					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVERY_STATUS_ID = '5'");
 			rs.next();
 			
 			assertEquals("5",rs.getString("DELIVERY_STATUS_ID"));
@@ -53,7 +53,7 @@ public class DeliveryStatusServiceTest extends DatabaseTestMethods{
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVER_STATUS_ID = '7'");
+					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVERY_STATUS_ID = '7'");
 			rs.next();
 			
 			assertEquals("7",rs.getString("DELIVERY_STATUS_ID"));
@@ -78,7 +78,7 @@ public class DeliveryStatusServiceTest extends DatabaseTestMethods{
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVER_STATUS_ID = '5'");
+					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVERY_STATUS_ID = '5'");
 			
 			assertEquals(rs.next(), false);
 			
@@ -96,7 +96,7 @@ public class DeliveryStatusServiceTest extends DatabaseTestMethods{
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVER_STATUS_ID = '2'");
+					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVERY_STATUS_ID = '2'");
 			
 			DeliveryStatus dstest = new DeliveryStatus(rs.getString(1), rs.getString(2));
 			

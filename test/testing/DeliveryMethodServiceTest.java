@@ -29,7 +29,7 @@ public class DeliveryMethodServiceTest extends DatabaseTestMethods{
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_METHODS WHERE DELIVER_METHOD_ID = '5'");
+					"SELECT * FROM DELIVERY_METHODS WHERE DELIVERY_METHOD_ID = '5'");
 			rs.next();
 						
 			assertEquals("20",rs.getString("DELIVERY_METHOD_ID"));
@@ -42,17 +42,17 @@ public class DeliveryMethodServiceTest extends DatabaseTestMethods{
 	
 	@Test
 	public void updateTest() {
-		DeliveryMethod dm = new DeliveryMethod("1", "Test");
+		DeliveryMethod dm = new DeliveryMethod("7", "Test");
 		DeliveryMethodService dms = new DeliveryMethodService(con);
 		dms.update(dm);
 		Statement statement;
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVER_STATUS_ID = '1'");
+					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVERY_STATUS_ID = '7'");
 			rs.next();
 			
-			assertEquals("1",rs.getString("DELIVERY_STATUS_ID"));
+			assertEquals("7",rs.getString("DELIVERY_STATUS_ID"));
 			assertEquals("Test",rs.getString("DELIVERY_STATUS"));
 			
 		} catch (SQLException e) {
@@ -74,7 +74,7 @@ public class DeliveryMethodServiceTest extends DatabaseTestMethods{
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVER_STATUS_ID = '5'");
+					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVERY_STATUS_ID = '5'");
 			
 			assertEquals(rs.next(), false);
 			
@@ -92,7 +92,7 @@ public class DeliveryMethodServiceTest extends DatabaseTestMethods{
 		try {
 			statement = con.createStatement();
 			ResultSet rs = statement.executeQuery(
-					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVER_STATUS_ID = '2'");
+					"SELECT * FROM DELIVERY_STATUSES WHERE DELIVERY_STATUS_ID = '2'");
 			
 			DeliveryStatus dstest = new DeliveryStatus(rs.getString(1), rs.getString(2));
 			
