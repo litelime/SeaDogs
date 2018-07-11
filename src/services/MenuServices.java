@@ -249,7 +249,7 @@ public class MenuServices implements Service<Menu> {
         try {
             String query = "SELECT * FROM specials s, items i "
                     + "WHERE s.item_id = i.item_id and "
-                    + "ORDER BY special_id";
+                    + "special_id = " + id;
             ResultSet rs = con.createStatement().executeQuery(query);
             SpecialMenu sm = new SpecialMenu();
             sm.setPrice(0);

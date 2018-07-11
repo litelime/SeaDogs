@@ -265,7 +265,7 @@ public class Tiger {
         if (input == menus.size() + 1) {
             menuScreen();
         } else {
-            menuItemScreen(menus.get(input - 1));
+            menuSpecialScreen(menus.get(input - 1));
         }
     }
 
@@ -358,29 +358,29 @@ public class Tiger {
                 }
             }
         }
-//        idList = currentOrder.getSpecial_ids();
-//        idList.sort(c);
-//        if (!idList.isEmpty()) {
-//            String curId = idList.get(0);
-//            //Tab so output can be read easier
-//            System.out.print("here    " + curId);
-//            int amount = 0;
-//            for (int i = 0; i <= idList.size() - 1; i++) {
-//                if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
-//                    amount += 1;
-//                    System.out.print(ms.getSpecialById(idList.get(i)).getName() + " " + amount);
-//                    amount = 0;
-//                    if (i != idList.size() - 1) {
-//                        System.out.print(", ");
-//                        curId = idList.get(i + 1);
-//                    } else {
-//                        System.out.print("\n");
-//                    }
-//                } else {
-//                    amount += 1;
-//                }
-//            }
-//        }
+        idList = currentOrder.getSpecial_ids();
+        idList.sort(c);
+        if (!idList.isEmpty()) {
+            String curId = idList.get(0);
+            //Tab so output can be read easier
+            System.out.print("    ");
+            int amount = 0;
+            for (int i = 0; i <= idList.size() - 1; i++) {
+                if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
+                    amount += 1;
+                    System.out.print(ms.getSpecialById(idList.get(i)).getName() + " " + amount);
+                    amount = 0;
+                    if (i != idList.size() - 1) {
+                        System.out.print(", ");
+                        curId = idList.get(i + 1);
+                    } else {
+                        System.out.print("\n");
+                    }
+                } else {
+                    amount += 1;
+                }
+            }
+        }
         ServiceWrapper serviceWrap = new ServiceWrapper(con);
         currentOrder.setTotal_price(serviceWrap.calculateTotalPrice(currentOrder));
         System.out.println("Tip: $" + currentOrder.getTip());
