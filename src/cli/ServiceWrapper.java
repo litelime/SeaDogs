@@ -160,10 +160,10 @@ public class ServiceWrapper {
 		for(Menu item: items){
 			total += item.getPrice();
 		}
-                ArrayList<SpecialMenu> specials = sw.getSpecialMenuItems(currentOrders.getItem_ids());
-		for(Menu item: items){
-			total += item.getPrice();
-		}
+//                ArrayList<SpecialMenu> specials = sw.getSpecialMenuItems(currentOrders.getItem_ids());
+//		for(Menu item: items){
+//			total += item.getPrice();
+//		}
                 total+=currentOrders.getTip();
                 
 		return total;
