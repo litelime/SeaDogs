@@ -21,7 +21,7 @@ public class Order {
 	
 	//Array to hold order items rather than the order_items table
 	ArrayList<String> item_ids = new ArrayList<String>();
-	
+	ArrayList<String> special_ids = new ArrayList<String>();
 	public Order(String order_id, String user_id, float tip, float total_price, LocalTime placed_timestamp,
 			LocalTime delivery_timestamp, String card_id, String instuctions, String delivery_method_id, String store_id,
 			String delivery_status_id, ArrayList<String> item_ids) {
@@ -38,6 +38,7 @@ public class Order {
 		this.store_id = store_id;
 		this.delivery_status_id = delivery_status_id;
 		this.item_ids = item_ids;
+                this.special_ids = new ArrayList<String>();
 	}
 
         public Order(String orderId){
@@ -77,6 +78,18 @@ public class Order {
 	}
         public void removeItem_id(String item_id){
            item_ids.remove(item_id);
+        }
+        public ArrayList<String> getSpecial_ids() {
+		return special_ids;
+	}
+        public void setSpecial_ids(ArrayList<String> item_ids) { 
+		this.special_ids = (ArrayList<String>) item_ids.clone();
+	}
+	public void addSpecial_id(String item_id){
+		this.special_ids.add(item_id);
+	}
+        public void removeSpecial_id(String item_id){
+           special_ids.remove(item_id);
         }
 	public String getOrder_id() {
 		return order_id;

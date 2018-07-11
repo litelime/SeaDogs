@@ -106,9 +106,9 @@ public class Tiger {
     public static void loginScreen() {
         System.out.println("\n*Login*");
         System.out.println("Enter email:");
-        String email = sc.next();
+        String email = getInput();
         System.out.println("Enter password:");
-        String password = sc.next();
+        String password = getInput();
 
         UserService us = new UserService(con);
         User candidate = us.getByEmail(email);
@@ -143,27 +143,27 @@ public class Tiger {
     public static void registerScreen() {
         System.out.println("\n*Register*");
         System.out.println("Enter email:");
-        String email = sc.next();
+        String email = getInput();
         // check if its a valid email
         while (email.indexOf('@') == -1) {
             System.out.println("Please enter a valid email");
-            email = sc.next();
+            email = getInput();
         }
         System.out.println("Enter password:");
-        String password = sc.next();
+        String password = getInput();
         System.out.println("Enter password again:");
-        String passwordConfirm = sc.next();
+        String passwordConfirm = getInput();
         System.out.println("Enter first name:");
-        String first = sc.next();
+        String first = getInput();
         System.out.println("Enter last name:");
-        String last = sc.next();
+        String last = getInput();
         System.out.println("Enter phone:");
-        String phone = sc.next();
+        String phone = getInput();
 
         System.out.println(phone.matches("^[0-9]+$"));
         while (!phone.matches("^[0-9]+$")) {
             System.out.println("Please enter a valid phone. Phone can only be numeric");
-            phone = sc.next();
+            phone = getInput();
         }
         if (password.equals(passwordConfirm)) {
             System.out.println("Registered");
@@ -265,7 +265,7 @@ public class Tiger {
         if (input == menus.size() + 1) {
             menuScreen();
         } else {
-            menuItemScreen(menus.get(input - 1));
+            menuSpecialScreen(menus.get(input - 1));
         }
     }
 
@@ -319,7 +319,7 @@ public class Tiger {
         //currentOrder.removeItem_id(menu.getId());
         if (input != 0) {
             for (int i = 0; i < input; i++) {
-                currentOrder.addItem_id(menu.getId());
+                currentOrder.addSpecial_id(menu.getId());
             }
             System.out.println("Item(s) added");
             menuScreen();
@@ -346,6 +346,29 @@ public class Tiger {
                 if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
                     amount += 1;
                     System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
+                    amount = 0;
+                    if (i != idList.size() - 1) {
+                        System.out.print(", ");
+                        curId = idList.get(i + 1);
+                    } else {
+                        System.out.print("\n");
+                    }
+                } else {
+                    amount += 1;
+                }
+            }
+        }
+        idList = currentOrder.getSpecial_ids();
+        idList.sort(c);
+        if (!idList.isEmpty()) {
+            String curId = idList.get(0);
+            //Tab so output can be read easier
+            System.out.print("    ");
+            int amount = 0;
+            for (int i = 0; i <= idList.size() - 1; i++) {
+                if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
+                    amount += 1;
+                    System.out.print(ms.getSpecialById(idList.get(i)).getName() + " " + amount);
                     amount = 0;
                     if (i != idList.size() - 1) {
                         System.out.print(", ");
@@ -463,7 +486,7 @@ public class Tiger {
         }
         if (input == 2) {
             System.out.println("Enter a time (hh:mm)");
-            String timeStr = sc.next();
+            String timeStr = getInput();
             LocalTime newDelivery_timestamp = LocalTime.now();
             try {
                 newDelivery_timestamp = LocalTime.parse(timeStr);
@@ -566,7 +589,7 @@ public class Tiger {
         System.out.println("1. Remove item");
         System.out.println("2. Go Back");
 
-        int input = sc.nextInt();
+        int input = Integer.valueOf(getInput());
         if (input == 1) {
             currentOrder.removeItem_id(menu.getId());
             currentOrderScreen();
@@ -740,31 +763,31 @@ public class Tiger {
 
         switch (input) {
             case 1:
-                String street = editStringLine();
+                String street = editString();
                 l.setStreet(street);
                 System.out.println("Street changed to " + street);
                 editALoc(l);
                 break;
             case 2:
-                String city = editStringLine();
+                String city = editString();
                 l.setCity(city);
                 System.out.println("City changed to " + city);
                 editALoc(l);
                 break;
             case 3:
-                String state = editStringLine();
+                String state = editString();
                 l.setState(state);
                 System.out.println("State changed to " + state);
                 editALoc(l);
                 break;
             case 4:
-                String country = editStringLine();
+                String country = editString();
                 l.setCountry(country);
                 System.out.println("Country changed to " + country);
                 editALoc(l);
                 break;
             case 5:
-                String zip = editStringLine();
+                String zip = editString();
                 l.setZip(zip);
                 System.out.println("Zip changed to " + zip);
                 editALoc(l);
@@ -777,28 +800,21 @@ public class Tiger {
         editLocations();
     }
 
-    private static String editStringLine() {
-        sc.nextLine();
-        System.out.println("Enter new value");
-        String in = sc.nextLine();
-        return in;
-    }
-
     private static void addLocation(LocationService ls) {
         System.out.println("Enter Street");
-        String street = sc.nextLine();
+        String street = getInput();
 
         System.out.println("Enter city");
-        String city = sc.nextLine();
+        String city = getInput();
 
         System.out.println("Enter Country");
-        String country = sc.nextLine();
+        String country = getInput();
 
         System.out.println("Enter state");
-        String state = sc.nextLine();
+        String state = getInput();
 
         System.out.println("Enter zip");
-        String zip = sc.nextLine();
+        String zip = getInput();
         String userId = currentUser.getUserId();
         String locId = ls.getNextLocId();
         Location loc = new Location(locId, userId, street, city, state, country, zip);
@@ -809,7 +825,7 @@ public class Tiger {
         CardService cardService = new CardService(con);
 
         System.out.println("Enter card number");
-        String cardNum = sc.next();
+        String cardNum = getInput();
 
         Date cardDate = editDate();
         if (cardDate.getYear() == 1111) {
@@ -817,7 +833,7 @@ public class Tiger {
         }
 
         System.out.println("Enter security code");
-        String securityCode = sc.next();
+        String securityCode = getInput();
 
         String userId = currentUser.getUserId();
         String cardId = cardService.getNextCardId();
@@ -892,10 +908,22 @@ public class Tiger {
         }
         editCards();
     }
-
-    private static String editString() {
+    private static String getInput(){
+        String in;
+        //Using count to check if it was the first time it was called. Otherwise it sometimes needs to eat a blank line.
+        int count = 0;
+        do{
+            in = sc.nextLine();
+            if(in.equalsIgnoreCase("") && count != 0){
+            System.out.println("Need a non empty input. Enter a value");
+            }
+            count = 1;
+        }while(in.isEmpty());
+        return in;
+    }
+    public static String editString() {
         System.out.println("Enter new value");
-        String inp = sc.next();
+        String inp = getInput();
         return inp;
     }
 

@@ -100,60 +100,73 @@ public class ServiceWrapper {
                     }
                 }
             }
-        }
-        System.out.println(++count + ". Go Back");
+		System.out.println(++count + ". Go Back");
+	}
     }
+	public static void printOrders(ArrayList<Order> orders){
+		int count = 0;
+		for(Order order: orders){
+			count++;
+			System.out.println(count + ". " + order.getPlaced_timestamp());
+		}
+		System.out.println(count++ + ". Go Back");
+	}
 
-    public static void printOrders(ArrayList<Order> orders) {
-        int count = 0;
+	public void cancelOrder(Order order) {
+		order.setDelivery_status_id("3");
+		OrderService os = new OrderService(con);
+		os.update(order);
+	}
 
-        for (Order order : orders) {
-            count++;
-            String orderStr = order.getItem_ids().size()+" items | Price $"
-                               +order.getTotal_price()+" | Placed at "
-                                +order.getPlaced_timestamp();
-            System.out.printf(count + ". " + orderStr);
-        }
-        System.out.println(++count + ". Go Back");
-    }
+	public void submitOrder(Order currentOrder) {
+		
+		currentOrder.setDelivery_status_id("0");
+		OrderService os = new OrderService(con);
+		os.add(currentOrder);
+		
+	}
 
-    public void cancelOrder(Order order) {
-        order.setDelivery_status_id("3");
-        OrderService os = new OrderService(con);
-        os.update(order);
-    }
+	public ArrayList<Menu> getMenuItems(ArrayList<String> itemIds) {
+		
+		MenuServices ms = new MenuServices(con);
+		ArrayList<Menu> items = new ArrayList<Menu>();
+		
+		
+		for (String itemId:itemIds){
+			items.add(ms.getById(itemId));
+		}
 
-    public void submitOrder(Order currentOrder) {
+		return items;
+	}
+        
+        public ArrayList<SpecialMenu> getSpecialMenuItems(ArrayList<String> itemIds) {
+		
+		MenuServices ms = new MenuServices(con);
+		ArrayList<SpecialMenu> sms = new ArrayList<SpecialMenu>();
+		
+		
+		for (String itemId:itemIds){
+			sms.add(ms.getSpecialById(itemId));
+		}
 
-        currentOrder.setDelivery_status_id("0");
-        OrderService os = new OrderService(con);
-        os.add(currentOrder);
-
-    }
-
-    public ArrayList<Menu> getMenuItems(ArrayList<String> itemIds) {
-
-        MenuServices ms = new MenuServices(con);
-        ArrayList<Menu> items = new ArrayList<Menu>();
-
-        for (String itemId : itemIds) {
-            items.add(ms.getById(itemId));
-        }
-
-        return items;
-    }
-
-    public float calculateTotalPrice(Order currentOrders) {
-        ArrayList<String> item_ids = currentOrders.getItem_ids();
-        float total = 0;
-        ServiceWrapper sw = new ServiceWrapper(con);
-        ArrayList<Menu> items = sw.getMenuItems(item_ids);
-        for (Menu item : items) {
-            total += item.getPrice();
-        }
-        total += currentOrders.getTip();
-
-        return total;
-    }
+		return sms;
+	}
+        
+	public float calculateTotalPrice(Order currentOrders) {
+                ArrayList<String> item_ids = currentOrders.getItem_ids();
+		float total = 0;
+		ServiceWrapper sw = new ServiceWrapper(con);
+		ArrayList<Menu> items = sw.getMenuItems(item_ids);
+		for(Menu item: items){
+			total += item.getPrice();
+		}
+                ArrayList<SpecialMenu> specials = sw.getSpecialMenuItems(currentOrders.getSpecial_ids());
+		for(SpecialMenu sm: specials){
+			total += sm.getPrice();
+		}
+                total+=currentOrders.getTip();
+                
+		return total;
+	}
 
 }

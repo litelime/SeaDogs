@@ -55,7 +55,7 @@ public class MenuServices implements Service<Menu> {
         return null;
 
     }
-
+    
     @Override
     public ArrayList<Menu> getAll() {
         ArrayList<Menu> menArr = new ArrayList<Menu>();
@@ -184,6 +184,32 @@ public class MenuServices implements Service<Menu> {
             return -1;
         }
     }
+    
+    public int getNextSpecialId() {
+        try {
+            // Ask for all the ids
+            String query = "select special_id from specials";
+            Statement stmnt = con.createStatement();
+            stmnt.execute(query);
+
+            // Collect the ids
+            ArrayList<Integer> ids = new ArrayList<Integer>();
+            ResultSet results = stmnt.getResultSet();
+            while (results.next()) {
+                ids.add(Integer.parseInt(results.getString(1)));
+            }
+
+            // Generate a new id
+            if (ids.isEmpty()) {
+                return 0;
+            }
+            return Collections.max(ids) + 1;
+        } catch (NumberFormatException | SQLException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+            return -1;
+        }
+    }
 
     private String getTimeName(ArrayList<TimeSlots> timeArr, String id) {
         String tName = "";
@@ -222,7 +248,7 @@ public class MenuServices implements Service<Menu> {
                     if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
                         sm.setDescription(rs.getString("special_description"));
                     }
-                    sm.setPrice(sm.getPrice() + rs.getInt("amount") * rs.getFloat("discount_percentage"));
+                    sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
                     for(int i = 0; i < rs.getInt("amount"); i++) {
                         sm.addItemId(rs.getString("item_id"));
                     }
@@ -244,5 +270,42 @@ public class MenuServices implements Service<Menu> {
 
     }
 
+    public SpecialMenu getSpecialById(String id) {
+        ArrayList<TimeSlots> times = timServ.getAll();
+        try {
+            String query = "SELECT * FROM specials s, items i "
+                    + "WHERE s.item_id = i.item_id and "
+                    + "special_id = " + id;
+            ResultSet rs = con.createStatement().executeQuery(query);
+            SpecialMenu sm = new SpecialMenu();
+            sm.setPrice(0);
+            while (rs.next()) {
+                if (rs.getString("special_id").equals(id)) {
+                    sm.setId(rs.getString("special_id"));
+                    if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
+                        sm.setName(rs.getString("special_name"));
+                        if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
+                            sm.setDescription(rs.getString("special_description"));
+                        }
+                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
+                        for(int i = 0; i < rs.getInt("amount"); i++) {
+                            sm.addItemId(rs.getString("item_id"));
+                        }
+                        String tid = rs.getString("time_slot_id");
+                        String tName = getTimeName(times, tid);
+                        sm.setPhoto(rs.getString("photo"));
+                        sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                    }
+                }
+            }
+            return sm;
 
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
 }
