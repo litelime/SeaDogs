@@ -13,5 +13,10 @@ BEGIN
   WHERE DELIVERY_STATUS_ID = ID;
 END;
 /
---View compilation errors
-SHOW ERRORS;
+create or replace procedure sp_update_delivery_status (id varchar, status varchar)
+as
+begin
+  update delivery_statuses set delivery_status = status 
+  where delivery_status_id = id;
+end;
+/

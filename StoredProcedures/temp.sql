@@ -4,7 +4,8 @@ ALTER TABLE specials
   special_description varchar(4000),
   amount number,
   photo varchar(4000),
-  veg varchar(1));
+  veg varchar(1),
+  time_slot varchar(4000));
   /
   
   --UPDATE specials SET special_id = 0 WHERE special_id IS NULL

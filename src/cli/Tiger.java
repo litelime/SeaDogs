@@ -102,6 +102,7 @@ public class Tiger {
 
     }
 
+
     public static void loginScreen() {
         System.out.println("\n*Login*");
         System.out.println("Enter email:");
@@ -134,6 +135,7 @@ public class Tiger {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
 
     }
@@ -263,7 +265,7 @@ public class Tiger {
         if (input == menus.size() + 1) {
             menuScreen();
         } else {
-            //menuItemScreen(menus.get(input - 1));
+            menuSpecialScreen(menus.get(input - 1));
         }
     }
 
@@ -282,7 +284,7 @@ public class Tiger {
         }
     }
     //TODO finish this
-    
+
     public static void menuSpecialScreen(SpecialMenu menu) {
         System.out.println("\n*" + menu.getName() + "*");
         System.out.println(menu.getDescription());
@@ -301,7 +303,7 @@ public class Tiger {
     public static void itemQuantityScreen(Menu menu) {
         System.out.println("Enter Quantity");
         int input = getAnInt();
-        currentOrder.removeItem_id(menu.getId());
+        //currentOrder.removeItem_id(menu.getId());
         if (input != 0) {
             for (int i = 0; i < input; i++) {
                 currentOrder.addItem_id(menu.getId());
@@ -310,23 +312,24 @@ public class Tiger {
             menuScreen();
         }
     }
+
     public static void specialQuantityScreen(SpecialMenu menu) {
         System.out.println("Enter Quantity");
         int input = getAnInt();
-        currentOrder.removeItem_id(menu.getId());
+        //currentOrder.removeItem_id(menu.getId());
         if (input != 0) {
             for (int i = 0; i < input; i++) {
-                currentOrder.addItem_id(menu.getId());
+                currentOrder.addSpecial_id(menu.getId());
             }
-            System.out.println("Special combo(s) added");
+            System.out.println("Item(s) added");
             menuScreen();
         }
     }
+
     public static void currentOrderScreen() {
         DeliveryMethodService method = new DeliveryMethodService(con);
         System.out.println("\n*Current Order*");
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
-        System.out.println("Placed: " + currentOrder.getPlaced_timestamp().format(timeFormat));
         System.out.println("Delivery Time: " + currentOrder.getDelivery_timestamp().format(timeFormat));
         System.out.println("Items: ");
 
@@ -341,7 +344,31 @@ public class Tiger {
             int amount = 0;
             for (int i = 0; i <= idList.size() - 1; i++) {
                 if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
+                    amount += 1;
                     System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
+                    amount = 0;
+                    if (i != idList.size() - 1) {
+                        System.out.print(", ");
+                        curId = idList.get(i + 1);
+                    } else {
+                        System.out.print("\n");
+                    }
+                } else {
+                    amount += 1;
+                }
+            }
+        }
+        idList = currentOrder.getSpecial_ids();
+        idList.sort(c);
+        if (!idList.isEmpty()) {
+            String curId = idList.get(0);
+            //Tab so output can be read easier
+            System.out.print("    ");
+            int amount = 0;
+            for (int i = 0; i <= idList.size() - 1; i++) {
+                if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
+                    amount += 1;
+                    System.out.print(ms.getSpecialById(idList.get(i)).getName() + " " + amount);
                     amount = 0;
                     if (i != idList.size() - 1) {
                         System.out.print(", ");
@@ -384,19 +411,20 @@ public class Tiger {
                 break;
             case 4:
                 if (hasItems()) {
-                    CardService cs = new CardService(con);
                     OrderService os = new OrderService(con);
-                       
-                    //if they have not chosen a payment methd send them back. 
-                    if (currentOrder.getCard_id().compareTo("-1")==0) {
+
+                    //if they have not chosen a payment method send them back. 
+                    if (currentOrder.getCard_id().compareTo("-1") == 0) {
                         System.out.println("You must choose a payment card first");
                         currentOrderScreen();
                     }
-                    
+
                     if (!hasLocation() && currentOrder.getDelivery_method_id().equalsIgnoreCase("1")) {
                         System.out.println("You must have a location selected");
                         currentOrderScreen();
                     }
+                    //the order is being placed now. 
+                    currentOrder.setPlaced_timestamp(LocalTime.now());
                     serviceWrap.submitOrder(currentOrder);
                     os.generateInvoice(currentOrder.getOrder_id());
                     //Gets ready for a new order.
@@ -934,28 +962,25 @@ public class Tiger {
         ArrayList<Order> orders = os.getUserOrders(currentUser.getUserId());
         ServiceWrapper.printOrders(orders);
         int input = getAnInt();
-        if (input == orders.size()) {
+        if (input == (orders.size()+1)) {
             homeScreen();
         } else {
-            oldOrderScreen(orders.get(input));
+            oldOrderScreen(orders.get(input-1));
         }
     }
 
     public static void oldOrderScreen(Order order) {
-        System.out.println("Placed: " + order.getPlaced_timestamp());
-        System.out.println("Delivered: " + order.getDelivery_timestamp());
-        System.out.println("Total price: " + order.getTotal_price());
-        System.out.println("Method: " + order.getDelivery_method_id());
-        System.out.println("Status: " + order.getDelivery_status_id());
+        OrderService os = new OrderService (con);
+        os.generateInvoice(order.getOrder_id());
+
         System.out.println("1. Reorder");
         System.out.println("2. Go Back");
         int input = getAnInt();
-        if (input == 1 && confirm()) {
+        if (input == 1) {
             currentOrder = order;
-            //TODO find out what the status id this thing needs is
-            currentOrder.setDelivery_status_id("1");
+            currentOrderScreen();
         } else if (input == 2) {
-            accountScreen();
+            allOrdersScreen();
         }
     }
 
