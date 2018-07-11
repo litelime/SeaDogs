@@ -814,7 +814,7 @@ private static void addSpecialScreen() {
         ArrayList<Special> specials = SS.getAll();
         for (Special special : specials) {
             specialCount++;
-            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscoutPercentage() + "%");
+            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
         }
         int specialChoice = Tiger.getAnInt();
         specialChoice--;
@@ -845,7 +845,7 @@ private static void addSpecialScreen() {
         ArrayList<Special> specials = SS.getAll();
         for (Special special : specials) {
             specialCount++;
-            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscoutPercentage() + "%");
+            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
         }
         int specialChoice = Tiger.getAnInt();
         specialChoice--;

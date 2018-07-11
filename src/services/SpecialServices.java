@@ -51,7 +51,7 @@ public class SpecialServices implements Service<Special> {
         try {
             oracleCallStmt = con.prepareCall("{call sp_insert_Special(?,?)}");
             oracleCallStmt.setString(1, spec.getItem_ID());
-            oracleCallStmt.setInt(2, spec.getDiscoutPercentage());
+            oracleCallStmt.setInt(2, spec.getDiscountPercentage());
             oracleCallStmt.execute();
             System.out.println("Successful");
             con.close();
@@ -118,7 +118,7 @@ public class SpecialServices implements Service<Special> {
         try {
             stmt = con.prepareCall("{call sp_update_special(?,?)}");
             stmt.setString(1, spec.getItem_ID());
-            stmt.setInt(2, spec.getDiscoutPercentage());
+            stmt.setInt(2, spec.getDiscountPercentage());
             stmt.execute();
             System.out.println("Updated");
         } catch (SQLException e) {
