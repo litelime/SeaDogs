@@ -22,6 +22,7 @@ import services.DeliveryMethod;
 import services.DeliveryMethodService;
 import services.DeliveryStatus;
 import services.DeliveryStatusService;
+import services.LocationService;
 import services.MenuServices;
 import services.SpecialServices;
 import services.UserService;
@@ -837,7 +838,7 @@ private static void addSpecialScreen() {
     }
 
 
-    private void editLocations() {
+    private static void editLocations() {
         Scanner sc = new Scanner(System.in);
         LocationService ls = new LocationService(con);
         ArrayList<Location> locs = ls.getAll();
@@ -900,7 +901,7 @@ private static void addSpecialScreen() {
         ls.update(l);
     }
 
-    private void addLocation() {
+    private static void addLocation() {
         // Get the delivery method
         Scanner sc = new Scanner(System.in);
         LocationService locServe = new LocationService(con);
@@ -910,7 +911,7 @@ private static void addSpecialScreen() {
         locServe.add(newLoc);
         System.out.println("Location at " +newLoc.getCity() +", " + newLoc.getState() +" added.");
     }
-    private Location locPrompt(Scanner sc){
+    private static Location locPrompt(Scanner sc){
         System.out.println("Enter street");
         String street = sc.nextLine();
         System.out.println("Enter city");
@@ -930,7 +931,7 @@ private static void addSpecialScreen() {
         return newLoc;
     }
 
-    private void deleteLocation() {
+    private static void deleteLocation() {
         // Ask for a location to delete
         Scanner sc = new Scanner(System.in);
         LocationService ls = new LocationService(con);
