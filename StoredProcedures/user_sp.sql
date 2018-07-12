@@ -25,3 +25,15 @@ begin
 end;
 
 /
+CREATE OR REPLACE PROCEDURE UPDATE_ORDER_ADMIN(orderID VARCHAR2, newTip NUMBER,
+                                               newPrice NUMBER, cardID VARCHAR2,
+                                               instr VARCHAR2, delID VARCHAR2,
+                                               delStatus VARCHAR2) AS 
+BEGIN
+  UPDATE orders
+  SET tip = newTip, total_price = newPrice, card_id = cardID,
+      instructions = instr, delivery_method_id = delID, 
+      delivery_status_id = delStatus
+  WHERE order_id = orderID;
+END UPDATE_ORDER_ADMIN;
+/

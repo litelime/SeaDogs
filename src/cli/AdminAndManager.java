@@ -196,23 +196,8 @@ public class AdminAndManager {
                         }
                         break;
             case 8:
-                System.out.println("Not yet supported");
-                option = optionsScreen("Order");
-                switch(option){
-                    case 1:
-                        System.out.println("Altering orders");
-                        alterOrder();
-                        break;
-                    case 2:
-                        System.out.println("Adding order");
-                        break;
-                    case 3:
-                        System.out.println("Deleting order");
-                        break;
-                    default:
-                        adminScreen();
-                }
-                
+               alterOrder();
+               break; 
             case 9: {
                 option = optionsScreen("User");
                 switch (option) {
@@ -276,9 +261,8 @@ public class AdminAndManager {
         * Order *
         *********
      */
-    
-    private static void alterOrder(){
-        // Select a user's orders to modify
+    private static void deleteOrder(){
+         // Select a user's orders to modify
         Scanner kb = new Scanner(System.in);
         UserService userHelper = new UserService(con);
         User user = userHelper.selectUser();
@@ -290,6 +274,31 @@ public class AdminAndManager {
         System.out.println("Which order would you like to edit?");
         for (int i = 0; i < orders.size(); i++) {
             System.out.println((i + 1) + ". " + orders.toString());
+        }
+        Order toDelete = orders.get(Integer.parseInt(kb.nextLine()) - 1);
+    
+        orderHelper.deleteById(toDelete.getOrder_id());
+    }
+    
+    
+    private static void alterOrder(){
+        // Select a user's orders to modify
+        Scanner kb = new Scanner(System.in);
+        UserService userHelper = new UserService(con);
+        User user = userHelper.selectUser();
+        System.out.println("You chose: "  + user);
+        
+        // Select a order to alter
+        ServiceWrapper service = new ServiceWrapper(con);
+        OrderService orderHelper = new OrderService(con);
+        ArrayList<Order> orders = orderHelper.getUserOrders(user.getUserId());
+        System.out.println("Whose would you like to edit?");
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            String out = order.getItem_ids().size()+" items | Price $"
+                               +order.getTotal_price()+" | Placed at "
+                                +order.getPlaced_timestamp();
+            System.out.println((i + 1) + ". " + out);
         }
         Order toAlter = orders.get(Integer.parseInt(kb.nextLine()) - 1);
         
@@ -320,9 +329,9 @@ public class AdminAndManager {
                 System.out.println((i + 1) + ". " + cards.get(i).getCardNumber());
             }
             Card choice = cards.get(Integer.parseInt(kb.nextLine()) - 1);
-            toAlter.setCard_id(choice.getCardNumber());
+            toAlter.setCard_id(choice.getCardId());
         } else if(toChange.equals("Delivery Method")){
-            DeliveryMethodService helper = new DeliveryMethodService();
+            DeliveryMethodService helper = new DeliveryMethodService(con);
             DeliveryMethod choice = helper.selectDeliveryMethod();
             toAlter.setDelivery_method_id(choice.getDelivery_method_id());
         }  else if(toChange.equals("Delivery Status")){
@@ -335,16 +344,8 @@ public class AdminAndManager {
         }
         
         // Update the order
-        System.out.println(toAlter);
-        orderHelper.update(toAlter);
+        orderHelper.updateAdmin(toAlter);
         adminScreen();
-    }
-    
-    public void addOrder(){
-    }
-    
-    public void deleteOrder(){
-        
     }
     
     /*
