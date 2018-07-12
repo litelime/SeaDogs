@@ -55,7 +55,7 @@ public class MenuServices implements Service<Menu> {
         return null;
 
     }
-
+    
     @Override
     public ArrayList<Menu> getAll() {
         ArrayList<Menu> menArr = new ArrayList<Menu>();
@@ -104,7 +104,29 @@ public class MenuServices implements Service<Menu> {
             return false;
         }
     }
-
+    
+    public boolean addSpecial(SpecialMenu men, String id, int amount) {
+        ArrayList<TimeSlots> times = timServ.getAll();
+        String timeId = getTimeID(times, men.getSlot_ID());
+        try {
+            CallableStatement preStmt = con.prepareCall("call sp_insert_Special (?,?,?,?,?,?,?,?,?)");
+            preStmt.setString(1, id);
+            preStmt.setFloat(2, men.getDiscount());
+            preStmt.setString(3, men.getId());
+            preStmt.setString(4, men.getName());
+            preStmt.setString(5, men.getDescription());
+            preStmt.setInt(6, amount);
+            preStmt.setString(7, men.getPhoto());
+            preStmt.setString(8, ""+men.getVegetarian());
+            preStmt.setString(9, timeId);
+            preStmt.executeUpdate();
+            
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
     public void deleteById(String id) {
         try {
             CallableStatement preStmt = con.prepareCall("call deleteItem(?)");
@@ -139,7 +161,7 @@ public class MenuServices implements Service<Menu> {
         ArrayList<Menu> menArr = new ArrayList<Menu>();
         ArrayList<TimeSlots> times = timServ.getAll();
         try {
-            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM items WHERE items_type_id = " + type);
+            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM items WHERE item_type_id = " + type);
             while (rs.next()) {
                 float price = rs.getFloat("price");
                 String tid = rs.getString("time_slot_id");
@@ -163,6 +185,32 @@ public class MenuServices implements Service<Menu> {
         try {
             // Ask for all the ids
             String query = "select item_id from items";
+            Statement stmnt = con.createStatement();
+            stmnt.execute(query);
+
+            // Collect the ids
+            ArrayList<Integer> ids = new ArrayList<Integer>();
+            ResultSet results = stmnt.getResultSet();
+            while (results.next()) {
+                ids.add(Integer.parseInt(results.getString(1)));
+            }
+
+            // Generate a new id
+            if (ids.isEmpty()) {
+                return 0;
+            }
+            return Collections.max(ids) + 1;
+        } catch (NumberFormatException | SQLException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
+            return -1;
+        }
+    }
+    
+    public int getNextSpecialId() {
+        try {
+            // Ask for all the ids
+            String query = "select special_id from specials";
             Statement stmnt = con.createStatement();
             stmnt.execute(query);
 
@@ -216,7 +264,14 @@ public class MenuServices implements Service<Menu> {
             SpecialMenu sm = new SpecialMenu();
             sm.setPrice(0);
             while (rs.next()) {
-                if (!sm.getId().equals("")) {
+                //First case
+                if (sm.getId().equals("")) {
+                    sm.setId(rs.getString("special_id"));
+                }
+                //if this is a new special
+                if (!sm.getId().equals(rs.getString("special_id"))) {
+                    menArr.add(sm);
+                    sm = new SpecialMenu();
                     sm.setId(rs.getString("special_id"));
                 }
                 if (sm.getId().equals(rs.getString("special_id"))) {
@@ -225,7 +280,7 @@ public class MenuServices implements Service<Menu> {
                         if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
                             sm.setDescription(rs.getString("special_description"));
                         }
-                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * rs.getFloat("discount_percentage"));
+                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
                         for(int i = 0; i < rs.getInt("amount"); i++) {
                             sm.addItemId(rs.getString("item_id"));
                         }
@@ -236,7 +291,8 @@ public class MenuServices implements Service<Menu> {
                     }
                 }
                 
-
+            }
+            if (!sm.getId().equals("")) {
                 menArr.add(sm);
             }
             return menArr;
@@ -250,5 +306,42 @@ public class MenuServices implements Service<Menu> {
 
     }
 
+    public SpecialMenu getSpecialById(String id) {
+        ArrayList<TimeSlots> times = timServ.getAll();
+        try {
+            String query = "SELECT * FROM specials s, items i "
+                    + "WHERE s.item_id = i.item_id and "
+                    + "special_id = " + id;
+            ResultSet rs = con.createStatement().executeQuery(query);
+            SpecialMenu sm = new SpecialMenu();
+            sm.setPrice(0);
+            while (rs.next()) {
+                if (rs.getString("special_id").equals(id)) {
+                    sm.setId(rs.getString("special_id"));
+                    if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
+                        sm.setName(rs.getString("special_name"));
+                        if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
+                            sm.setDescription(rs.getString("special_description"));
+                        }
+                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
+                        for(int i = 0; i < rs.getInt("amount"); i++) {
+                            sm.addItemId(rs.getString("item_id"));
+                        }
+                        String tid = rs.getString("time_slot_id");
+                        String tName = getTimeName(times, tid);
+                        sm.setPhoto(rs.getString("photo"));
+                        sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                    }
+                }
+            }
+            return sm;
 
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
 }

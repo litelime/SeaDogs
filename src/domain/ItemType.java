@@ -9,14 +9,14 @@ package domain;
  *
  * @author syntel
  */
-public class itemType {
+public class ItemType {
     private String itemTypeId;
     private String itemType;
 
-    public itemType() {
+    public ItemType() {
     }
 
-    public itemType(String itemTypeId, String itemType) {
+    public ItemType(String itemTypeId, String itemType) {
         this.itemTypeId = itemTypeId;
         this.itemType = itemType;
     }

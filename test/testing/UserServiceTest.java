@@ -22,7 +22,7 @@ public class UserServiceTest {
 
 	private static final String DB_DRIVER = "oracle.jdbc.driver.OracleDriver";
 	private static final String DB_CONNECTION = "jdbc:oracle:thin:@localhost:1521:XE";
-	private static final String DB_USER = "pass";
+	private static final String DB_USER = "db_uSpring";
 	private static final String DB_PASSWORD = "pass";
 	
 	static Connection con;

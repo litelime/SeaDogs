@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class DeliveryMethodService implements Service<DeliveryMethod>{
 	
@@ -126,4 +127,14 @@ public class DeliveryMethodService implements Service<DeliveryMethod>{
                 return -1;
             }
         }
+        
+    public DeliveryMethod selectDeliveryMethod(){
+        ArrayList<DeliveryMethod> methods = getAll();
+        Scanner kb = new Scanner(System.in);
+        System.out.println("Select a delivery method");
+        for (int i = 0; i < methods.size(); i++) {
+            System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
+        }
+        return methods.get(Integer.parseInt(kb.nextLine()) - 1);
+    }
 }

@@ -1,86 +1,60 @@
 package cli;
 
+import static cli.Tiger.con;
+import static cli.Tiger.editString;
 import static cli.Tiger.firstScreen;
+import static cli.Tiger.getAnInt;
 
 import domain.Card;
+import domain.Location;
 import domain.Menu;
+import domain.Order;
 import domain.Special;
+import domain.SpecialMenu;
 import domain.User;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import domain.UserStatus;
-import domain.itemType;
+import domain.ItemType;
 import java.sql.Date;
+import java.util.Arrays;
 import services.CardService;
 import services.DeliveryMethod;
 import services.DeliveryMethodService;
+import services.DeliveryStatus;
+import services.DeliveryStatusService;
 import services.LocationService;
 import services.MenuServices;
+import services.OrderService;
 import services.SpecialServices;
 import services.UserService;
 import services.UserStatusService;
-import services.itemTypeServices;
+import services.ItemTypeServices;
 
 public class AdminAndManager {
 
+    static Connection con;
+    private static User user;
+    private static final String MANAGER = "5";
+    private static final String ADMIN = "3";
 
-	static Connection con;
-        private User user;
-        private static final String MANAGER = "5";
-        private static final String ADMIN = "3";
-	
-	public AdminAndManager(Connection con){
-		AdminAndManager.con = con;
-                user = null;
-	}
-	
-	public void adminScreen(){
-            // Wait for login
-            Scanner sc = new Scanner(System.in);
-            UserService userHelper = new UserService(con);
-            while(user == null){
-                // Get email
-                String email = "";
-                do{
-                    System.out.println("Enter your email:");
-                    email = sc.nextLine();
-                } while(email.length() == 0);
-                
-                // Get password
-                String password = "";
-                do{
-                    System.out.println("Enter your password");
-                    password = sc.nextLine();
-                } while(password.length() == 0);
-                
-                // Check credentials
-                boolean emailExists = (userHelper.getByEmail(email) != null);
-                boolean passwordMatch = emailExists && 
-                                        (userHelper.getByEmail(email).getPassword().equals(password));
-                boolean isAdmin = passwordMatch &&
-                        (userHelper.getByEmail(email).getUserStatusId().equals(MANAGER) ||
-                         userHelper.getByEmail(email).getUserStatusId().endsWith(ADMIN));
-                
-                // Notify user of reason for failed login
-                if(!emailExists || !passwordMatch){
-                    System.out.println("Incorrect credentials. Please try again.");
-                } else if(!isAdmin){
-                    System.out.println("You are not an admin.");
-                    firstScreen();
-}
+    public AdminAndManager(Connection con) {
+        AdminAndManager.con = con;
+        user = null;
+    }
 
-            // Allow login
-            if (isAdmin) {
-                user = userHelper.getByEmail(email);
-            }
+    public static void adminScreen() {
+        // Request login            
+        if (user == null) {
+            adminLogin();
         }
 
         ArrayList<String> options = new ArrayList<String>();
         System.out.println("Admin View");
         options.add("Alter Cards");
-        options.add("Alter Combos");
+        options.add("Alter Specials");
         options.add("Alter Delivery Methods");
         options.add("Alter Delivery Statuses");
         options.add("Alter Items");
@@ -90,6 +64,7 @@ public class AdminAndManager {
         options.add("Alter Users");
         options.add("Alter User Statuses");
         ServiceWrapper.printOptions(options);
+        Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
         int option = 0;
         switch (input) {
@@ -103,15 +78,33 @@ public class AdminAndManager {
                     case 3:
                         deleteCardScreen();
                     case 4:
-                        adminScreen();                }
+                        adminScreen();
+                }
                 break;
             }
-            case 3:
-                option = optionsScreen("Delivery Method");
-                // Goes to item menu. Fix that later
+            case 2:
+                option = optionsScreen("Specials");
                 switch (option) {
                     case 1:
-                        editDeliveryMethod();
+                        alterSpecialScreen();
+                        break;
+                    case 2:
+                        addSpecialScreen();
+                        break;
+                    case 3:
+                        deleteSpecialScreen();
+                        break;
+                    case 4:
+                        adminScreen();
+                        break;
+                    case 5:
+                        System.exit(0);
+                }
+            case 3:
+                option = optionsScreen("Delivery Method");
+                switch (option) {
+                    case 1:
+                        alterDeliveryMethod();
                         break;
                     case 2:
                         addDeliveryMethod();
@@ -125,8 +118,26 @@ public class AdminAndManager {
                     default:
                         System.exit(1);
                 }
-            case 4:
-                optionsScreen("Delivery Statuse");
+            case 4:{
+                option = optionsScreen("Delivery Status");
+                switch(option){
+                    case 1:
+                        alterDeliveryStatus();
+                        break;
+                    case 2:
+                        addDeliveryStatus();
+                        break;
+                    case 3:
+                        deleteDeliveryStatus();
+                        break;
+                    case 4:
+                        adminScreen();
+                        break;
+                    case 5:
+                        System.exit(0);
+                }
+            }
+            
             case 5: {
                 option = optionsScreen("Item");
                 switch (option) {
@@ -148,33 +159,66 @@ public class AdminAndManager {
             }
             case 6:
                 option = optionsScreen("Item Type");
-                switch (option) {
+
+                        switch(option){
+                            case 1:
+                                updateItemTypeScreen();
+                                break;
+                            case 2:
+                                addItemTypeScreen();
+                                break;
+                            case 3:
+                                deleteItemScreen();
+                                break;
+                            case 4:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
+                        break;
+            case 7:
+                option = optionsScreen("Locations");
+                        switch(option){
+                            case 1:
+                                editLocations();
+                                break;
+                            case 2:
+                                addLocation();
+                                break;
+                            case 3:
+                                deleteLocation();
+                                break;
+                            case 4:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
+                        break;
+            case 8:
+                System.out.println("Not yet supported");
+                option = optionsScreen("Order");
+                switch(option){
                     case 1:
-                        updateItemTypeScreen();
+                        System.out.println("Altering orders");
+                        alterOrder();
                         break;
-                    
                     case 2:
-                        addItemTypeScreen();
+                        System.out.println("Adding order");
                         break;
-                    
                     case 3:
-                        deleteItemType();
+                        System.out.println("Deleting order");
                         break;
                         
                     case 4:
                         adminScreen();
                         break;
-                    
                     default:
-                        System.exit(0);
+                        adminScreen();
                 }
-            case 7:
-                optionsScreen("Location");
-            case 8:
-                optionsScreen("Order");
-            case 9:
-                optionsScreen("Order Item");
-            case 10: {
+                
+            case 9: {
                 option = optionsScreen("User");
                 switch (option) {
                     case 1:
@@ -192,7 +236,7 @@ public class AdminAndManager {
                 }
 
             }
-            case 11:
+            case 10:
                 option = optionsScreen("User Statuses");
                 switch (option) {
                     case 1:
@@ -202,14 +246,15 @@ public class AdminAndManager {
                         addStatus();
                         break;
                     case 3:
-                        System.out.println("Deleting not supported");
                         deleteStatus();
+                    case 4:
+                        adminScreen();
                         break;
+                    default:
+                        firstScreen();
                 }
-            case 12:
+            case 11:
                 firstScreen();
-            case 13:
-                System.exit(0);
             default:
                 adminScreen();
         }
@@ -230,12 +275,89 @@ public class AdminAndManager {
         return input;
     }
 
+    
     /*
-        **************************
-        * Delivery Method Status *
-        **************************
+        *********
+        * Order *
+        *********
      */
-    public void editDeliveryMethod() {
+    
+    private static void alterOrder(){
+        // Select a user's orders to modify
+        Scanner kb = new Scanner(System.in);
+        UserService userHelper = new UserService(con);
+        User user = userHelper.selectUser();
+        System.out.println("You chose: "  + user);
+        
+        // Select a order to alter
+        OrderService orderHelper = new OrderService(con);
+        ArrayList<Order> orders = orderHelper.getUserOrders(user.getUserId());
+        System.out.println("Which order would you like to edit?");
+        for (int i = 0; i < orders.size(); i++) {
+            System.out.println((i + 1) + ". " + orders.toString());
+        }
+        Order toAlter = orders.get(Integer.parseInt(kb.nextLine()) - 1);
+        
+        // Select a field to edit
+        String[] fields = {"Tip", "Price", "Card", "Instructions",
+                           "Delivery Method", "Delivery Status"};
+        for (int i = 0; i < fields.length; i++) {
+            System.out.println((i + 1) + ". " + fields[i]);
+        }
+        String toChange = fields[Integer.parseInt(kb.nextLine()) - 1]; 
+        
+        // Enter a new value
+        System.out.println("What would you like to change " + toChange + " to?");
+        if(toChange.equals("Tip")){
+            toAlter.setTip(Float.parseFloat(kb.nextLine()));
+        } else if(toChange.equals("Price")){
+            toAlter.setTotal_price(Float.parseFloat(kb.nextLine()));
+        } else if(toChange.equals("Instructions")){
+            toAlter.setInstuctions(kb.nextLine());
+        } else if(toChange.equals("Card")){
+            // Get the users card
+            CardService helper = new CardService(con);
+            ArrayList<Card> cards = helper.getUserCards(user.getUserId());
+        
+            // Select a card to use
+            System.out.println("Select a card:");
+            for (int i = 0; i < cards.size(); i++) {
+                System.out.println((i + 1) + ". " + cards.get(i).getCardNumber());
+            }
+            Card choice = cards.get(Integer.parseInt(kb.nextLine()) - 1);
+            toAlter.setCard_id(choice.getCardNumber());
+        } else if(toChange.equals("Delivery Method")){
+            DeliveryMethodService helper = new DeliveryMethodService();
+            DeliveryMethod choice = helper.selectDeliveryMethod();
+            toAlter.setDelivery_method_id(choice.getDelivery_method_id());
+        }  else if(toChange.equals("Delivery Status")){
+            DeliveryStatusService helper = new DeliveryStatusService(con);
+            DeliveryStatus choice = helper.selectDeliveryStatus();
+            toAlter.setDelivery_status_id(choice.getDelivery_status_id());
+        } else {
+            System.out.println("Invalid option");
+            alterOrder();
+        }
+        
+        // Update the order
+        System.out.println(toAlter);
+        orderHelper.update(toAlter);
+        adminScreen();
+    }
+    
+    public void addOrder(){
+    }
+    
+    public void deleteOrder(){
+        
+    }
+    
+    /*
+        *******************
+        * Delivery Method *
+        *******************
+     */
+    private static void alterDeliveryMethod() {
         // Ask for a delivery method to delete
         Scanner kb = new Scanner(System.in);
         DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
@@ -255,7 +377,7 @@ public class AdminAndManager {
         System.out.println("Alteration successful.");
     }
 
-    public void deleteDeliveryMethod() {
+    private static void deleteDeliveryMethod() {
         // Ask for a delivery method to delete
         Scanner kb = new Scanner(System.in);
         DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
@@ -269,9 +391,10 @@ public class AdminAndManager {
         // Delete the method
         deliveryHelper.deleteById(choice.getDelivery_method_id());
         System.out.println(choice.getDelivery_method() + " deleted");
+        adminScreen();
     }
 
-    public void addDeliveryMethod() {
+    private static void addDeliveryMethod() {
         // Get the delivery method
         Scanner kb = new Scanner(System.in);
         DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
@@ -290,7 +413,7 @@ public class AdminAndManager {
         * User Status *
         ***************
      */
-    public void alterStatus() {
+    private static void alterStatus() {
         // Ask for which status to alter
         UserStatusService statusHelper = new UserStatusService(con);
         ArrayList<UserStatus> statuses = statusHelper.getAll();
@@ -307,9 +430,10 @@ public class AdminAndManager {
         toAlter.setUserStatus(newStatus);
         statusHelper.update(toAlter);
         System.out.println("Status altered");
+        adminScreen();
     }
 
-    public void addStatus() {
+    private static void addStatus() {
         // Ask for a new status
         UserStatusService statusHelper = new UserStatusService(con);
         Scanner kb = new Scanner(System.in);
@@ -324,17 +448,27 @@ public class AdminAndManager {
         adminScreen();
     }
 
-    public void deleteStatus() {
+    private static void deleteStatus() {
         // Ask for the user status to delete
         UserStatusService statusHelper = new UserStatusService(con);
         Scanner kb = new Scanner(System.in);
         ArrayList<UserStatus> statuses = statusHelper.getAll();
+        ArrayList<UserStatus> filtered = new ArrayList<UserStatus>();
+
+        // Don't give the option to delete admin or manager
+        for(UserStatus status: statuses){
+            if(!status.getUserStatusId().equals(MANAGER) &&
+                !status.getUserStatusId().equals(ADMIN)){
+                filtered.add(status);
+            }
+        }
+
         System.out.println("Select a user status to delete");
-        for (int i = 0; i < statuses.size(); i++) {
-            System.out.println((i + 1) + ". " + statuses.get(i));
+        for (int i = 0; i < filtered.size(); i++) {
+            System.out.println((i + 1) + ". " + filtered.get(i));
         }
         int choiceIndex = Integer.parseInt(kb.nextLine()) - 1;
-        UserStatus toDelete = statuses.get(choiceIndex);
+        UserStatus toDelete = filtered.get(choiceIndex);
 
         // Ask for the replacement status
         System.out.println("Users with status " + toDelete.toString() + " should take on which status?");
@@ -349,6 +483,7 @@ public class AdminAndManager {
 
         // Delete the user status from the table
         statusHelper.deleteById(toDelete.getUserStatusId());
+        adminScreen();
     }
 
     /*
@@ -356,28 +491,18 @@ public class AdminAndManager {
             to values that are not valid. I.e. someone can change a user
             status to 999999 which is not a status
      */
-    public void alterUserScreen() {
-        // Display the users
-        UserService userHelper = new UserService(con);
-//            for(User user: userHelper.getAll()){
-//                System.out.println(user.getEmail);
-//            }
-
-        // Ask for the user to modify
+    private static void alterUserScreen() {
+        // Ask what user to alter
         Scanner kb = new Scanner(System.in);
-        System.out.println("Enter the email of the user you wish to alter:");
-        String alterEmail = kb.nextLine();
-
-        // Check to see the user exists
-        User toAlter = null;
-        boolean exists = userHelper.emailExists(alterEmail);
-        if (!exists) {
-            System.out.println(alterEmail + " not associated with an account.");
-            adminScreen();
-            return;
-        } else {
-            toAlter = userHelper.getByEmail(alterEmail);
+        UserService userHelper = new UserService(con);
+        ArrayList<User> users = userHelper.getAll();
+        System.out.println("Select a user to edit:");
+        for(int i = 0; i < users.size(); i++){
+            String first = users.get(i).getFirstName();
+            String last = users.get(i).getLastName();
+            System.out.println((i + 1) + ". " + first + " " + last);
         }
+        User toAlter = users.get(Integer.parseInt(kb.nextLine()) - 1);
 
         // Fields that can't be null
         ArrayList<String> cantBeNull = new ArrayList<String>();
@@ -396,11 +521,11 @@ public class AdminAndManager {
         options.add("Go back");
         System.out.println("What field would you like to change?");
         for (int i = 0; i < options.size(); i++) {
-            System.out.println(i + ". " + options.get(i));
+            System.out.println((i + 1) + ". " + options.get(i));
         }
-        changeField = options.get(Integer.parseInt(kb.nextLine()));
+        changeField = options.get(Integer.parseInt(kb.nextLine()) - 1);
 
-        // Go back 
+        // Go back
         if (changeField.equals("Go back")) {
             adminScreen();
             return;
@@ -410,8 +535,10 @@ public class AdminAndManager {
         System.out.println("What would you like to change " + changeField + " to?");
         String changeValue = kb.nextLine();
 
-        // Check the user input 
+        // Check the user input
         // No value given
+        
+        /*Instead repeatedly ask for input*/
         if (changeValue.isEmpty()) {
             if (cantBeNull.contains(changeField)) { // empty and shouldnt be
                 System.out.println(changeField + " cannot be empty");
@@ -420,7 +547,7 @@ public class AdminAndManager {
             } else { // empty and needs to be changed to null
                 changeValue = "NULL";
             }
-            // Email alread in use
+        // Email alread in use
         } else if (changeField.equals("Email") && userHelper.emailExists(changeValue)) {
             System.out.println("Email already in use");
             adminScreen();
@@ -447,10 +574,9 @@ public class AdminAndManager {
         userHelper.update(toAlter);
         System.out.println("Alteration successful");
         adminScreen();
-        return;
     }
 
-    public static void addCardScreen() {
+    private static void addCardScreen() {
         CardService cs = new CardService(con);
         UserService us = new UserService(con);
 
@@ -479,11 +605,10 @@ public class AdminAndManager {
         Card c = new Card(cs.getNextCardId(), userId, cardNumber, expiryDate, securityCode);
 
         cs.add(c);
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        adminScreen();
     }
 
-    public static void deleteCardScreen() {
+    private static void deleteCardScreen() {
         System.out.println("List of cards");
         CardService cs = new CardService(con);
         ArrayList<Card> cl = cs.getAll();
@@ -497,10 +622,10 @@ public class AdminAndManager {
         int input = sc.nextInt();
         cs.deleteById(cl.get(input - 1).getCardId());
         System.out.println("Deleted Card");
-
+        adminScreen();
     }
 
-    public static void alterCardScreen() {
+    private static void alterCardScreen() {
         System.out.println("List of cards");
         CardService cs = new CardService(con);
         ArrayList<Card> cl = cs.getAll();
@@ -538,11 +663,108 @@ public class AdminAndManager {
         Card c = new Card(cardId, userId, cardNumber, expiryDate, securityCode);
 
         cs.update(c);
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        adminScreen();
+    }
+private static void addSpecialScreen() {
+        System.out.println("Add a special");
+        Scanner sc = new Scanner(System.in);
+        MenuServices menServ = new MenuServices(con);
+        SpecialMenu sm = new SpecialMenu();
+        sm.setId("" + menServ.getNextSpecialId());
+        System.out.println("\nEnter special name: ");
+        sm.setName(sc.nextLine());
+//        System.out.println("\nEnter vegeterian (y or n): ");
+//        String vege = sc.next();
+//        char vegetarian = vege.charAt(0);
+        System.out.println("\nEnter a description: ");
+        sm.setDescription(sc.nextLine());
+//        System.out.println("\nEnter meal time: ");
+//        String slot_ID = sc.next();
+        MenuServices ms = new MenuServices(con);
+        Boolean stillSelecting = true;
+        while(stillSelecting) {
+            System.out.println("Choose an item to add");
+            ArrayList<Menu> menus = ms.getAll();
+            ServiceWrapper.printMenuItems(menus);
+            int id = sc.nextInt();
+            if (id == menus.size() + 1) {
+                return;
+            }
+            if (id == menus.size() + 2) {
+                System.exit(0);
+            }
+            System.out.println("Enter amount");
+            int amount = sc.nextInt();
+            System.out.println("Enter discount");
+            sm.setDiscount(sc.nextInt());
+            ms.addSpecial(sm, "" + (id-1), amount);
+            System.out.println("Do you wish to add more items? ");
+            System.out.println("1. I want to add more ");
+            System.out.println("2. I am done ");
+            int input = sc.nextInt();
+            if (input > 1) {
+                stillSelecting = false;
+            }
+        }
+        adminScreen();
     }
 
-    public static void addItemScreen() {
+    private static void deleteSpecialScreen() {
+        System.out.println("Choose an item to delete");
+        MenuServices ms = new MenuServices(con);
+        ArrayList<Menu> menus = ms.getAll();
+        ServiceWrapper.printMenuItems(menus);
+        Scanner sc = new Scanner(System.in);
+        int input = sc.nextInt();
+        if (input == menus.size() + 1) {
+            return;
+        }
+        if (input == menus.size() + 2) {
+            System.exit(0);
+        }
+        MenuServices menServ = new MenuServices(con);
+
+        menServ.deleteById(menus.get(input - 1).getId());
+        System.out.println("Deleted " + menus.get(input - 1).getName());
+        adminScreen();
+    }
+
+    private static void alterSpecialScreen() {
+        System.out.println("Choose a Special Combo to alter");
+        MenuServices ms = new MenuServices(con);
+        ArrayList<SpecialMenu> menus = ms.getAllSpecials();
+        ServiceWrapper.printSpecialMenuItems(menus);
+        Scanner sc = new Scanner(System.in);
+        int input = sc.nextInt();
+        if (input == (menus.size()) + 1) {
+            alterItemScreen();
+        }
+        Menu men = menus.get(input - 1);
+        MenuServices menServ = new MenuServices(con);
+        System.out.println("Enter item name: ");
+        sc.nextLine();
+        String name = sc.nextLine();
+        System.out.println("Enter vegeterian (y or n): ");
+        String vege = sc.next();
+        char vegetarian = vege.charAt(0);
+        System.out.println("Enter a description: ");
+        sc.nextLine();
+        String description = sc.nextLine();
+        System.out.println("Enter type number id: ");
+        String type = sc.next();
+        System.out.println("Enter meal time: ");
+        String slot_ID = sc.next();
+        System.out.println("Enter photo link: ");
+        String photo = sc.next();
+        System.out.println("Enter a price: ");
+        float price = sc.nextFloat();
+        String id = men.getId();
+        Menu menUp = new Menu(id, name, vegetarian, type, description, slot_ID, photo, price);
+        menServ.update(menUp);
+        System.out.println("Updated " + name);
+        adminScreen();
+    }
+    private static void addItemScreen() {
         System.out.println("Add an item");
         Scanner sc = new Scanner(System.in);
         MenuServices menServ = new MenuServices(con);
@@ -567,12 +789,10 @@ public class AdminAndManager {
         Menu men = new Menu("" + menServ.getNextItemId(), name, vegetarian, type, description, slot_ID, photo, price);
         menServ.add(men);
         System.out.println("\n" + name + " added to database\n");
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
-
+        adminScreen();
     }
 
-    public static void deleteItemScreen() {
+    private static void deleteItemScreen() {
         System.out.println("Choose an item to delete");
         MenuServices ms = new MenuServices(con);
         ArrayList<Menu> menus = ms.getAll();
@@ -589,9 +809,10 @@ public class AdminAndManager {
 
         menServ.deleteById(menus.get(input - 1).getId());
         System.out.println("Deleted " + menus.get(input - 1).getName());
+        adminScreen();
     }
 
-    public static void alterItemScreen() {
+    private static void alterItemScreen() {
         System.out.println("Choose an item to alter");
         MenuServices ms = new MenuServices(con);
         ArrayList<Menu> menus = ms.getAll();
@@ -624,9 +845,10 @@ public class AdminAndManager {
         Menu menUp = new Menu(id, name, vegetarian, type, description, slot_ID, photo, price);
         menServ.update(menUp);
         System.out.println("Updated " + name);
+        adminScreen();
     }
 
-    public static void addUserScreen() {
+    private static void addUserScreen() {
         // Get info for new user
         UserService helper = new UserService(con);
         System.out.println("Add a User");
@@ -665,12 +887,11 @@ public class AdminAndManager {
         User u = new User(userID, firstName, lastName, phone, email, password, userStatusId);
         helper.add(u);
 
-        // Not sure why this is here
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        // Go back to the admin screen
+        adminScreen();
     }
 
-    public static void deleteUserScreen() {
+    private static void deleteUserScreen() {
         // List existing users
         System.out.println("List of users");
         UserService us = new UserService(con);
@@ -700,12 +921,13 @@ public class AdminAndManager {
 
         /*
                 Tables who have records that reference this user will also be
-                deleted. For example, all of the 
+                deleted. For example, all of the
          */
         // Delete the user
         System.out.println("Deleting user...");
         us.deleteById(toDelete.getUserId());
         System.out.println(toDelete.getFirstName() + " has been deleted");
+        adminScreen();
     }
 
     private static String emptyToNull(String field) {
@@ -725,7 +947,7 @@ public class AdminAndManager {
         ArrayList<Special> specials = SS.getAll();
         for (Special special : specials) {
             specialCount++;
-            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscoutPercentage() + "%");
+            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
         }
         int specialChoice = Tiger.getAnInt();
         specialChoice--;
@@ -756,7 +978,7 @@ public class AdminAndManager {
         ArrayList<Special> specials = SS.getAll();
         for (Special special : specials) {
             specialCount++;
-            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscoutPercentage() + "%");
+            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
         }
         int specialChoice = Tiger.getAnInt();
         specialChoice--;
@@ -765,18 +987,256 @@ public class AdminAndManager {
         adminScreen();
     }
 
-    public static void addItemTypeScreen() {
+
+    private static void editLocations() {
+        Scanner sc = new Scanner(System.in);
+        LocationService ls = new LocationService(con);
+        ArrayList<Location> locs = ls.getAll();
+        for(int i = 0; i < locs.size(); i++){
+            System.out.println((i + 1) + ". " + locs.get(i).getAddress());
+        }
+        int input = Integer.parseInt(sc.nextLine());
+        if(input <= locs.size() && input > 0){
+            editALoc(locs.get(input -1));
+            System.out.println("Location updated");
+        }
+    }
+    
+    private static void editALoc(Location l) {
+        System.out.printf("\n*** Edit Location: ***\n");
+        System.out.println("1. Edit Street: " + l.getStreet());
+        System.out.println("2. Edit City:  " + l.getCity());
+        System.out.println("3. Edit State: " + l.getState());
+        System.out.println("4. Edit Country: " + l.getCountry());
+        System.out.println("5. Edit Zip: " + l.getZip());
+        System.out.println("6. Back");
+
+        int input = getAnInt();
+
+        switch (input) {
+            case 1:
+                String street = editString();
+                l.setStreet(street);
+                System.out.println("Street changed to " + street);
+                editALoc(l);
+                break;
+            case 2:
+                String city = editString();
+                l.setCity(city);
+                System.out.println("City changed to " + city);
+                editALoc(l);
+                break;
+            case 3:
+                String state = editString();
+                l.setState(state);
+                System.out.println("State changed to " + state);
+                editALoc(l);
+                break;
+            case 4:
+                String country = editString();
+                l.setCountry(country);
+                System.out.println("Country changed to " + country);
+                editALoc(l);
+                break;
+            case 5:
+                String zip = editString();
+                l.setZip(zip);
+                System.out.println("Zip changed to " + zip);
+                editALoc(l);
+                break;
+            default:
+                break;
+        }
+        LocationService ls = new LocationService(con);
+        ls.update(l);
+    }
+
+    private static void addLocation() {
+        // Get the delivery method
+        Scanner sc = new Scanner(System.in);
+        LocationService locServe = new LocationService(con);
+        Location newLoc = locPrompt(sc);
+        String newID = locServe.getNextLocId();
+        newLoc.setLocationId(newID);
+        locServe.add(newLoc);
+        System.out.println("Location at " +newLoc.getCity() +", " + newLoc.getState() +" added.");
+    }
+    private static Location locPrompt(Scanner sc){
+        System.out.println("Enter street");
+        String street = sc.nextLine();
+        System.out.println("Enter city");
+        String city = sc.nextLine();
+        System.out.println("Enter state");
+        String state = sc.nextLine();
+        System.out.println("Enter country");
+        String country = sc.nextLine();
+        System.out.println("Enter Zip");
+        String zip = sc.nextLine();
+        Location newLoc = new Location();
+        newLoc.setStreet(street);
+        newLoc.setCity(city);
+        newLoc.setState(state);
+        newLoc.setCountry(country);
+        newLoc.setZip(zip);
+        return newLoc;
+    }
+
+    private static void deleteLocation() {
+        // Ask for a location to delete
+        Scanner sc = new Scanner(System.in);
+        LocationService ls = new LocationService(con);
+        ArrayList<Location> locs = ls.getAll();
+        int total = locs.size();
+        System.out.println("");
+        if(total < 10){
+            for(int i = 0; i < total; i++ ){
+                System.out.println(i+1 + ". " + locs.get(i).getStreet());
+            }
+                System.out.println(total+1 + ". Go Back");
+        }else{//Make a nicer format for a longer list. 4 To a line.
+            for(int i= 0; i < total; i++){
+                System.out.printf("%s. %-25s",(i+1), locs.get(i).getStreet());
+                if((i+1)%4 ==0 ){
+                    System.out.print("\n");
+                }
+            }
+            System.out.println("");
+        }
+        int input = sc.nextInt();
+        if(input <= total){
+            ls.deleteById(locs.get(input-1).getLocationId());
+            System.out.println("Location deleted");
+        }
+                adminScreen();     
+    }
+
+    private static void alterDeliveryStatus() {
+        System.out.println("Choose a delivery status to alter");
+
+        DeliveryStatusService DSS = new DeliveryStatusService(con);
+        ArrayList<DeliveryStatus> stats = DSS.getAll();
+        int count = 0;
+        for (DeliveryStatus x : stats) {
+            count++;
+            System.out.println(count + ". " + x.getDelivery_status());
+        }
+        Scanner sc = new Scanner(System.in);
+
+        int input = Tiger.getAnInt();
+
+        if (input == stats.size() + 1) {
+            return;
+        }
+        if (input == stats.size() + 2) {
+            System.exit(0);
+        }
+
+        System.out.println("Enter the new Delivery Status");
+
+        String deliveryStatus = sc.next();
+
+        DSS.update(new DeliveryStatus(stats.get(input - 1).getDelivery_status_id(), deliveryStatus));
+
+        System.out.println("Delivery status deleted");
+
+    }
+
+    private static void deleteDeliveryStatus() {
+
+        System.out.println("Choose a delivery status to delete");
+
+        DeliveryStatusService DSS = new DeliveryStatusService(con);
+        ArrayList<DeliveryStatus> stats = DSS.getAll();
+        int count = 0;
+        for (DeliveryStatus x : stats) {
+            count++;
+            System.out.println(count + ". " + x.getDelivery_status());
+        }
+        Scanner sc = new Scanner(System.in);
+
+        int input = Tiger.getAnInt();
+
+        if (input == stats.size() + 1) {
+            return;
+        }
+        if (input == stats.size() + 2) {
+            System.exit(0);
+        }
+
+        DSS.deleteByID(stats.get(input - 1).getDelivery_status_id());
+
+        System.out.println("Delivery status deleted");
+    }
+
+    private static void addDeliveryStatus() {
+
+        Scanner sc = new Scanner(System.in);
+
+        DeliveryStatusService DSS = new DeliveryStatusService(con);
+
+        System.out.println("Enter the new Delivery Status");
+
+        String newService = sc.next();
+
+        DSS.add(new DeliveryStatus("" + DSS.newDeliveryStatusId(), newService));
+
+        System.out.println("New Delivery Status " + newService + " created.");
+
+    }
+
+    private static void adminLogin() {
+        Scanner sc = new Scanner(System.in);
+        UserService userHelper = new UserService(con);
+        while (user == null) {
+            // Get email
+            String email = "";
+            do {
+                System.out.println("Enter your email:");
+                email = sc.nextLine();
+            } while (email.length() == 0);
+
+            // Get password
+            String password = "";
+            do {
+                System.out.println("Enter your password");
+                password = sc.nextLine();
+            } while (password.length() == 0);
+
+            // Check credentials
+            boolean emailExists = (userHelper.getByEmail(email) != null);
+            boolean passwordMatch = emailExists
+                    && (userHelper.getByEmail(email).getPassword().equals(password));
+            boolean isAdmin = passwordMatch
+                    && (userHelper.getByEmail(email).getUserStatusId().equals(MANAGER)
+                    || userHelper.getByEmail(email).getUserStatusId().endsWith(ADMIN));
+
+            // Notify user of reason for failed login
+            if (!emailExists || !passwordMatch) {
+                System.out.println("Incorrect credentials.");
+                firstScreen();
+            } else if (!isAdmin) {
+                System.out.println("You are not an admin.");
+                firstScreen();
+            }
+
+            // Allow login
+            if (isAdmin) {
+                user = userHelper.getByEmail(email);
+            }
+        }
+    }
+
+    private static void addItemTypeScreen() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter the item type ID to be inserted");
         String TypeId = sc.next();
         System.out.println("Please enter the item type");
         String itmTyp = sc.next();
-        itemType it = new itemType(TypeId, itmTyp);
-        itemTypeServices it1 = new itemTypeServices(con);
+        ItemType it = new ItemType(TypeId, itmTyp);
+        ItemTypeServices it1 = new ItemTypeServices(con);
         it1.add(it);
         System.out.println("Item Type ID " + TypeId + " added to database\n");
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
+        adminScreen();
 
     }
     
@@ -787,9 +1247,9 @@ public class AdminAndManager {
         System.out.println("Please enter the new value for item type id: "+TypeId);
         String itmTyp = sc.next();
         System.out.println("1 here");
-        itemType it = new itemType(TypeId, itmTyp);
+        ItemType it = new ItemType(TypeId, itmTyp);
         System.out.println("2 here: " + it.getItemType());
-        itemTypeServices it1 = new itemTypeServices(con);
+        ItemTypeServices it1 = new ItemTypeServices(con);
         System.out.println("here 3");
         it1.update(it);
         System.out.println("Item Type ID " + TypeId + " has been updated\n");
@@ -802,13 +1262,10 @@ public class AdminAndManager {
     public static void deleteItemType(){
         Scanner sc= new Scanner(System.in);
         System.out.println("Please enter the item type ID to be deleted");
-        String id=sc.next();
-        itemTypeServices it1=new itemTypeServices(con);
+        String id = sc.next();
+        ItemTypeServices it1 = new ItemTypeServices(con);
         it1.deleteById(id);
-        System.out.println(id+" Item Type ID has been successfully deleted");
-        AdminAndManager aam = new AdminAndManager(con);
-        aam.adminScreen();
-        
+        System.out.println(id + " Item Type ID has been successfully deleted");
+        adminScreen();
     }
-
 }

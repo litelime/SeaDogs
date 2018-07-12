@@ -42,7 +42,7 @@ public class Location {
 	}
 
 	public String getStreet() {
-		return street;
+		return this.street;
 	}
 
 	public void setStreet(String street) {
@@ -92,6 +92,11 @@ public class Location {
                 return street + " St " + city + ", "
 				+ state + " " + country + " " + zip;
 	}
+        
+        @Override
+        public boolean equals(Object o){
+            return (this.toString().equals(o.toString()));
+        }
 	
 	
 	
