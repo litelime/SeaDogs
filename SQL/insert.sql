@@ -133,3 +133,8 @@ insert into stores
 insert into stores
 	values ('2','6','Scottsdale',5201932948,4,21600,79200);
 
+insert into specials values(8, 10, 1, 'Strawberry Delight',  'Save 10%', 6, null, 'y', 'Lunch');
+insert into specials values(14, 10, 1,  'Strawberry Delight',  'Save 10%', 6, null, 'y', 'Lunch');
+insert into specials values(5, 15, 2, 'Sambar Slumbers', 'Have a midnight snack', 3, null, 'n', 'Dinner');
+insert into specials values(9, 15, 2, 'Sambar Slumbers', 'Have a midnight snack', 3, null, 'n', 'Dinner');
+insert into specials values(12, 15, 2, 'Sambar Slumbers', 'Have a midnight snack', 3, null, 'n', 'Dinner');
