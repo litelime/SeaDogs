@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class DeliveryStatusService {
 	
@@ -121,5 +122,13 @@ public class DeliveryStatusService {
 		return deliveryStatus;
 	}
 	
-	
+    public DeliveryStatus selectDeliveryStatus(){
+        ArrayList<DeliveryStatus> statuses = getAll();
+        Scanner kb = new Scanner(System.in);
+        System.out.println("Select a delivery status");
+        for (int i = 0; i < statuses.size(); i++) {
+            System.out.println((i + 1) + ". " + statuses.get(i).getDelivery_status());
+        }
+        return statuses.get(Integer.parseInt(kb.nextLine()) - 1);
+    }
 }
