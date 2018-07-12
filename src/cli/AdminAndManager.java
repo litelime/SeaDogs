@@ -665,6 +665,7 @@ private static void addSpecialScreen() {
         Scanner sc = new Scanner(System.in);
         MenuServices menServ = new MenuServices(con);
         SpecialMenu sm = new SpecialMenu();
+        sm.setId("" + menServ.getNextSpecialId());
         System.out.println("\nEnter special name: ");
         sm.setName(sc.nextLine());
 //        System.out.println("\nEnter vegeterian (y or n): ");
@@ -680,18 +681,25 @@ private static void addSpecialScreen() {
             System.out.println("Choose an item to add");
             ArrayList<Menu> menus = ms.getAll();
             ServiceWrapper.printMenuItems(menus);
-            int input = sc.nextInt();
-            if (input == menus.size() + 1) {
+            int id = sc.nextInt();
+            if (id == menus.size() + 1) {
                 return;
-        }
-        if (input == menus.size() + 2) {
-            System.exit(0);
-        }
-       // MenuServices menServ = new MenuServices(con);
-
-        menServ.deleteById(menus.get(input - 1).getId());
-        System.out.println("Deleted " + menus.get(input - 1).getName());
-        adminScreen();
+            }
+            if (id == menus.size() + 2) {
+                System.exit(0);
+            }
+            System.out.println("Enter amount");
+            int amount = sc.nextInt();
+            System.out.println("Enter discount");
+            sm.setDiscount(sc.nextInt());
+            ms.addSpecial(sm, "" + (id-1), amount);
+            System.out.println("Do you wish to add more items? ");
+            System.out.println("1. I want to add more ");
+            System.out.println("2. I am done ");
+            int input = sc.nextInt();
+            if (input > 1) {
+                stillSelecting = false;
+            }
         }
         adminScreen();
     }

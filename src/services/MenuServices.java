@@ -104,7 +104,29 @@ public class MenuServices implements Service<Menu> {
             return false;
         }
     }
-
+    
+    public boolean addSpecial(SpecialMenu men, String id, int amount) {
+        ArrayList<TimeSlots> times = timServ.getAll();
+        String timeId = getTimeID(times, men.getSlot_ID());
+        try {
+            CallableStatement preStmt = con.prepareCall("call sp_insert_Special (?,?,?,?,?,?,?,?,?)");
+            preStmt.setString(1, id);
+            preStmt.setFloat(2, men.getDiscount());
+            preStmt.setString(3, men.getId());
+            preStmt.setString(4, men.getName());
+            preStmt.setString(5, men.getDescription());
+            preStmt.setInt(6, amount);
+            preStmt.setString(7, men.getPhoto());
+            preStmt.setString(8, ""+men.getVegetarian());
+            preStmt.setString(9, timeId);
+            preStmt.executeUpdate();
+            
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
     public void deleteById(String id) {
         try {
             CallableStatement preStmt = con.prepareCall("call deleteItem(?)");
