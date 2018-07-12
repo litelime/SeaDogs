@@ -1,4 +1,4 @@
-#Sea Dogs
+#SeaDogs
 Emanuel Bustamante
 David Santana
 Todd
