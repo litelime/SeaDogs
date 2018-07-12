@@ -54,25 +54,28 @@ public class Tiger {
         }
         sw = new ServiceWrapper(con);
         sc = new Scanner(System.in);
+        printArt();
         firstScreen();
         sc.close();
     }
 
     public static void printArt() {
 
-        System.out.println(" _______   ______  _______  _____    _______   ______  _______ ");
-        System.out.println("|       | |   ___||   _   ||  _  |  |   _   | |   ___||       |");
-        System.out.println("|  _____| |  |___ |  |_|  || | |  | |  | |  | |  | __ |  _____|");
-        System.out.println("| |_____  |   ___||   _   || |_|  | |  |_|  | |  ||  || |_____ ");
-        System.out.println("|_____  | |  |___ |__| |__||_____|  |_______| |  |_| ||_____  |");
-        System.out.println(" _____| | |______|                            |______| _____| |");
-        System.out.println("|       |                                             |       |");
-        System.out.println("|_______|                                             |_______|");
+        
+        System.out.println( " _______   ______  _______  _____    _______   ______  _______ ");
+        System.out.println( "|       | |   ___||   _   ||  _  |  |   _   | |   ___||       |");
+        System.out.println( "|  _____| |  |___ |  |_|  || | |  | |  | |  | |  | __ |  _____|");
+        System.out.println( "| |_____  |   ___||   _   || |_|  | |  |_|  | |  ||  || |_____ ");
+        System.out.println( "|_____  | |  |___ |__| |__||_____|  |_______| |  |_| ||_____  |");
+        System.out.println( " _____| | |______|                            |______| _____| |");
+        System.out.println( "|       |                                             |       |");
+        System.out.println( "|_______|                                             |_______|");
 
+        
     }
 
     public static void firstScreen() {
-        printArt();
+        
         ArrayList<String> options = new ArrayList<>();
         
         options.add("Login");
@@ -120,8 +123,12 @@ public class Tiger {
         UserService us = new UserService(con);
         User candidate = us.getByEmail(email);
         if (candidate == null) {
-            System.out.println("Wrong email");
+            System.out.println("Email not registered\n");
             firstScreen();
+        }
+        if(candidate.getUserStatusId().compareTo("2")==0){
+            System.out.println("Your account has been banned\n");
+            firstScreen(); 
         }
         if (password.equals(candidate.getPassword())) {
 
@@ -134,7 +141,7 @@ public class Tiger {
             currentStore = ss.getById("0");
             homeScreen();
         } else {
-            System.out.println("Wrong email or password");
+            System.out.println("Wrong email or password\n");
             try {
                 TimeUnit.SECONDS.sleep(1);
                 firstScreen();
