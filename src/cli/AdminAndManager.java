@@ -159,9 +159,10 @@ public class AdminAndManager {
             }
             case 6:
                 option = optionsScreen("Item Type");
+
                         switch(option){
                             case 1:
-                                //SHOULD BE ITEMTYPE SCREEN 
+                                updateItemTypeScreen();
                                 break;
                             case 2:
                                 addItemTypeScreen();
@@ -208,6 +209,10 @@ public class AdminAndManager {
                         break;
                     case 3:
                         System.out.println("Deleting order");
+                        break;
+                        
+                    case 4:
+                        adminScreen();
                         break;
                     default:
                         adminScreen();
@@ -1233,9 +1238,28 @@ private static void addSpecialScreen() {
         adminScreen();
 
     }
-
-    private static void deleteItemType() {
+    
+    public static void updateItemTypeScreen() {
         Scanner sc = new Scanner(System.in);
+        System.out.println("Please enter the item type ID to be changed");
+        String TypeId = sc.next();
+        System.out.println("Please enter the new value for item type id: "+TypeId);
+        String itmTyp = sc.next();
+        System.out.println("1 here");
+        ItemType it = new ItemType(TypeId, itmTyp);
+        System.out.println("2 here: " + it.getItemType());
+        ItemTypeServices it1 = new ItemTypeServices(con);
+        System.out.println("here 3");
+        it1.update(it);
+        System.out.println("Item Type ID " + TypeId + " has been updated\n");
+        AdminAndManager aam = new AdminAndManager(con);
+        aam.adminScreen();
+
+    }
+    
+    
+    public static void deleteItemType(){
+        Scanner sc= new Scanner(System.in);
         System.out.println("Please enter the item type ID to be deleted");
         String id = sc.next();
         ItemTypeServices it1 = new ItemTypeServices(con);

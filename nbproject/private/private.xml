@@ -4,9 +4,17 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
 <<<<<<< HEAD
         <group>
+<<<<<<< HEAD
+            <file>file:/C:/Users/syntel/SeaDogs/src/domain/itemType.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/cli/Tiger.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/services/itemTypeServices.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/cli/ServiceWrapper.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/cli/AdminAndManager.java</file>
+=======
             <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/AdminAndManager.java</file>
             <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/ServiceWrapper.java</file>
             <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/Tiger.java</file>
+>>>>>>> 7e1dd3dd3cf76ca445df5773932f0afc0702376c
         </group>
 =======
         <group/>
