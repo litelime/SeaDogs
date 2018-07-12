@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import domain.Order;
 import java.sql.DriverManager;
 import java.time.LocalTime;
+import java.util.Collections;
 
 public class OrderService implements Service<Order> {
 
@@ -32,6 +33,7 @@ public class OrderService implements Service<Order> {
     @Override
     public boolean add(Order order) {
         try {
+            System.out.println(order);
             //Add order items
             CallableStatement statement = connection.prepareCall(
                     "{call AddOrder(?,?,?,?,?,?,?,?,?,?,?)}");
@@ -50,6 +52,7 @@ public class OrderService implements Service<Order> {
             statement.execute();
             statement.close();
 
+            
             //Add all items in order to order_items
             ArrayList<String> item_ids = order.getItem_ids();
             for (String item_id : item_ids) {
@@ -226,30 +229,29 @@ public class OrderService implements Service<Order> {
 
     public String getNextOrderId() {
 
-        int orderId = 0;
-
         try {
-            Statement orderSt = connection.createStatement();
+            // Ask for all the ids
+            String query = "select order_id from orders";
+            Statement stmnt = connection.createStatement();
+            stmnt.execute(query);
 
-            ResultSet orderRs = orderSt.executeQuery("Select order_id from Orders");
+            // Collect the ids
+            ArrayList<Integer> ids = new ArrayList<Integer>();
+            ResultSet results = stmnt.getResultSet();
+            while (results.next()) {
+                ids.add(Integer.parseInt(results.getString(1)));
+            }
 
-            ArrayList<Integer> ints = new ArrayList();
-            while (orderRs.next()) {
-                ints.add(orderRs.getInt("order_id"));
+            // Generate a new id
+            if (ids.isEmpty()) {
+                return "0";
             }
-            System.out.println(ints.get(0));
-            //orderId = greatest value. 
-            for (int x : ints) {
-                if (x > orderId) {
-                    orderId = x;
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("ERROR: getNextOrderID");
+            return ""+(Collections.max(ids) + 1);
+        } catch (NumberFormatException | SQLException e) {
             System.out.println(e.getMessage());
+            System.exit(1);
+            return "-1";
         }
-        orderId++;
-        return Integer.toString(orderId);
     }
         
 	public ArrayList<Order> getUserOrders(String userId){
@@ -302,7 +304,7 @@ public class OrderService implements Service<Order> {
                 pStmt=connection.prepareStatement("SELECT S.store, S.PHONE_NUMBER, O.order_id, U.first, U.last, U.phone, U.email, I.name, I.description, I.price, O.TOTAL_PRICE, C.CARD_NUMBER "
                                        +"FROM orders O, USERS U, Order_items OI, stores S, cards C, items I WHERE "
                                        + "O.order_id=OI.ORDER_ID AND OI.ITEM_ID=I.ITEM_ID AND U.user_id=O.user_id AND O.Store_id=S.STORE_ID AND O.card_id=C.CARD_ID AND O.order_id=?");
-                pStmt.setString(1, "Order_ID");
+                pStmt.setString(1, Order_ID);
                 pStmt.execute();
                 //Step4: get the output ResultSet
                 RS=pStmt.getResultSet();
