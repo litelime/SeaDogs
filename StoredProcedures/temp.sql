@@ -8,6 +8,8 @@ ALTER TABLE specials
   time_slot varchar(4000));
   /
   
+ EXECUTE SP_ADD_ITEM_TYPES('6','asdas');
+  
   --UPDATE specials SET special_id = 0 WHERE special_id IS NULL
   --ALTER TABLE specials ALTER COLUMN special_id VARCHAR NOT NULL
   --/
