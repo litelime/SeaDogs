@@ -127,6 +127,7 @@ public class MenuServices implements Service<Menu> {
             return false;
         }
     }
+    @Override
     public void deleteById(String id) {
         try {
             CallableStatement preStmt = con.prepareCall("call deleteItem(?)");
@@ -137,6 +138,15 @@ public class MenuServices implements Service<Menu> {
         }
     }
 
+    public void deleteSpecialById(String id) {
+        try {
+            CallableStatement preStmt = con.prepareCall("call sp_delete_special(?)");
+            preStmt.setString(1, id);
+            preStmt.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     @Override
     public void update(Menu men) {
         ArrayList<TimeSlots> times = timServ.getAll();

@@ -25,6 +25,6 @@ end;
 create or replace procedure sp_delete_special (id varchar)
 as
 begin
-  delete from specials where item_id = id;
+  delete from specials where special_id = id;
 end;
 /
