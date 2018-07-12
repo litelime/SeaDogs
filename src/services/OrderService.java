@@ -33,7 +33,6 @@ public class OrderService implements Service<Order> {
     @Override
     public boolean add(Order order) {
         try {
-            System.out.println(order);
             //Add order items
             CallableStatement statement = connection.prepareCall(
                     "{call AddOrder(?,?,?,?,?,?,?,?,?,?,?)}");

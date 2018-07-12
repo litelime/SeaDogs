@@ -584,7 +584,12 @@ public class Tiger {
                 System.out.println(countCards + ". " + x.getCardNumber());
 
             }
+            
+            System.out.println(++countCards+ ". Go Back");
             int userChoice = getAnInt();
+            if(userChoice == countCards){
+                editOrder(currentOrder);
+            }
             userChoice--; //subtract because array index at 0. 
             String cardId = userCards.get(userChoice).getCardId();
             currentOrder.setCard_id(cardId);
