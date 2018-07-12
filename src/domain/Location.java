@@ -42,7 +42,7 @@ public class Location {
 	}
 
 	public String getStreet() {
-		return street;
+		return this.street;
 	}
 
 	public void setStreet(String street) {

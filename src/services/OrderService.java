@@ -227,7 +227,7 @@ public class OrderService implements Service<Order>{
                 while(orderRs.next()){
                     ints.add(orderRs.getInt("order_id"));
                 }
-                System.out.println(ints.get(0));
+
                 //orderId = greatest value. 
                 for(int x: ints){
                     if(x>orderId){
@@ -238,6 +238,7 @@ public class OrderService implements Service<Order>{
                 System.out.println("ERROR: getNextOrderID");
 		System.out.println(e.getMessage());
             }
+            //one more than the greatest current Id. 
             orderId++;
             return Integer.toString(orderId);
         }

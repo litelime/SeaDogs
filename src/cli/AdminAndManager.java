@@ -60,8 +60,6 @@ public class AdminAndManager {
         options.add("Alter Orders");
         options.add("Alter Users");
         options.add("Alter User Statuses");
-        options.add("Go back");
-        options.add("Quit");
         ServiceWrapper.printOptions(options);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
@@ -157,8 +155,24 @@ public class AdminAndManager {
                 }
             }
             case 6:
-                System.out.println("Not yet supported");
-                //optionsScreen("Item Type");
+                option = optionsScreen("Item Type");
+                        switch(option){
+                            case 1:
+                                //SHOULD BE ITEMTYPE SCREEN 
+                                break;
+                            case 2:
+                                addItemTypeScreen();
+                                break;
+                            case 3:
+                                deleteItemScreen();
+                                break;
+                            case 4:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
+                        break;
             case 7:
                 option = optionsScreen("Locations");
                         switch(option){
@@ -210,9 +224,13 @@ public class AdminAndManager {
                         break;
                     case 3:
                         deleteStatus();
+                    case 4:
+                        adminScreen();
                         break;
+                    default:
+                        firstScreen();
                 }
-            case 12:
+            case 11:
                 firstScreen();
             default:
                 adminScreen();
@@ -1080,7 +1098,8 @@ private static void addSpecialScreen() {
 
             // Notify user of reason for failed login
             if (!emailExists || !passwordMatch) {
-                System.out.println("Incorrect credentials. Please try again.");
+                System.out.println("Incorrect credentials.");
+                firstScreen();
             } else if (!isAdmin) {
                 System.out.println("You are not an admin.");
                 firstScreen();
