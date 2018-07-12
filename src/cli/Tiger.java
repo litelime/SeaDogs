@@ -12,6 +12,7 @@ import domain.Order;
 import domain.Store;
 import domain.User;
 import domain.Card;
+import domain.ItemType;
 import domain.Location;
 import domain.SpecialMenu;
 import java.sql.Date;
@@ -27,6 +28,7 @@ import services.CardService;
 import services.DeliveryMethod;
 import services.DeliveryMethodService;
 import services.DeliveryStatusService;
+import services.ItemTypeServices;
 import services.LocationService;
 import services.MenuServices;
 import services.OrderService;
@@ -222,7 +224,10 @@ public class Tiger {
     public static void menuScreen() {
         System.out.println("\n*Menu*");
         ArrayList<String> options = new ArrayList<String>();
-        options.add("Items");
+        options.add("Drinks");
+        options.add("Sides");
+        options.add("Entrees");
+        options.add("Desserts");
         options.add("Specials");
         options.add("Go back");
         int count = 0;
@@ -231,21 +236,37 @@ public class Tiger {
             System.out.println(count + ". " + option);
         }
         int input = getAnInt();
-        if (input == 1) {
-            itemScreen();
+        
+        //arg to itemScreen is item_type_id
+        if(input == 1){
+            itemScreen("0");            
         }
-        if (input == 2) {
+        if(input == 2){
+            itemScreen("1");
+        }        
+        if(input == 3){
+            itemScreen("2");
+        }
+        if (input == 4) {
+            itemScreen("3");
+        }
+        if (input == 5) {
             specialScreen();
         }
-        if (input == 3) {
+        if (input == 6) {
             homeScreen();
         }
     }
 
-    public static void itemScreen() {
-        System.out.println("\n*Items*");
+    public static void itemScreen(String item_Type_Id) {
+        ItemTypeServices ITS = new ItemTypeServices(con);
+        
+        ItemType thisType = ITS.getById(item_Type_Id);
+        
+        System.out.println("\n*"+thisType.getItemType()+"*");
+        
         MenuServices ms = new MenuServices(con);
-        ArrayList<Menu> menus = ms.getAll();
+        ArrayList<Menu> menus = ms.getByType(item_Type_Id);
         ServiceWrapper.printMenuItems(menus);
         int input = getAnInt();
         if (input == menus.size() + 1) {

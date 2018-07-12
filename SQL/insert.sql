@@ -40,7 +40,7 @@ insert into items
 insert into items
 	values ('9', 'Mango Kulfi', 'y', '3', 'Traditional Indian ice cream', '2', null, 3.99);
 insert into items
-	values ('9', 'Gulab Jamun', 'y', '3', 'Fried milk balls soaked in sweet syrup', '2', null, 4.99);
+	values ('17', 'Gulab Jamun', 'y', '3', 'Fried milk balls soaked in sweet syrup', '2', null, 4.99);
 insert into items
 	values ('10', 'Lamb Biryani', 'n', '2', 'Basmati rice with slow cooked lamb marinated in yoghurt with Indian herbs and spices', '2', null, 13.99);
 insert into items
