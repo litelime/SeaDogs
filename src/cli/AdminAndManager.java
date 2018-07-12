@@ -266,12 +266,19 @@ public class AdminAndManager {
          // Select a user's orders to modify
         Scanner kb = new Scanner(System.in);
         UserService userHelper = new UserService(con);
+        if(userHelper.getAll().size() == 0){
+            System.out.println("No orders to delete");
+            adminScreen();
+        }
         User user = userHelper.selectUser();
-        System.out.println("You chose: "  + user);
         
         // Select a order to alter
         OrderService orderHelper = new OrderService(con);
         ArrayList<Order> orders = orderHelper.getUserOrders(user.getUserId());
+        if(orders.size() == 0){
+            System.out.println("No orders to delete");
+            adminScreen();
+        }
         System.out.println("Which order would you like to edit?");
         for (int i = 0; i < orders.size(); i++) {
             System.out.println((i + 1) + ". " + orders.toString());
@@ -287,13 +294,16 @@ public class AdminAndManager {
         Scanner kb = new Scanner(System.in);
         UserService userHelper = new UserService(con);
         User user = userHelper.selectUser();
-        System.out.println("You chose: "  + user);
         
         // Select a order to alter
         ServiceWrapper service = new ServiceWrapper(con);
         OrderService orderHelper = new OrderService(con);
         ArrayList<Order> orders = orderHelper.getUserOrders(user.getUserId());
-        System.out.println("Whose would you like to edit?");
+        if(orders.size() == 0){
+            System.out.println("No orders to edit.");
+            adminScreen();
+        }
+        System.out.println("Which order would you like to edit?");
         for (int i = 0; i < orders.size(); i++) {
             Order order = orders.get(i);
             String out = order.getItem_ids().size()+" items | Price $"
@@ -359,6 +369,10 @@ public class AdminAndManager {
         Scanner kb = new Scanner(System.in);
         DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
         ArrayList<DeliveryMethod> methods = deliveryHelper.getAll();
+        if(methods.size() == 0){
+            System.out.println("No methods to edit");
+            adminScreen();
+        }
         for (int i = 0; i < methods.size(); i++) {
             System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
         }
@@ -379,6 +393,10 @@ public class AdminAndManager {
         Scanner kb = new Scanner(System.in);
         DeliveryMethodService deliveryHelper = new DeliveryMethodService(con);
         ArrayList<DeliveryMethod> methods = deliveryHelper.getAll();
+        if(methods.size() == 0){
+            System.out.println("No methods to delete");
+            adminScreen();
+        }
         for (int i = 0; i < methods.size(); i++) {
             System.out.println((i + 1) + ". " + methods.get(i).getDelivery_method());
         }
@@ -415,6 +433,10 @@ public class AdminAndManager {
         UserStatusService statusHelper = new UserStatusService(con);
         ArrayList<UserStatus> statuses = statusHelper.getAll();
         System.out.println("Select a user status to alter:" + statuses.size());
+        if(statuses.size() == 0){
+            System.out.println("No user statuses to edit");
+            adminScreen();
+        }
         for (int i = 0; i < statuses.size(); i++) {
             System.out.println((i + 1) + ". " + statuses.get(i));
         }
@@ -460,6 +482,10 @@ public class AdminAndManager {
             }
         }
 
+        if(filtered.isEmpty()){
+            System.out.println("No statuses to delete");
+            adminScreen();
+        }
         System.out.println("Select a user status to delete");
         for (int i = 0; i < filtered.size(); i++) {
             System.out.println((i + 1) + ". " + filtered.get(i));
@@ -493,6 +519,10 @@ public class AdminAndManager {
         Scanner kb = new Scanner(System.in);
         UserService userHelper = new UserService(con);
         ArrayList<User> users = userHelper.getAll();
+        if(users.size() == 0){
+            System.out.println("No users to edit");
+            adminScreen();
+        }
         System.out.println("Select a user to edit:");
         for(int i = 0; i < users.size(); i++){
             String first = users.get(i).getFirstName();
@@ -609,6 +639,10 @@ public class AdminAndManager {
         System.out.println("List of cards");
         CardService cs = new CardService(con);
         ArrayList<Card> cl = cs.getAll();
+        if(cl.size() == 0){
+            System.out.println("No cards to delete");
+            adminScreen();
+        }
         int count = 1;
         for (Card c : cl) {
             System.out.println(count + ": " + c.getCardNumber());
@@ -626,6 +660,10 @@ public class AdminAndManager {
         System.out.println("List of cards");
         CardService cs = new CardService(con);
         ArrayList<Card> cl = cs.getAll();
+        if(cl.size() == 0){
+            System.out.println("No cards to edit");
+            adminScreen();
+        }
         int count = 1;
         for (Card c : cl) {
             System.out.println(count + ": " + c.getCardNumber());
@@ -707,9 +745,12 @@ private static void addSpecialScreen() {
     }
 
     private static void deleteSpecialScreen() {
-        System.out.println("Choose a Special Combo to delete");
-        MenuServices ms = new MenuServices(con);
+         MenuServices ms = new MenuServices(con);
         ArrayList<SpecialMenu> menus = ms.getAllSpecials();
+        if(menus.isEmpty()){
+            System.out.println("No special combos to delete");
+        }
+        System.out.println("Choose a Special Combo to delete");
         ServiceWrapper.printSpecialMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
@@ -729,6 +770,10 @@ private static void addSpecialScreen() {
         System.out.println("Choose a Special Combo to alter");
         MenuServices ms = new MenuServices(con);
         ArrayList<SpecialMenu> menus = ms.getAllSpecials();
+        if(menus.size() == 0){
+            System.out.println("No specials to edit");
+            adminScreen();
+        }
         ServiceWrapper.printSpecialMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
@@ -792,6 +837,10 @@ private static void addSpecialScreen() {
         System.out.println("Choose an item to delete");
         MenuServices ms = new MenuServices(con);
         ArrayList<Menu> menus = ms.getAll();
+        if(menus.size()== 0){
+            System.out.println("No items to delete");
+            adminScreen();
+        }
         ServiceWrapper.printMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
@@ -812,6 +861,10 @@ private static void addSpecialScreen() {
         System.out.println("Choose an item to alter");
         MenuServices ms = new MenuServices(con);
         ArrayList<Menu> menus = ms.getAll();
+        if(menus.size() == 0){
+            System.out.println("No items to edit");
+            adminScreen();
+        }
         ServiceWrapper.printMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
@@ -892,6 +945,10 @@ private static void addSpecialScreen() {
         System.out.println("List of users");
         UserService us = new UserService(con);
         ArrayList<User> uArr = us.getAll();
+        if(uArr.isEmpty()){
+            System.out.println("No users to delete");
+            adminScreen();
+        }
         int count = 1;
         for (User u : uArr) {
             System.out.println(count + " " + u.getFirstName() + " " + u.getLastName());
@@ -941,6 +998,10 @@ private static void addSpecialScreen() {
         System.out.println("\nWhat combo do you want to alter");
         int specialCount = 0;
         ArrayList<Special> specials = SS.getAll();
+        if(specials.size() == 0){
+            System.out.println("No combos to edit");
+            adminScreen();
+        }
         for (Special special : specials) {
             specialCount++;
             System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
@@ -968,10 +1029,14 @@ private static void addSpecialScreen() {
 
     private void deleteComboScreen() {
         SpecialServices SS = new SpecialServices(con);
+        ArrayList<Special> specials = SS.getAll();
+        if(specials.size() == 0){
+            System.out.println("No specials to delete");
+            adminScreen();
+        }
         System.out.println("\nWhat combo do you want to delete?");
 
         int specialCount = 0;
-        ArrayList<Special> specials = SS.getAll();
         for (Special special : specials) {
             specialCount++;
             System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
@@ -988,6 +1053,10 @@ private static void addSpecialScreen() {
         Scanner sc = new Scanner(System.in);
         LocationService ls = new LocationService(con);
         ArrayList<Location> locs = ls.getAll();
+        if(locs.isEmpty()){
+            System.out.println("No locations to edit");
+            adminScreen();
+        }
         for(int i = 0; i < locs.size(); i++){
             System.out.println((i + 1) + ". " + locs.get(i).getAddress());
         }
@@ -1082,6 +1151,10 @@ private static void addSpecialScreen() {
         Scanner sc = new Scanner(System.in);
         LocationService ls = new LocationService(con);
         ArrayList<Location> locs = ls.getAll();
+        if(locs.size() == 0){
+            System.out.println("No locations to delete");
+            adminScreen();
+        }
         int total = locs.size();
         System.out.println("");
         if(total < 10){
@@ -1111,6 +1184,10 @@ private static void addSpecialScreen() {
 
         DeliveryStatusService DSS = new DeliveryStatusService(con);
         ArrayList<DeliveryStatus> stats = DSS.getAll();
+        if(stats.size() == 0){
+            System.out.println("No delivery statuses to edit");
+            adminScreen();
+        }
         int count = 0;
         for (DeliveryStatus x : stats) {
             count++;
@@ -1138,11 +1215,15 @@ private static void addSpecialScreen() {
     }
 
     private static void deleteDeliveryStatus() {
-
-        System.out.println("Choose a delivery status to delete");
-
         DeliveryStatusService DSS = new DeliveryStatusService(con);
         ArrayList<DeliveryStatus> stats = DSS.getAll();
+        if(stats.size() == 0){
+            System.out.println("No delivery statuses to delete");
+            adminScreen();
+        }
+        
+        System.out.println("Choose a delivery status to delete");
+
         int count = 0;
         for (DeliveryStatus x : stats) {
             count++;
