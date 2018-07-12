@@ -664,28 +664,35 @@ private static void addSpecialScreen() {
         System.out.println("Add a special");
         Scanner sc = new Scanner(System.in);
         MenuServices menServ = new MenuServices(con);
-
-        System.out.println("\nEnter special name: ");
-        String name = sc.nextLine();
-        System.out.println("\nEnter vegeterian (y or n): ");
-        String vege = sc.next();
-        char vegetarian = vege.charAt(0);
-        System.out.println("\nEnter a description: ");
-        sc.nextLine();
-        String description = sc.nextLine();
-        System.out.println("\nEnter meal time: ");
-        String slot_ID = sc.next();
-        System.out.println("\nEnter photo link: ");
-        String photo = sc.next();
-        System.out.println("\nEnter a price: ");
-        float price = sc.nextFloat();
         SpecialMenu sm = new SpecialMenu();
-        sm.setId("" + menServ.getNextSpecialId());
-        sm.setName(name);
-        
-        //Menu men = new Menu("" + menServ.getNextItemId(), name, vegetarian, 0, description, slot_ID, photo, price);
-        //menServ.add(men);
-        System.out.println("\n" + name + " added to database\n");
+        System.out.println("\nEnter special name: ");
+        sm.setName(sc.nextLine());
+//        System.out.println("\nEnter vegeterian (y or n): ");
+//        String vege = sc.next();
+//        char vegetarian = vege.charAt(0);
+        System.out.println("\nEnter a description: ");
+        sm.setDescription(sc.nextLine());
+//        System.out.println("\nEnter meal time: ");
+//        String slot_ID = sc.next();
+        MenuServices ms = new MenuServices(con);
+        Boolean stillSelecting = true;
+        while(stillSelecting) {
+            System.out.println("Choose an item to add");
+            ArrayList<Menu> menus = ms.getAll();
+            ServiceWrapper.printMenuItems(menus);
+            int input = sc.nextInt();
+            if (input == menus.size() + 1) {
+                return;
+        }
+        if (input == menus.size() + 2) {
+            System.exit(0);
+        }
+       // MenuServices menServ = new MenuServices(con);
+
+        menServ.deleteById(menus.get(input - 1).getId());
+        System.out.println("Deleted " + menus.get(input - 1).getName());
+        adminScreen();
+        }
         adminScreen();
     }
 
