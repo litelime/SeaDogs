@@ -1035,7 +1035,6 @@ public class Tiger {
         System.out.println("\n*Store*");
         System.out.println("Name: " + currentStore.getStoreName());
         System.out.println("Phone Number: " + currentStore.getPhoneNumber());
-        System.out.println("Location: " + currentStore.getLocationId());
         System.out.println("Open: " + currentStore.getOpenTime());
         System.out.println("Close: " + currentStore.getCloseTime());
         homeScreen();
