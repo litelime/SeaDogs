@@ -2,12 +2,12 @@ package domain;
 
 public class Special {
 	String item_ID;
-	int discoutPercentage;
+	int discountPercentage;
 	
 	public Special(String item_ID, int discoutPercentage) {
 		super();
 		this.item_ID = item_ID;
-		this.discoutPercentage = discoutPercentage;
+		this.discountPercentage = discoutPercentage;
 	}
 	
 	public String getItem_ID() {
@@ -16,11 +16,11 @@ public class Special {
 	public void setItem_ID(String item_ID) {
 		this.item_ID = item_ID;
 	}
-	public int getDiscoutPercentage() {
-		return discoutPercentage;
+	public int getDiscountPercentage() {
+		return discountPercentage;
 	}
-	public void setDiscoutPercentage(int discoutPercentage) {
-		this.discoutPercentage = discoutPercentage;
+	public void setDiscountPercentage(int discountPercentage) {
+		this.discountPercentage = discountPercentage;
 	}
 	
 	

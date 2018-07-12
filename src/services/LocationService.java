@@ -144,11 +144,11 @@ public class LocationService implements Service<Location>{
 				Location location = new Location(
 						locationsRs.getString(1),
 						locationsRs.getString(2),
-						locationsRs.getString(3),
 						locationsRs.getString(4),
 						locationsRs.getString(5),
 						locationsRs.getString(6),
-                                                locationsRs.getString(7)
+						locationsRs.getString(7),
+                                                locationsRs.getString(8)
 						); 
 				locations.add(location);
 			}

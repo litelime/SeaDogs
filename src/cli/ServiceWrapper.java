@@ -104,12 +104,16 @@ public class ServiceWrapper {
         System.out.println(++count + ". Go Back");
     }
 	public static void printOrders(ArrayList<Order> orders){
-		int count = 0;
-		for(Order order: orders){
-			count++;
-			System.out.println(count + ". " + order.getPlaced_timestamp());
-		}
-		System.out.println(count++ + ". Go Back");
+        int count = 0;
+
+        for (Order order : orders) {
+            count++;
+            String orderStr = order.getItem_ids().size()+" items | Price $"
+                               +order.getTotal_price()+" | Placed at "
+                                +order.getPlaced_timestamp();
+            System.out.println(count + ". " + orderStr);
+        }
+            System.out.println(++count + ". Go Back");
 	}
 
 	public void cancelOrder(Order order) {
