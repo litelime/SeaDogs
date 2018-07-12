@@ -1,5 +1,7 @@
 package domain;
 
+import Exceptions.IdException;
+
 public class UserStatus {
 	String userStatusId;
 	String userStatus;

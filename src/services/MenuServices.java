@@ -139,7 +139,7 @@ public class MenuServices implements Service<Menu> {
         ArrayList<Menu> menArr = new ArrayList<Menu>();
         ArrayList<TimeSlots> times = timServ.getAll();
         try {
-            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM items WHERE items_type_id = " + type);
+            ResultSet rs = con.createStatement().executeQuery("SELECT * FROM items WHERE item_type_id = " + type);
             while (rs.next()) {
                 float price = rs.getFloat("price");
                 String tid = rs.getString("time_slot_id");

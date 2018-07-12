@@ -6,24 +6,26 @@
 package services;
 
 import domain.Menu;
-import domain.itemType;
+import domain.ItemType;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
  *
  * @author syntel
  */
-public class itemTypeServices {
+public class ItemTypeServices {
 //implements Service<itemType> {
     
     Connection connection;
     CallableStatement orclCallableStatement;
 
-    public itemTypeServices(Connection connection) {
+    public ItemTypeServices(Connection connection) {
         this.connection = connection;
     }
     
@@ -47,7 +49,7 @@ public class itemTypeServices {
        }
         
     }
-    public boolean add(itemType it){
+    public boolean add(ItemType it){
         Connection conn;
         
         try{
@@ -72,9 +74,27 @@ public class itemTypeServices {
         return false;
     }
     //public void update(E obj);
-    //public E getById(String id);
+    public ItemType getById(String id){
+        		ItemType type = null;
+		
+		try{
+			Statement itemSt = connection.createStatement();
+			ResultSet itemRs = itemSt.executeQuery("Select * from Item_Types where item_type_id = " + id);
+			
+			itemRs.next();
+			type = new ItemType(
+					itemRs.getString(1),
+					itemRs.getString(2)
+					); 
+		}catch(SQLException e){
+			System.out.println(e.getMessage());
+		}	
+		
+		return type;
+        
+    }
     //public ArrayList<E> getAll();
-    //public void add(itemType it){
+    //public void add(ItemType it){
         
     
 }

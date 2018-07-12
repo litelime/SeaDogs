@@ -108,7 +108,7 @@ public class DeliveryStatusService {
 		try{
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(
-					"SELECT * FROM DELIVERY_METHODS WHERE DELIVERY_METHOD_ID = " + id);
+					"SELECT * FROM DELIVERY_Statuses WHERE DELIVERY_status_ID = " + id);
 			
 			resultSet.next();
 			deliveryStatus = new DeliveryStatus(

@@ -1,5 +1,6 @@
 package cli;
 
+import static cli.Tiger.con;
 import static cli.Tiger.editString;
 import static cli.Tiger.firstScreen;
 import static cli.Tiger.getAnInt;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import domain.UserStatus;
-import domain.itemType;
+import domain.ItemType;
 import java.sql.Date;
 import java.util.Arrays;
 import services.CardService;
@@ -30,7 +31,7 @@ import services.OrderService;
 import services.SpecialServices;
 import services.UserService;
 import services.UserStatusService;
-import services.itemTypeServices;
+import services.ItemTypeServices;
 
 public class AdminAndManager {
 
@@ -53,7 +54,7 @@ public class AdminAndManager {
         ArrayList<String> options = new ArrayList<String>();
         System.out.println("Admin View");
         options.add("Alter Cards");
-        options.add("Alter Combos");
+        options.add("Alter Specials");
         options.add("Alter Delivery Methods");
         options.add("Alter Delivery Statuses");
         options.add("Alter Items");
@@ -62,8 +63,6 @@ public class AdminAndManager {
         options.add("Alter Orders");
         options.add("Alter Users");
         options.add("Alter User Statuses");
-        options.add("Go back");
-        options.add("Quit");
         ServiceWrapper.printOptions(options);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
@@ -84,7 +83,7 @@ public class AdminAndManager {
                 break;
             }
             case 2:
-                option = optionsScreen("Item");
+                option = optionsScreen("Specials");
                 switch (option) {
                     case 1:
                         alterSpecialScreen();
@@ -103,7 +102,6 @@ public class AdminAndManager {
                 }
             case 3:
                 option = optionsScreen("Delivery Method");
-                // Goes to item menu. Fix that later
                 switch (option) {
                     case 1:
                         alterDeliveryMethod();
@@ -120,8 +118,26 @@ public class AdminAndManager {
                     default:
                         System.exit(1);
                 }
-            case 4:
-                optionsScreen("Delivery Status");
+            case 4:{
+                option = optionsScreen("Delivery Status");
+                switch(option){
+                    case 1:
+                        alterDeliveryStatus();
+                        break;
+                    case 2:
+                        addDeliveryStatus();
+                        break;
+                    case 3:
+                        deleteDeliveryStatus();
+                        break;
+                    case 4:
+                        adminScreen();
+                        break;
+                    case 5:
+                        System.exit(0);
+                }
+            }
+            
             case 5: {
                 option = optionsScreen("Item");
                 switch (option) {
@@ -142,8 +158,24 @@ public class AdminAndManager {
                 }
             }
             case 6:
-                System.out.println("Not yet supported");
-                //optionsScreen("Item Type");
+                option = optionsScreen("Item Type");
+                        switch(option){
+                            case 1:
+                                //SHOULD BE ITEMTYPE SCREEN 
+                                break;
+                            case 2:
+                                addItemTypeScreen();
+                                break;
+                            case 3:
+                                deleteItemScreen();
+                                break;
+                            case 4:
+                                adminScreen();
+                                break;
+                            default:
+                                System.exit(1);
+                        }
+                        break;
             case 7:
                 option = optionsScreen("Locations");
                         switch(option){
@@ -210,9 +242,13 @@ public class AdminAndManager {
                         break;
                     case 3:
                         deleteStatus();
+                    case 4:
+                        adminScreen();
                         break;
+                    default:
+                        firstScreen();
                 }
-            case 12:
+            case 11:
                 firstScreen();
             default:
                 adminScreen();
@@ -674,10 +710,10 @@ private static void addSpecialScreen() {
     }
 
     private static void alterSpecialScreen() {
-        System.out.println("Choose an item to alter");
+        System.out.println("Choose a Special Combo to alter");
         MenuServices ms = new MenuServices(con);
-        ArrayList<Menu> menus = ms.getAll();
-        ServiceWrapper.printMenuItems(menus);
+        ArrayList<SpecialMenu> menus = ms.getAllSpecials();
+        ServiceWrapper.printSpecialMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
         if (input == (menus.size()) + 1) {
@@ -891,7 +927,7 @@ private static void addSpecialScreen() {
         ArrayList<Special> specials = SS.getAll();
         for (Special special : specials) {
             specialCount++;
-            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscoutPercentage() + "%");
+            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
         }
         int specialChoice = Tiger.getAnInt();
         specialChoice--;
@@ -922,7 +958,7 @@ private static void addSpecialScreen() {
         ArrayList<Special> specials = SS.getAll();
         for (Special special : specials) {
             specialCount++;
-            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscoutPercentage() + "%");
+            System.out.println(specialCount + ". " + special.getItem_ID() + " " + special.getDiscountPercentage() + "%");
         }
         int specialChoice = Tiger.getAnInt();
         specialChoice--;
@@ -1156,7 +1192,8 @@ private static void addSpecialScreen() {
 
             // Notify user of reason for failed login
             if (!emailExists || !passwordMatch) {
-                System.out.println("Incorrect credentials. Please try again.");
+                System.out.println("Incorrect credentials.");
+                firstScreen();
             } else if (!isAdmin) {
                 System.out.println("You are not an admin.");
                 firstScreen();
@@ -1175,8 +1212,8 @@ private static void addSpecialScreen() {
         String TypeId = sc.next();
         System.out.println("Please enter the item type");
         String itmTyp = sc.next();
-        itemType it = new itemType(TypeId, itmTyp);
-        itemTypeServices it1 = new itemTypeServices(con);
+        ItemType it = new ItemType(TypeId, itmTyp);
+        ItemTypeServices it1 = new ItemTypeServices(con);
         it1.add(it);
         System.out.println("Item Type ID " + TypeId + " added to database\n");
         adminScreen();
@@ -1187,7 +1224,7 @@ private static void addSpecialScreen() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter the item type ID to be deleted");
         String id = sc.next();
-        itemTypeServices it1 = new itemTypeServices(con);
+        ItemTypeServices it1 = new ItemTypeServices(con);
         it1.deleteById(id);
         System.out.println(id + " Item Type ID has been successfully deleted");
         adminScreen();
