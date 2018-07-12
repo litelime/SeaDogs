@@ -7,6 +7,7 @@ import static cli.Tiger.getAnInt;
 import domain.Card;
 import domain.Location;
 import domain.Menu;
+import domain.Order;
 import domain.Special;
 import domain.SpecialMenu;
 import domain.User;
@@ -17,6 +18,7 @@ import java.util.Scanner;
 import domain.UserStatus;
 import domain.itemType;
 import java.sql.Date;
+import java.util.Arrays;
 import services.CardService;
 import services.DeliveryMethod;
 import services.DeliveryMethodService;
@@ -24,6 +26,7 @@ import services.DeliveryStatus;
 import services.DeliveryStatusService;
 import services.LocationService;
 import services.MenuServices;
+import services.OrderService;
 import services.SpecialServices;
 import services.UserService;
 import services.UserStatusService;
@@ -162,7 +165,22 @@ public class AdminAndManager {
                         break;
             case 8:
                 System.out.println("Not yet supported");
-                //optionsScreen("Order");
+                option = optionsScreen("Order");
+                switch(option){
+                    case 1:
+                        System.out.println("Altering orders");
+                        alterOrder();
+                        break;
+                    case 2:
+                        System.out.println("Adding order");
+                        break;
+                    case 3:
+                        System.out.println("Deleting order");
+                        break;
+                    default:
+                        adminScreen();
+                }
+                
             case 9: {
                 option = optionsScreen("User");
                 switch (option) {
@@ -216,11 +234,87 @@ public class AdminAndManager {
         return input;
     }
 
-
+    
     /*
-        **************************
-        * Delivery Method Status *
-        **************************
+        *********
+        * Order *
+        *********
+     */
+    
+    private static void alterOrder(){
+        // Select a user's orders to modify
+        Scanner kb = new Scanner(System.in);
+        UserService userHelper = new UserService(con);
+        User user = userHelper.selectUser();
+        System.out.println("You chose: "  + user);
+        
+        // Select a order to alter
+        OrderService orderHelper = new OrderService(con);
+        ArrayList<Order> orders = orderHelper.getUserOrders(user.getUserId());
+        System.out.println("Which order would you like to edit?");
+        for (int i = 0; i < orders.size(); i++) {
+            System.out.println((i + 1) + ". " + orders.toString());
+        }
+        Order toAlter = orders.get(Integer.parseInt(kb.nextLine()) - 1);
+        
+        // Select a field to edit
+        String[] fields = {"Tip", "Price", "Card", "Instructions",
+                           "Delivery Method", "Delivery Status"};
+        for (int i = 0; i < fields.length; i++) {
+            System.out.println((i + 1) + ". " + fields[i]);
+        }
+        String toChange = fields[Integer.parseInt(kb.nextLine()) - 1]; 
+        
+        // Enter a new value
+        System.out.println("What would you like to change " + toChange + " to?");
+        if(toChange.equals("Tip")){
+            toAlter.setTip(Float.parseFloat(kb.nextLine()));
+        } else if(toChange.equals("Price")){
+            toAlter.setTotal_price(Float.parseFloat(kb.nextLine()));
+        } else if(toChange.equals("Instructions")){
+            toAlter.setInstuctions(kb.nextLine());
+        } else if(toChange.equals("Card")){
+            // Get the users card
+            CardService helper = new CardService(con);
+            ArrayList<Card> cards = helper.getUserCards(user.getUserId());
+        
+            // Select a card to use
+            System.out.println("Select a card:");
+            for (int i = 0; i < cards.size(); i++) {
+                System.out.println((i + 1) + ". " + cards.get(i).getCardNumber());
+            }
+            Card choice = cards.get(Integer.parseInt(kb.nextLine()) - 1);
+            toAlter.setCard_id(choice.getCardNumber());
+        } else if(toChange.equals("Delivery Method")){
+            DeliveryMethodService helper = new DeliveryMethodService();
+            DeliveryMethod choice = helper.selectDeliveryMethod();
+            toAlter.setDelivery_method_id(choice.getDelivery_method_id());
+        }  else if(toChange.equals("Delivery Status")){
+            DeliveryStatusService helper = new DeliveryStatusService(con);
+            DeliveryStatus choice = helper.selectDeliveryStatus();
+            toAlter.setDelivery_status_id(choice.getDelivery_status_id());
+        } else {
+            System.out.println("Invalid option");
+            alterOrder();
+        }
+        
+        // Update the order
+        System.out.println(toAlter);
+        orderHelper.update(toAlter);
+        adminScreen();
+    }
+    
+    public void addOrder(){
+    }
+    
+    public void deleteOrder(){
+        
+    }
+    
+    /*
+        *******************
+        * Delivery Method *
+        *******************
      */
     private static void alterDeliveryMethod() {
         // Ask for a delivery method to delete
