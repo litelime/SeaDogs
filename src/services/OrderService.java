@@ -302,7 +302,7 @@ public class OrderService implements Service<Order> {
                 pStmt=connection.prepareStatement("SELECT S.store, S.PHONE_NUMBER, O.order_id, U.first, U.last, U.phone, U.email, I.name, I.description, I.price, O.TOTAL_PRICE, C.CARD_NUMBER "
                                        +"FROM orders O, USERS U, Order_items OI, stores S, cards C, items I WHERE "
                                        + "O.order_id=OI.ORDER_ID AND OI.ITEM_ID=I.ITEM_ID AND U.user_id=O.user_id AND O.Store_id=S.STORE_ID AND O.card_id=C.CARD_ID AND O.order_id=?");
-                pStmt.setString(1, "Order_ID");
+                pStmt.setString(1, Order_ID);
                 pStmt.execute();
                 //Step4: get the output ResultSet
                 RS=pStmt.getResultSet();
