@@ -264,21 +264,35 @@ public class MenuServices implements Service<Menu> {
             SpecialMenu sm = new SpecialMenu();
             sm.setPrice(0);
             while (rs.next()) {
-                sm.setId(rs.getString("special_id"));
-                if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
-                    sm.setName(rs.getString("special_name"));
-                    if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
-                        sm.setDescription(rs.getString("special_description"));
-                    }
-                    sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
-                    for(int i = 0; i < rs.getInt("amount"); i++) {
-                        sm.addItemId(rs.getString("item_id"));
-                    }
-                    String tid = rs.getString("time_slot_id");
-                    String tName = getTimeName(times, tid);
-                    sm.setPhoto(rs.getString("photo"));
-                    sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                //First case
+                if (sm.getId().equals("")) {
+                    sm.setId(rs.getString("special_id"));
                 }
+                //if this is a new special
+                if (!sm.getId().equals(rs.getString("special_id"))) {
+                    menArr.add(sm);
+                    sm = new SpecialMenu();
+                    sm.setId(rs.getString("special_id"));
+                }
+                if (sm.getId().equals(rs.getString("special_id"))) {
+                    if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
+                        sm.setName(rs.getString("special_name"));
+                        if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
+                            sm.setDescription(rs.getString("special_description"));
+                        }
+                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
+                        for(int i = 0; i < rs.getInt("amount"); i++) {
+                            sm.addItemId(rs.getString("item_id"));
+                        }
+                        String tid = rs.getString("time_slot_id");
+                        String tName = getTimeName(times, tid);
+                        sm.setPhoto(rs.getString("photo"));
+                        sm.setVegetarian(rs.getString("vegetarian").charAt(0));
+                    }
+                }
+                
+            }
+            if (!sm.getId().equals("")) {
                 menArr.add(sm);
             }
             return menArr;
