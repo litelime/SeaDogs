@@ -100,8 +100,8 @@ public class ServiceWrapper {
                     }
                 }
             }
-		System.out.println(++count + ". Go Back");
 	}
+        System.out.println(++count + ". Go Back");
     }
 	public static void printOrders(ArrayList<Order> orders){
 		int count = 0;
