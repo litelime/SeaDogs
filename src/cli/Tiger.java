@@ -593,22 +593,54 @@ public class Tiger {
 
     //TODO get item from item id here
     private static void viewEditOrderItems(Order order) {
-        System.out.println("*View Items*");
-        ArrayList<String> itemIds = currentOrder.getItem_ids();
-        ArrayList<Menu> items = sw.getMenuItems(itemIds);
-        if (items.isEmpty()) {
-            System.out.println("No items");
+        
+        System.out.println("What do you want to change? ");
+        System.out.println("1. Items");
+        System.out.println("2. Specials");
+        System.out.println("3. Go Back");
+        int option = getAnInt();
+        switch(option) {
+            case 1:
+                System.out.println("*View Items*");
+                ArrayList<String> itemIds = currentOrder.getItem_ids();
+                ArrayList<Menu> items = sw.getMenuItems(itemIds);
+                if (items.isEmpty()) {
+                    System.out.println("No items");
+                }
+                ServiceWrapper.printMenuItems(items);
+                int input = getAnInt();
+                System.out.println("Items size: " + items.size());
+                if (input == items.size()+2) {
+                    homeScreen();
+                } else if (input == items.size() + 1) {
+                    currentOrderScreen();
+                } else {
+                    orderItemScreen(items.get(input));
+                }
+                break;
+            case 2:
+                //View specials
+                System.out.println("*View Specials*");
+                ArrayList<String> specialIds = currentOrder.getSpecial_ids();
+                ArrayList<SpecialMenu> specials = sw.getSpecialMenuItems(specialIds);
+                if (specials.isEmpty()) {
+                    System.out.println("No specials");
+                }
+                ServiceWrapper.printSpecialMenuItems(specials);
+                input = getAnInt();
+                System.out.println("Special size: " + specials.size());
+                if (input == specials.size()+2) {
+                    homeScreen();
+                } else if (input == specials.size() + 1) {
+                    currentOrderScreen();
+                } else {
+                    orderSpecialScreen(specials.get(input - 1));
+                }
+                break;
+            case 3:
+                break;
         }
-        ServiceWrapper.printMenuItems(items);
-        int input = getAnInt();
-        System.out.println("Items size: " + items.size());
-        if (input == items.size()) {
-            homeScreen();
-        } else if (input == items.size() + 1) {
-            currentOrderScreen();
-        } else {
-            orderItemScreen(items.get(input));
-        }
+        
     }
 
     public static void orderItemScreen(Menu menu) {
@@ -624,7 +656,19 @@ public class Tiger {
             currentOrderScreen();
         }
     }
+    public static void orderSpecialScreen(SpecialMenu menu) {
+        System.out.println("*** " + menu.getName() + " ***");
+        System.out.println("1. Remove item");
+        System.out.println("2. Go Back");
 
+        int input = Integer.valueOf(getInput());
+        if (input == 1) {
+            currentOrder.removeSpecial_id(menu.getId());
+            currentOrderScreen();
+        } else if (input == 2) {
+            currentOrderScreen();
+        }
+    }
     public static void submitOrder() {
         System.out.println("\n*Submit*");
 
