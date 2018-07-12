@@ -710,10 +710,10 @@ private static void addSpecialScreen() {
     }
 
     private static void deleteSpecialScreen() {
-        System.out.println("Choose an item to delete");
+        System.out.println("Choose a Special Combo to delete");
         MenuServices ms = new MenuServices(con);
-        ArrayList<Menu> menus = ms.getAll();
-        ServiceWrapper.printMenuItems(menus);
+        ArrayList<SpecialMenu> menus = ms.getAllSpecials();
+        ServiceWrapper.printSpecialMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
         if (input == menus.size() + 1) {
@@ -722,9 +722,8 @@ private static void addSpecialScreen() {
         if (input == menus.size() + 2) {
             System.exit(0);
         }
-        MenuServices menServ = new MenuServices(con);
 
-        menServ.deleteById(menus.get(input - 1).getId());
+        ms.deleteSpecialById(menus.get(input - 1).getId());
         System.out.println("Deleted " + menus.get(input - 1).getName());
         adminScreen();
     }
@@ -737,12 +736,12 @@ private static void addSpecialScreen() {
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
         if (input == (menus.size()) + 1) {
-            alterItemScreen();
+            adminScreen();
         }
-        Menu men = menus.get(input - 1);
+        SpecialMenu men = menus.get(input - 1);
         MenuServices menServ = new MenuServices(con);
-        System.out.println("Enter item name: ");
-        sc.nextLine();
+        System.out.println("Enter special name: ");
+        men.setName(sc.nextLine());
         String name = sc.nextLine();
         System.out.println("Enter vegeterian (y or n): ");
         String vege = sc.next();
