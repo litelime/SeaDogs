@@ -90,7 +90,6 @@ public class Menu {
 		this.price = price;
 	}
 
-
 	@Override
 	public String toString() {
 		return "Menu [id=" + id + ", name=" + name + ", vegetarian=" + vegetarian + ", description=" + description

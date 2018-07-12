@@ -272,8 +272,10 @@ public class MenuServices implements Service<Menu> {
                     + "ORDER BY special_id";
             ResultSet rs = con.createStatement().executeQuery(query);
             SpecialMenu sm = new SpecialMenu();
+            float discount = 15;
             sm.setPrice(0);
             while (rs.next()) {
+                discount = rs.getInt("discount_percentage");
                 //First case
                 if (sm.getId().equals("")) {
                     sm.setId(rs.getString("special_id"));
@@ -290,10 +292,10 @@ public class MenuServices implements Service<Menu> {
                         if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
                             sm.setDescription(rs.getString("special_description"));
                         }
-                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
                         for(int i = 0; i < rs.getInt("amount"); i++) {
                             sm.addItemId(rs.getString("item_id"));
                         }
+                        discount = rs.getFloat("discount_percentage");
                         String tid = rs.getString("time_slot_id");
                         String tName = getTimeName(times, tid);
                         sm.setPhoto(rs.getString("photo"));
@@ -303,8 +305,10 @@ public class MenuServices implements Service<Menu> {
                 
             }
             if (!sm.getId().equals("")) {
+                sm.setPrice(sm.getPrice()* (1.0f - discount/100));
                 menArr.add(sm);
             }
+
             return menArr;
 
         } catch (SQLException e) {
@@ -324,8 +328,10 @@ public class MenuServices implements Service<Menu> {
                     + "special_id = " + id;
             ResultSet rs = con.createStatement().executeQuery(query);
             SpecialMenu sm = new SpecialMenu();
+            float discount = 15.0f;
             sm.setPrice(0);
             while (rs.next()) {
+                discount = rs.getFloat("discount_percentage");
                 if (rs.getString("special_id").equals(id)) {
                     sm.setId(rs.getString("special_id"));
                     if (rs.getString("special_name") != null && !rs.getString("special_name").equals("")) {
@@ -333,10 +339,10 @@ public class MenuServices implements Service<Menu> {
                         if (rs.getString("special_description") != null && !rs.getString("special_description").equals("")) {
                             sm.setDescription(rs.getString("special_description"));
                         }
-                        sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
                         for(int i = 0; i < rs.getInt("amount"); i++) {
                             sm.addItemId(rs.getString("item_id"));
                         }
+                        
                         String tid = rs.getString("time_slot_id");
                         String tName = getTimeName(times, tid);
                         sm.setPhoto(rs.getString("photo"));
@@ -344,6 +350,8 @@ public class MenuServices implements Service<Menu> {
                     }
                 }
             }
+            sm.setPrice(sm.getPrice() * (1 - discount / 100.0f));
+
             return sm;
 
         } catch (SQLException e) {

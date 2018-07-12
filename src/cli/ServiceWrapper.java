@@ -75,7 +75,7 @@ public class ServiceWrapper {
         int count = 0;
         for (SpecialMenu menu : menus) {
             count++;
-            System.out.println(count + ". $" + menu.getPrice() + " " + menu.getName());
+            System.out.printf("%d. $ %.2f %s\n",count, menu.getPrice() , menu.getName());
 
             ArrayList<String> idList = menu.getItemIds();
             Comparator<String> c = Comparator.comparing(String::toString);
@@ -84,11 +84,11 @@ public class ServiceWrapper {
                 String curId = idList.get(0);
                 //Tab so output can be read easier
                 System.out.print("\t -");
-                int amount = 0;
+                int amount = 1;
                 for (int i = 0; i <= idList.size() - 1; i++) {
                     if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
                         System.out.print(ms.getById(idList.get(i)).getName() + " " + amount);
-                        amount = 0;
+                        amount = 1;
                         if (i != idList.size() - 1) {
                             System.out.print(", ");
                             curId = idList.get(i + 1);

@@ -5,8 +5,9 @@
  */
 package domain;
 
+import cli.Tiger;
 import java.util.ArrayList;
-
+import services.MenuServices;
 /**
  *
  * @author syntel
@@ -39,10 +40,6 @@ public class SpecialMenu extends Menu {
                 this.itemIds = itemIds;
 	}
 	
-
-
-	
-
         public float getDiscount() {
             return discount;
         }
@@ -60,6 +57,8 @@ public class SpecialMenu extends Menu {
         }
         
         public void addItemId(String itemId) {
+            MenuServices item = new  MenuServices(Tiger.con);
+            this.setPrice(this.getPrice()+item.getById(itemId).getPrice());
             itemIds.add(itemId);
         }
 
@@ -83,7 +82,6 @@ public class SpecialMenu extends Menu {
 		result = prime * result + vegetarian;
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {

@@ -132,4 +132,17 @@ insert into stores
 	values ('1','5','South Phoenix',9094827459,1,21600,79200);
 insert into stores
 	values ('2','6','Scottsdale',5201932948,4,21600,79200);
+	
+insert into specials
+	values(2,15,'0','Tandoori Combo','Tandoori Chicken with a drink and dessert',1,'Tandoor_Special.jpg','n',2);
+insert into specials
+	values(4,15,'0','Tandoori Combo','Tandoori Chicken with a drink and dessert',1,'Tandoor_Special.jpg','n',2);
+insert into specials
+	values(8,15,'0','Tandoori Combo','Tandoori Chicken with a drink and dessert',1,'Tandoor_Special.jpg','n',2);
 
+insert into specials
+	values(1,15,'1','Tikka Combo','Samosa Appetizer with Chicken Tikka and Sweet Lassi',1,'Tandoor_Special.jpg','n',2);
+insert into specials
+	values(6,15,'1','Tikka Combo','Samosa Appetizer with Chicken Tikka and Sweet Lassi',1,'Tandoor_Special.jpg','n',2);
+insert into specials
+	values(14,15,'1','Tikka Combo','Samosa Appetizer with Chicken Tikka and Sweet Lassi',1,'Tandoor_Special.jpg','n',2);

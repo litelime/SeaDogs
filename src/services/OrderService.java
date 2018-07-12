@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import domain.Order;
+import domain.Special;
+import domain.SpecialMenu;
 import java.sql.DriverManager;
 import java.time.LocalTime;
 import java.util.Collections;
@@ -54,6 +56,19 @@ public class OrderService implements Service<Order> {
             
             //Add all items in order to order_items
             ArrayList<String> item_ids = order.getItem_ids();
+            ArrayList<String> special_ids = order.getSpecial_ids();
+            SpecialServices SS = new SpecialServices(connection);
+            
+            for(String item_id : special_ids){
+                
+                statement = connection.prepareCall(
+                        "{call AddOrderItem(?,?)}");
+                statement.setString(1, order.getOrder_id());
+                statement.setString(2, item_id);
+                statement.execute();
+                statement.close();
+                
+            }
             for (String item_id : item_ids) {
                 statement = connection.prepareCall(
                         "{call AddOrderItem(?,?)}");

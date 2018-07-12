@@ -83,6 +83,9 @@ public class Tiger {
         options.add("Admin/Manager");
         options.add("Quit");
         
+        //print a newline befre the screen.
+        System.out.println("");
+        
         int count = 0;
         for (String option : options) {
             count++;
@@ -474,13 +477,13 @@ public class Tiger {
     }
 
     public static boolean hasItems() {
-        if (currentOrder.getItem_ids().isEmpty()) {
+        if (currentOrder.getSpecial_ids().isEmpty()&&currentOrder.getItem_ids().isEmpty()) {
             return false;
         }
         return confirm();
     }
+    
     //Check if they have a location set.
-
     public static boolean hasLocation() {
         LocationService ls = new LocationService(con);
         if (ls.getUserLocations(currentUser.getUserId()).isEmpty()) {
