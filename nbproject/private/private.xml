@@ -12,7 +12,21 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/C:/Users/syntel/Desktop/Examples/CoreJava/Java/src/cli/Tiger.java</file>
+=======
+<<<<<<< HEAD
+            <file>file:/C:/Users/syntel/SeaDogs/src/domain/itemType.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/cli/Tiger.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/services/itemTypeServices.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/cli/ServiceWrapper.java</file>
+            <file>file:/C:/Users/syntel/SeaDogs/src/cli/AdminAndManager.java</file>
+=======
+            <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/AdminAndManager.java</file>
+            <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/ServiceWrapper.java</file>
+            <file>file:/C:/Users/syntel.PHX440G3-2815YT/SeaDogs/src/cli/Tiger.java</file>
+>>>>>>> 7e1dd3dd3cf76ca445df5773932f0afc0702376c
+>>>>>>> 305cc90e361f25039e89c7cbc88d93941b0321d8
         </group>
     </open-files>
 </project-private>

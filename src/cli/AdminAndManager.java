@@ -159,9 +159,10 @@ public class AdminAndManager {
             }
             case 6:
                 option = optionsScreen("Item Type");
+
                         switch(option){
                             case 1:
-                                //SHOULD BE ITEMTYPE SCREEN 
+                                updateItemTypeScreen();
                                 break;
                             case 2:
                                 addItemTypeScreen();
@@ -208,6 +209,10 @@ public class AdminAndManager {
                         break;
                     case 3:
                         System.out.println("Deleting order");
+                        break;
+                        
+                    case 4:
+                        adminScreen();
                         break;
                     default:
                         adminScreen();
@@ -665,6 +670,7 @@ private static void addSpecialScreen() {
         Scanner sc = new Scanner(System.in);
         MenuServices menServ = new MenuServices(con);
         SpecialMenu sm = new SpecialMenu();
+        sm.setId("" + menServ.getNextSpecialId());
         System.out.println("\nEnter special name: ");
         sm.setName(sc.nextLine());
 //        System.out.println("\nEnter vegeterian (y or n): ");
@@ -680,18 +686,25 @@ private static void addSpecialScreen() {
             System.out.println("Choose an item to add");
             ArrayList<Menu> menus = ms.getAll();
             ServiceWrapper.printMenuItems(menus);
-            int input = sc.nextInt();
-            if (input == menus.size() + 1) {
+            int id = sc.nextInt();
+            if (id == menus.size() + 1) {
                 return;
-        }
-        if (input == menus.size() + 2) {
-            System.exit(0);
-        }
-       // MenuServices menServ = new MenuServices(con);
-
-        menServ.deleteById(menus.get(input - 1).getId());
-        System.out.println("Deleted " + menus.get(input - 1).getName());
-        adminScreen();
+            }
+            if (id == menus.size() + 2) {
+                System.exit(0);
+            }
+            System.out.println("Enter amount");
+            int amount = sc.nextInt();
+            System.out.println("Enter discount");
+            sm.setDiscount(sc.nextInt());
+            ms.addSpecial(sm, "" + (id-1), amount);
+            System.out.println("Do you wish to add more items? ");
+            System.out.println("1. I want to add more ");
+            System.out.println("2. I am done ");
+            int input = sc.nextInt();
+            if (input > 1) {
+                stillSelecting = false;
+            }
         }
         adminScreen();
     }
@@ -1226,9 +1239,28 @@ private static void addSpecialScreen() {
         adminScreen();
 
     }
-
-    private static void deleteItemType() {
+    
+    public static void updateItemTypeScreen() {
         Scanner sc = new Scanner(System.in);
+        System.out.println("Please enter the item type ID to be changed");
+        String TypeId = sc.next();
+        System.out.println("Please enter the new value for item type id: "+TypeId);
+        String itmTyp = sc.next();
+        System.out.println("1 here");
+        ItemType it = new ItemType(TypeId, itmTyp);
+        System.out.println("2 here: " + it.getItemType());
+        ItemTypeServices it1 = new ItemTypeServices(con);
+        System.out.println("here 3");
+        it1.update(it);
+        System.out.println("Item Type ID " + TypeId + " has been updated\n");
+        AdminAndManager aam = new AdminAndManager(con);
+        aam.adminScreen();
+
+    }
+    
+    
+    public static void deleteItemType(){
+        Scanner sc= new Scanner(System.in);
         System.out.println("Please enter the item type ID to be deleted");
         String id = sc.next();
         ItemTypeServices it1 = new ItemTypeServices(con);
