@@ -31,7 +31,7 @@ public class itemTypeServices {
        Connection conn;
        try{
            //call driver
-           Class.forName("oracle.jdbc.OracleDriver");
+           //Class.forName("oracle.jdbc.OracleDriver");
            //Database connection
            conn=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","db_uspring","pass");
            //call SP for deleting item types
@@ -42,7 +42,7 @@ public class itemTypeServices {
            orclCallableStatement.close();
            conn.close();
            
-       }catch(Exception e){
+       }catch(SQLException e){
            System.out.println(e.getMessage());
        }
         
@@ -52,7 +52,7 @@ public class itemTypeServices {
         
         try{
             //get the driver
-            Class.forName("oracle.jdbc.OracleDriver");
+            //Class.forName("oracle.jdbc.OracleDriver");
             //connecting to database
             conn=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","db_uspring","pass");
             System.out.println("Connection is successful");
@@ -66,15 +66,43 @@ public class itemTypeServices {
             orclCallableStatement.close();
             conn.close();
             return true;           
-        }catch(Exception e){
+        }catch(SQLException e){
             System.out.println(e.getMessage());
         }
         return false;
     }
-    //public void update(E obj);
-    //public E getById(String id);
+    public void update(itemType itype){
+        CallableStatement cs;
+        Connection connect;
+        try{
+            //get the driver
+            //Class.forName("oracle.jdbc.OracleDriver");
+            //connecting to database
+            connect=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "db_uspring", "pass");
+            System.out.println("Connection is successful");
+            System.out.println("here in update1");
+            cs=connect.prepareCall("{call SP_UPD_ITEM_TYPES(?,?)}");
+            cs.setString(1, itype.getItemTypeId());
+            cs.setString(2, itype.getItemType());
+            
+            System.out.println("here in update2: it id " + itype.getItemTypeId() + " \n aafg: " + itype.getItemType());
+            cs.execute();
+            System.out.println("here in update3");
+            //close all resources
+            cs.close();
+            connect.close();
+            //return true;
+                      
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+            //return false;
+        }
+       
+               
+    }
+    //public E getById(String id)
     //public ArrayList<E> getAll();
-    //public void add(itemType it){
+    
         
     
 }

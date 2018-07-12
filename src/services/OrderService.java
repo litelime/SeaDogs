@@ -303,41 +303,35 @@ public class OrderService implements Service<Order>{
             PreparedStatement pStmt;
             ResultSet RS;
             try{
-                pStmt=connection.prepareStatement("SELECT S.store, S.PHONE_NUMBER, O.order_id, U.first, U.last, U.phone, U.email, I.name, I.description, I.price,C.CARD_NUMBER "
-                                           +"FROM orders O, USERS U, Order_items OI, stores S, cards C, items I WHERE "
-                                           + "O.order_id=OI.ORDER_ID AND OI.ITEM_ID=I.ITEM_ID AND U.user_id=O.user_id AND O.Store_id=S.STORE_ID AND O.card_id=C.CARD_ID AND O.order_id=?");
-                pStmt.setString(1, Order_ID);
+                pStmt=connection.prepareStatement("SELECT S.store, S.PHONE_NUMBER, O.order_id, U.first, U.last, U.phone, U.email, I.name, I.description, I.price, O.TOTAL_PRICE, C.CARD_NUMBER "
+                                       +"FROM orders O, USERS U, Order_items OI, stores S, cards C, items I WHERE "
+                                       + "O.order_id=OI.ORDER_ID AND OI.ITEM_ID=I.ITEM_ID AND U.user_id=O.user_id AND O.Store_id=S.STORE_ID AND O.card_id=C.CARD_ID AND O.order_id=?");
+                pStmt.setString(1, "Order_ID");
                 pStmt.execute();
                 //Step4: get the output ResultSet
                 RS=pStmt.getResultSet();
+
                 RS.next();
-            
+
                 System.out.println("Thank You for the Order");
-                System.out.println("INVOICE");
+                System.out.println("                                      INVOICE");
                 System.out.println("STORE DETAILS");
-                System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2));
+                System.out.println(" Store-- "+RS.getString(1)+"                     Store Phone Number-- "+RS.getString(2));
+                System.out.println(" ");
                 System.out.println("CUSTOMER and ORDER DETAILS");
-                System.out.println("--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
-                            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Payment Card Number: "+RS.getString(11));
+                System.out.println(" Order ID-- "+RS.getString(3)+"     Total Amount-- "+RS.getString(11));
+                System.out.println(" Name--"+RS.getString(4)+" "+RS.getString(5)+"     Phone Number-- "+RS.getString(6)+"     Email-- "+RS.getString(7)+"     Payment Card Number-- "+RS.getString(12));
+                System.out.println(" ");
                 System.out.println("Items Ordered under Order no. 1 ");
-                System.out.println("Item No. 1: "+RS.getString(8)+
-                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10));
+                System.out.println(" Item No. 1-- "+RS.getString(8)+
+                            "     Item Description-- "+RS.getString(9)+"     Item Price-- "+RS.getString(10));
                 int i=2;
                 while(RS.next()){
-                    //   System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
-                   //         "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
-                     //       "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Paymeny Card Number: "+RS.getString(11));
-
-                    System.out.println("Item No. "+i+": "+RS.getString(8)+
-                            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10));
+                    System.out.println(" Item No. "+i+"-- "+RS.getString(8)+
+                            "     Item Description-- "+RS.getString(9)+"     Item Price-- "+RS.getString(10));
                     i++;
-                }    
-                    //while(RS.next()){
-                //    System.out.println("Store: "+RS.getString(1)+"--Store Phone Number: "+RS.getString(2)+"--Order ID: "+RS.getString(3)+"--First Name: "+RS.getString(4)+
-                //            "--Last Name: "+RS.getString(5)+"--Phone Number: "+RS.getString(6)+"--Email: "+RS.getString(7)+"--Item Bought: "+RS.getString(8)+
-                //            "--Item Description: "+RS.getString(9)+"--Item Price: "+RS.getString(10)+"--Payment Card Number: "+RS.getString(11));
-                //}
-                //Step5: close statement and connections
+                }
+                //Step5: close statement and connection
                 pStmt.close();
 
             }catch (SQLException e){

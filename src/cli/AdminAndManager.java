@@ -149,6 +149,9 @@ public class AdminAndManager {
             case 6:
                 option = optionsScreen("Item Type");
                 switch (option) {
+                    case 1:
+                        updateItemTypeScreen();
+                        break;
                     
                     case 2:
                         addItemTypeScreen();
@@ -157,6 +160,13 @@ public class AdminAndManager {
                     case 3:
                         deleteItemType();
                         break;
+                        
+                    case 4:
+                        adminScreen();
+                        break;
+                    
+                    default:
+                        System.exit(0);
                 }
             case 7:
                 optionsScreen("Location");
@@ -769,6 +779,25 @@ public class AdminAndManager {
         aam.adminScreen();
 
     }
+    
+    public static void updateItemTypeScreen() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Please enter the item type ID to be changed");
+        String TypeId = sc.next();
+        System.out.println("Please enter the new value for item type id: "+TypeId);
+        String itmTyp = sc.next();
+        System.out.println("1 here");
+        itemType it = new itemType(TypeId, itmTyp);
+        System.out.println("2 here: " + it.getItemType());
+        itemTypeServices it1 = new itemTypeServices(con);
+        System.out.println("here 3");
+        it1.update(it);
+        System.out.println("Item Type ID " + TypeId + " has been updated\n");
+        AdminAndManager aam = new AdminAndManager(con);
+        aam.adminScreen();
+
+    }
+    
     
     public static void deleteItemType(){
         Scanner sc= new Scanner(System.in);
