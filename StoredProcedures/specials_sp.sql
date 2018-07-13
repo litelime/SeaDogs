@@ -28,3 +28,9 @@ begin
   delete from specials where special_id = id;
 end;
 /
+create or replace procedure sp_delete_special_item (id varchar, item_id_in varchar)
+as
+begin
+  delete from specials where special_id = id and item_id = item_id_in;
+end;
+/

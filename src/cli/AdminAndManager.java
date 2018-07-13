@@ -680,6 +680,8 @@ private static void addSpecialScreen() {
         sm.setDescription(sc.nextLine());
 //        System.out.println("\nEnter meal time: ");
 //        String slot_ID = sc.next();
+        System.out.println("Enter discount");
+        sm.setDiscount(sc.nextInt());
         MenuServices ms = new MenuServices(con);
         Boolean stillSelecting = true;
         while(stillSelecting) {
@@ -695,8 +697,6 @@ private static void addSpecialScreen() {
             }
             System.out.println("Enter amount");
             int amount = sc.nextInt();
-            System.out.println("Enter discount");
-            sm.setDiscount(sc.nextInt());
             ms.addSpecial(sm, "" + (id-1), amount);
             System.out.println("Do you wish to add more items? ");
             System.out.println("1. I want to add more ");
@@ -735,32 +735,70 @@ private static void addSpecialScreen() {
         ServiceWrapper.printSpecialMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
-        if (input == (menus.size()) + 1) {
-            adminScreen();
+        if (input == menus.size() + 1) {
+            alterSpecialScreen();
+        }
+        if (input == menus.size() + 2) {
+            System.exit(0);
         }
         SpecialMenu men = menus.get(input - 1);
-        MenuServices menServ = new MenuServices(con);
-        System.out.println("Enter special name: ");
-        men.setName(sc.nextLine());
-        String name = sc.nextLine();
-        System.out.println("Enter vegeterian (y or n): ");
-        String vege = sc.next();
-        char vegetarian = vege.charAt(0);
-        System.out.println("Enter a description: ");
-        sc.nextLine();
-        String description = sc.nextLine();
-        System.out.println("Enter type number id: ");
-        String type = sc.next();
-        System.out.println("Enter meal time: ");
-        String slot_ID = sc.next();
-        System.out.println("Enter photo link: ");
-        String photo = sc.next();
-        System.out.println("Enter a price: ");
-        float price = sc.nextFloat();
-        String id = men.getId();
-        Menu menUp = new Menu(id, name, vegetarian, type, description, slot_ID, photo, price);
-        menServ.update(menUp);
-        System.out.println("Updated " + name);
+        //ms.deleteSpecialById(menus.get(input - 1).getId());
+        System.out.println("Enter new name for " + men.getName() + ": ");
+        men.setName(sc.next());
+//        System.out.println("Enter vegeterian (y or n): ");
+//        String vege = sc.next();
+//        char vegetarian = vege.charAt(0);
+        System.out.println("Enter a new description instead of: " + men.getDescription());
+        men.setDescription(sc.next());
+        System.out.println("Enter new discount");
+        men.setDiscount(sc.nextInt());
+//        System.out.println("Enter type number id: ");
+//        String type = sc.next();
+//        System.out.println("Enter meal time: ");
+//        String slot_ID = sc.next();
+//        System.out.println("Enter photo link: ");
+//        String photo = sc.next();
+        Boolean stillChanging = true;
+        while(stillChanging) {
+            System.out.println("Choose an item to change");
+            Menu im;
+            for(String i : men.getUniqueItemId()) {
+                im = ms.getById(i);
+                System.out.println("- " + im.getName() + ": " + men.countItemsById(i) + " * " 
+                        + im.getPrice() + " * " + (100 - men.getDiscount()) + "% = "
+                        + im.getPrice()* men.countItemsById(i) * (100 - men.getDiscount()) / 100);
+            }
+            ServiceWrapper sw = new ServiceWrapper(con);
+            sw.printMenuItems(ms.getAll());
+            int id = sc.nextInt();
+            if (id == ms.getAll().size() + 1) {
+                stillChanging = false;
+                break;
+            }
+            if (id == ms.getAll().size() + 2) {
+                System.exit(0);
+            }
+            System.out.println("Enter amount");
+            int amount = sc.nextInt();
+            if (men.getUniqueItemId().contains("" + (id-1))) {
+                men.removeItemsById("" + (id-1));
+                for (int j = 0; j < amount; j++) {
+                    men.addItemId("" + (id-1));
+                }
+                ms.updateSpecial(men);
+            } else {
+                ms.addSpecial(men, "" + (id-1), amount);
+            }
+            
+            men = ms.getSpecialById(men.getId());
+            System.out.println("Do you wish to change more items? ");
+            System.out.println("1. I want to change more ");
+            System.out.println("2. I am done ");
+            input = sc.nextInt();
+            if (input > 1) {
+                stillChanging = false;
+            }
+        }
         adminScreen();
     }
     private static void addItemScreen() {

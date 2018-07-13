@@ -166,7 +166,35 @@ public class MenuServices implements Service<Menu> {
             e.printStackTrace();
         }
     }
-
+    public void updateSpecial(SpecialMenu men) {
+        ArrayList<TimeSlots> times = timServ.getAll();
+        String timeId = getTimeID(times, men.getSlot_ID());
+        try {
+            CallableStatement preStmt = con.prepareCall("call sp_update_special (?,?,?,?,?,?,?,?,?)");
+            for (String i:men.getUniqueItemId()) {
+                preStmt.setString(1, i);
+                preStmt.setFloat(2, men.getDiscount());
+                preStmt.setString(3, men.getId());
+                preStmt.setString(4, men.getName());
+                preStmt.setString(5, men.getDescription());
+                preStmt.setInt(6, men.countItemsById(i));
+                preStmt.setString(7, men.getPhoto());
+                preStmt.setString(8, "" + men.getVegetarian());
+                preStmt.setString(9, timeId);
+                preStmt.executeUpdate();
+            }
+            preStmt = con.prepareCall("call sp_delete_special_item (?,?)");
+            for (String i:men.getUniqueItemId()) {
+                if (men.countItemsById(i) == 0) {
+                    preStmt.setString(1,  men.getId());
+                    preStmt.setString(2, i);
+                    preStmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public ArrayList<Menu> getByType(String type) {
         ArrayList<Menu> menArr = new ArrayList<Menu>();
         ArrayList<TimeSlots> times = timServ.getAll();
@@ -291,6 +319,7 @@ public class MenuServices implements Service<Menu> {
                             sm.setDescription(rs.getString("special_description"));
                         }
                         sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
+                        sm.setDiscount(rs.getFloat("discount_percentage"));
                         for(int i = 0; i < rs.getInt("amount"); i++) {
                             sm.addItemId(rs.getString("item_id"));
                         }
@@ -324,7 +353,6 @@ public class MenuServices implements Service<Menu> {
                     + "special_id = " + id;
             ResultSet rs = con.createStatement().executeQuery(query);
             SpecialMenu sm = new SpecialMenu();
-            sm.setPrice(0);
             while (rs.next()) {
                 if (rs.getString("special_id").equals(id)) {
                     sm.setId(rs.getString("special_id"));
@@ -334,9 +362,11 @@ public class MenuServices implements Service<Menu> {
                             sm.setDescription(rs.getString("special_description"));
                         }
                         sm.setPrice(sm.getPrice() + rs.getInt("amount") * (100 - rs.getFloat("discount_percentage")) / 100);
+                        sm.setDiscount(rs.getFloat("discount_percentage"));
                         for(int i = 0; i < rs.getInt("amount"); i++) {
                             sm.addItemId(rs.getString("item_id"));
                         }
+                        
                         String tid = rs.getString("time_slot_id");
                         String tName = getTimeName(times, tid);
                         sm.setPhoto(rs.getString("photo"));

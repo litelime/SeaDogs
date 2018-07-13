@@ -19,3 +19,4 @@ start C:\SeaDogs\StoredProcedures\cards_sp.sql
 --CALL IT ONLY ONE TIME, U WILL GET AN ERROR IF CALLED TWICE, BUT DONT WORRY
 start C:\SeaDogs\StoredProcedures\temp.sql
 start C:\SeaDogs\StoredProcedures\DropColumn_Location.sql
+start C:\SeaDogs\StoredProcedures\addItems.sql
