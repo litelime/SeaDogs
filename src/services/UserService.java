@@ -1,5 +1,6 @@
 package services;
 
+import static cli.Tiger.getAnInt;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
 import domain.User;
 import java.util.Collection;
 import java.util.Collections;
@@ -226,13 +226,19 @@ public class UserService implements Service<User> {
 
     public User selectUser(){
         ArrayList<User> users = getAll();
+        int choice = -1;
+        while(choice < 0 || choice >= users.size()){
         System.out.println("Select a user:");
         for(int i = 0; i < users.size(); i++){
             String first = users.get(i).getFirstName();
             String last = users.get(i).getLastName();
             System.out.println((i + 1) + ". " + first + " " + last);
         }
+        
         Scanner kb = new Scanner(System.in);
-        return users.get(Integer.parseInt(kb.nextLine()) - 1);
+        choice = getAnInt() - 1;
+        }
+        
+        return users.get(choice);
     }
 }
