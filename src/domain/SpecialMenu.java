@@ -58,8 +58,17 @@ public class SpecialMenu extends Menu {
         
         public void addItemId(String itemId) {
             MenuServices item = new  MenuServices(Tiger.con);
-            this.setPrice(this.getPrice()+item.getById(itemId).getPrice());
+            //this.setPrice(this.getPrice()+item.getById(itemId).getPrice());
             itemIds.add(itemId);
+        }
+        @Override
+        public float getPrice() {
+            float totalPrice = 0.0f;
+            MenuServices ms = new MenuServices(Tiger.con);
+            for (String s: getUniqueItemId()) {
+                totalPrice += ms.getById(s).getPrice() * countItemsById(s) * (100 - discount) / 100;
+            }
+            return totalPrice;
         }
         public int countItemsById(String id) {
             int count = 0;

@@ -784,7 +784,6 @@ private static void addSpecialScreen() {
             System.exit(0);
         }
         SpecialMenu men = menus.get(input - 1);
-        //ms.deleteSpecialById(menus.get(input - 1).getId());
         System.out.println("Enter new name for " + men.getName() + ": ");
         men.setName(sc.next());
 //        System.out.println("Enter vegeterian (y or n): ");
