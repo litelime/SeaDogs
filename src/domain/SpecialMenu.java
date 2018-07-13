@@ -61,7 +61,29 @@ public class SpecialMenu extends Menu {
             this.setPrice(this.getPrice()+item.getById(itemId).getPrice());
             itemIds.add(itemId);
         }
-
+        public int countItemsById(String id) {
+            int count = 0;
+            for(String iId : itemIds) {
+                if (iId.equals(id)) {
+                    count++;
+                }
+            }
+            return count;
+        }
+        public ArrayList<String> getUniqueItemId() {
+            ArrayList<String> result = new ArrayList<>();
+            for(String iId : itemIds) {
+                if (!result.contains(iId)) {
+                    result.add(iId);
+                }
+            }
+            return result;
+        }
+        public void removeItemsById(String id){
+            while(itemIds.contains(id)) {
+                itemIds.remove(id);
+            }
+        }
 	@Override
 	public String toString() {
 		return "Menu [id=" + id + ", name=" + name + ", vegetarian=" + vegetarian + ", description=" + description
