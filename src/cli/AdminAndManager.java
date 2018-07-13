@@ -774,11 +774,13 @@ private static void addSpecialScreen() {
             System.out.println("No specials to edit");
             adminScreen();
         }
+        System.out.println((menus.size() + 1) + ". Go Back");
         ServiceWrapper.printSpecialMenuItems(menus);
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
+        
         if (input == menus.size() + 1) {
-            alterSpecialScreen();
+            adminScreen();
         }
         if (input == menus.size() + 2) {
             System.exit(0);
@@ -811,14 +813,17 @@ private static void addSpecialScreen() {
             }
             ServiceWrapper sw = new ServiceWrapper(con);
             sw.printMenuItems(ms.getAll());
+            System.out.println((ms.getAll().size()+2) + ". I will pass");
             int id = sc.nextInt();
             if (id == ms.getAll().size() + 1) {
-                stillChanging = false;
-                break;
+                adminScreen();
             }
             if (id == ms.getAll().size() + 2) {
-                System.exit(0);
-            }
+                stillChanging = false;
+                ms.updateSpecial(men);
+                adminScreen();
+                //System.exit(0);
+            } 
             System.out.println("Enter amount");
             int amount = sc.nextInt();
             if (men.getUniqueItemId().contains("" + (id-1))) {
@@ -826,6 +831,7 @@ private static void addSpecialScreen() {
                 for (int j = 0; j < amount; j++) {
                     men.addItemId("" + (id-1));
                 }
+                System.out.println("new amount: " + men.countItemsById("" + (id-1)));
                 ms.updateSpecial(men);
             } else {
                 ms.addSpecial(men, "" + (id-1), amount);

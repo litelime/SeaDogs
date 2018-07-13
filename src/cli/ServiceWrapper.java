@@ -84,6 +84,11 @@ public class ServiceWrapper {
                 String curId = idList.get(0);
                 //Tab so output can be read easier
                 System.out.print("\t -");
+//                int amount = 0;
+//                for (String s: menu.getUniqueItemId()) {
+//                    System.out.print(ms.getById(s).getName() + " " + menu.countItemsById(s));
+//                    
+//                }
                 int amount = 1;
                 for (int i = 0; i <= idList.size() - 1; i++) {
                     if (i == idList.size() - 1 || !idList.get(i + 1).equals(curId)) {
